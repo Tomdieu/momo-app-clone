@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title='Momo api')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/',include('accounts.urls')),
-    path('api-auth/', include('rest_framework.urls'))
+    path('api/',include('accounts.urls'),name='accounts'),
+    path('api-auth/', include('rest_framework.urls'),name="api-auth"),
+    path('api-doc/',schema_view),
 ]
