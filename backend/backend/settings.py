@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # Third party apps
     "corsheaders",
     "rest_framework",
+    "rest_framework_swagger",
     "rest_framework.authtoken"
 ]
 
@@ -151,5 +152,6 @@ CORS_ALLOW_METHODS = [
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-    ]
+    ],
+    # 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
