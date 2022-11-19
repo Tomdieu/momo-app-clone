@@ -14,3 +14,7 @@ def putMethod(request):
 def deleteMethod(request):
 
     return request.method == 'DELETE'
+
+def patchMethod(request):
+
+    return request.method == 'PATCH'
