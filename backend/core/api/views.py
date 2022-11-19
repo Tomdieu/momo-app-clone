@@ -98,7 +98,7 @@ class TransferViewSet(ListModelMixin,CreateModelMixin,GenericViewSet):
         data['charge'] = TransactionCharge.objects.filter(type_name__iequals='transfer')
 
         if data['sender'] == data['reciever']:
-            return Response({'detail':'You can not send money to your self!'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail':'You can not send money to your self!'},status=status.HTTP_400)
 
         if data['amount'] >= data['sender'].balance:
             from_currency = data['sender'].currency
