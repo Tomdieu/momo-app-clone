@@ -78,6 +78,3 @@ class Deposit(Transaction):
     deposit_from = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='deposit_from')
     deposit_to = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='deposit_to')
     
-
-# 6906 998 599
-# 5261 960 521 
