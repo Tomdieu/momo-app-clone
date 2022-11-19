@@ -1,20 +1,42 @@
 from django.contrib import admin
-
 # Register your models here.
 
-from .models import Account,Transaction
+from .models import Account,TransactionType,TransactionCharge,Transfer,Withdraw,Deposit
 
 
 class AccountAdmin(admin.ModelAdmin):
 
-	list_display = ('id','user','balance','account_status','currency')
+	list_display = ('id','user','is_agent','balance','account_status','currency')
 	list_filter=('balance','currency','account_status')
+
+	search_fields = ('user','currency','account_status',)
+	list_per_page = 25
+
 
 admin.site.register(Account,AccountAdmin)
 
-class TransactionAdmin(admin.ModelAdmin):
+class TransactionTypeAdmin(admin.ModelAdmin):
 
-	list_display = ('id','transaction_type','from_account','to_account','ammount','date_issue')
-	list_filter = ('from_account','to_account','ammount','date_issue')
+	pass
 
-admin.site.register(Transaction,TransactionAdmin)
+admin.site.register(TransactionType,TransactionTypeAdmin)
+
+class TransactionChargeAdmin(admin.ModelAdmin):
+	pass
+
+admin.site.register(TransactionCharge,TransactionChargeAdmin)
+
+class TransferAdmin(admin.ModelAdmin):
+	pass
+
+admin.site.register(Transfer,TransferAdmin)
+
+class WithdrawAdmin(admin.ModelAdmin):
+	pass
+
+admin.site.register(Withdraw,WithdrawAdmin)
+
+class DepositAdmin(admin.ModelAdmin):
+	pass
+
+admin.site.register(Deposit,DepositAdmin)
