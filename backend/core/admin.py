@@ -6,11 +6,15 @@ from .models import Account,TransactionType,TransactionCharge,Transfer,Withdraw,
 
 class AccountAdmin(admin.ModelAdmin):
 
-	list_display = ('id','user','is_agent','balance','account_status','currency')
+	list_display = ('id','user','is_agent','amount','account_status','currency')
 	list_filter=('balance','currency','account_status')
 
-	search_fields = ('user','currency','account_status',)
+	search_fields = ('user__username','currency','account_status',)
 	list_per_page = 25
+
+	@admin.display
+	def amount(self,obj):
+		return f'{obj.currency} {obj.balance}'
 
 
 admin.site.register(Account,AccountAdmin)
