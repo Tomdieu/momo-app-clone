@@ -42,8 +42,8 @@ admin.empty_value_display = "**Empty**"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/',include('accounts.urls'),name='accounts'),
-    path('api/',include('core.urls'),name='core'),
+    path('api/',include('accounts.urls'),name='auth'),
+    path('api/',include('core.urls'),name='accounts'),
     path('api-auth/', include('rest_framework.urls'),name="api-auth"),
     path('api-doc/',include_docs_urls(title='Momo API')),
     path('api/swagger/shema/',swagger_schema_view.with_ui('swagger',cache_timeout=0),name='swagger-schema')
