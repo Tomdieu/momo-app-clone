@@ -12,7 +12,7 @@ class Account(models.Model):
 
     STATUS = (('active','active'),('inactive','inactive'))
     account_number = models.UUIDField(default=uuid.uuid4,unique=True,editable=False)
-    user = models.OneToOneField(User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User,on_delete=models.CASCADE,help_text='user id')
     balance = models.BigIntegerField(default=0,help_text='User account balance')
     account_status = models.CharField(max_length=255,choices=STATUS,default='active')
     currency = models.CharField(max_length=3,default='XAF',help_text='currency',choices=CURRENCY)
@@ -37,23 +37,23 @@ class TransactionType(models.Model):
         ('WITHDRAW','WITHDRAW')
     )
 
-    name = models.CharField(max_length=25,unique=True,choices=TRANSACTION_TYPE)
-    description = models.CharField(max_length=255)
+    name = models.CharField(max_length=25,unique=True,choices=TRANSACTION_TYPE,help_text='transaction type name')
+    description = models.CharField(max_length=255,help_text='transaction type description')
 
     def __str__(self):
         return f'Transaction Type {self.name}'
         
 class TransactionCharge(models.Model):
     charge = models.FloatField(help_text="charge in % example 0.2 ")
-    type = models.ForeignKey(TransactionType,on_delete=models.CASCADE,related_name='transaction_type')
+    type = models.ForeignKey(TransactionType,on_delete=models.CASCADE,related_name='transaction_type',help_text='transaction type id')
 
     def __str__(self):
         return f'{self.charge}'
 
 class Transaction(models.Model):
     code = models.UUIDField(default=uuid.uuid4,unique=True,editable=False)
-    amount = models.FloatField()
-    created_at = models.DateTimeField()
+    amount = models.FloatField(help_text='the transaction amount')
+    created_at = models.DateTimeField(help_text='time at which the transaction was created')
     
     class Meta:
         abstract = True
@@ -63,18 +63,18 @@ class Transaction(models.Model):
 
 class Transfer(Transaction):
     
-    sender = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='sender')
-    reciever = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='reciever')
-    charge = models.ForeignKey(TransactionCharge,on_delete=models.CASCADE,related_name='transaction_charge')
+    sender = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='sender',help_text='the account sender id')
+    reciever = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='reciever',help_text='the reciever account id')
+    charge = models.ForeignKey(TransactionCharge,on_delete=models.CASCADE,related_name='transaction_charge',help_text='the transaction type id')
 
 
 class Withdraw(Transaction):
-    withdraw_from = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='withdraw_from')
-    agent = models.ForeignKey(Account,on_delete=models.CASCADE,related_name="agent")
-    withdraw_charge = models.ForeignKey(TransactionCharge,on_delete=models.CASCADE,related_name='withdraw_from')
+    withdraw_from = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='withdraw_from',help_text='the account id of the agent making the transaction')
+    agent = models.ForeignKey(Account,on_delete=models.CASCADE,related_name="agent",help_text='the account id of the user from which the money is withdraw from')
+    withdraw_charge = models.ForeignKey(TransactionCharge,on_delete=models.CASCADE,related_name='withdraw_charge',help_text='the transaction charge id')
 
 
 class Deposit(Transaction):
-    deposit_from = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='deposit_from')
-    deposit_to = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='deposit_to')
+    deposit_from = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='deposit_from',help_text='the account id which is depositing the money')
+    deposit_to = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='deposit_to',help_text='the account id which is recieving the money')
     

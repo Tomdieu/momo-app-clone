@@ -7,24 +7,31 @@ from  core.models import Account,TransactionCharge,TransactionType,Transfer,Depo
 
 class AccountSerializer(serializers.ModelSerializer):
 
+	class Meta:
+
+		model = Account
+		fields = '__all__'
+class AccountListSerializer(AccountSerializer):
+
 	user = UserSerializer()
 
 	class Meta:
 
 		model = Account
 		fields = '__all__'
-		# fields = ('id','user','balance','is_agent','account_status','currency','created_at','updated_at')
 
 class DepositSerializer(serializers.ModelSerializer):
-
-	deposit_from = AccountSerializer()
-	desposit_to = AccountSerializer()
 
 	class Meta:
 
 		model = Deposit
 
 		fields = '__all__'
+class DepositListSerializer(DepositSerializer):
+
+	deposit_from = AccountSerializer()
+	desposit_to = AccountSerializer()
+
 
 class TransactionTypeSerializer(serializers.ModelSerializer):
 
@@ -32,7 +39,7 @@ class TransactionTypeSerializer(serializers.ModelSerializer):
 		model = TransactionType	
 		fields = '__all__'
 
-class TransactionChargeSerializer(serializers.ModelSerializer):
+class TransactionListChargeSerializer(serializers.ModelSerializer):
 
 	type = TransactionTypeSerializer()
 
@@ -40,22 +47,33 @@ class TransactionChargeSerializer(serializers.ModelSerializer):
 		model = TransactionCharge
 		fields = '__all__'
 
-class Transferserializer(serializers.ModelSerializer):
+class TransactionChargeSerializer(serializers.ModelSerializer):
 
-	sender = AccountSerializer()
-	reciever = AccountSerializer()
-	charge = TransactionChargeSerializer()
+	class Meta:
+
+		model = TransactionCharge
+		fields = '__all__'
+
+
+class TransferSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Transfer
 		fields = '__all__'
 
-class WithdrawSerializer(serializers.ModelSerializer):
+class TransferListserializer(TransferSerializer):
 
-	withdraw_from = AccountSerializer()
-	agent= AccountSerializer()
-	withdraw_charge = TransactionChargeSerializer()
+	sender = AccountSerializer()
+	reciever = AccountSerializer()
+	charge = TransactionChargeSerializer()
+class WithdrawSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Withdraw
 		fields = '__all__'
+
+class WithdrawListSerializer(WithdrawSerializer):
+
+	withdraw_from = AccountSerializer()
+	agent= AccountSerializer()
+	withdraw_charge = TransactionChargeSerializer()

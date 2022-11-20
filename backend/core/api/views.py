@@ -1,17 +1,13 @@
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import authentication,permissions,status
-from .serializers import AccountSerializer,DepositSerializer,TransactionChargeSerializer,TransactionTypeSerializer,Transferserializer
+from rest_framework import status
+from .serializers import (AccountSerializer,DepositSerializer,TransactionChargeSerializer,TransactionTypeSerializer,TransferSerializer)
 from core.models import Account,Deposit,TransactionCharge,TransactionType,Transfer
-from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import (CreateModelMixin,UpdateModelMixin,DestroyModelMixin,ListModelMixin,RetrieveModelMixin)
-from rest_framework.viewsets import (GenericViewSet,ModelViewSet)
-
+from rest_framework.viewsets import (GenericViewSet)
 from django.db.models import Q
-
 from django.db import transaction
 
 
@@ -69,7 +65,7 @@ class TransactionTypeViewSet(ListModelMixin,CreateModelMixin,GenericViewSet):
 
 class TransferViewSet(ListModelMixin,CreateModelMixin,GenericViewSet):
 
-    serializer_class = Transferserializer
+    serializer_class = TransferSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -116,7 +112,7 @@ class TransferViewSet(ListModelMixin,CreateModelMixin,GenericViewSet):
                 serializer = self.get_serializer(data=data)
                 serializer.is_valid(raise_exception=True)
                 instance = serializer.save()
-                return Response(Transferserializer(instance).data,status=status.HTTP_201_CREATED)
+                return Response(TransferSerializer(instance).data,status=status.HTTP_201_CREATED)
 
         else:
             return Response({'detail':'Your account balance is insufficent!'},status=status.HTTP_400_BAD_REQUEST)
