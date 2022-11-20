@@ -12,8 +12,8 @@ User = get_user_model()
 
 class ProfileAdmin(admin.ModelAdmin):
 
-	list_display = ('user','phone_number','dob','age','city','created_at','updated_at')
-	search_fields=('user','city','phone_number')
+	list_display = ('user','phone_number','age','city','created_at','updated_at')
+	search_fields=('user__username','city','phone_number')
 	list_filter = ('user','city','dob')
 	list_per_page = 25
 
