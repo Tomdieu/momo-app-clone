@@ -12,14 +12,14 @@ User = get_user_model()
 
 class LoginSerializer(serializers.Serializer):
 
-    username = serializers.CharField(max_length=120)
-    password = serializers.CharField(max_length=120)
+    username = serializers.CharField(max_length=120,help_text='username of the account willing to login')
+    password = serializers.CharField(max_length=120,help_text='password of the account willing to login')
 
 class UpdatePasswordSerializer(serializers.Serializer):
 
-    old_password = serializers.CharField(max_length=120)
-    new_password = serializers.CharField(max_length=120)
-    confirm_password = serializers.CharField(max_length=120)
+    old_password = serializers.CharField(max_length=120,help_text='old password')
+    new_password = serializers.CharField(max_length=120,help_text='new password')
+    confirm_password = serializers.CharField(max_length=120,help_text='confirmation of the new password')
     
     
 class UserSerializer(serializers.ModelSerializer):
@@ -52,7 +52,14 @@ class UserSerializer(serializers.ModelSerializer):
         return serializer.save()
         # return super(UserSerializer,self).update(instance,validated_data)
 
-class ProfileSerializer(WritableNestedModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+
+        model = Profile
+        fields = ['user','phone_number','dob','city','created_at','updated_at']
+    
+
+class ProfileListSerializer(WritableNestedModelSerializer):
     user = UserSerializer()
     class Meta:
 
