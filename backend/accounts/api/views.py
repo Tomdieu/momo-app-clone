@@ -1,5 +1,5 @@
 
-import re
+import json
 
 from dateutil import parser
 from django.contrib.auth import get_user_model,authenticate,logout
@@ -11,20 +11,32 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-
 from accounts.models import Profile
 
-from .serializers import ProfileSerializer, UserSerializer
+from django.db import transaction
+
+from .serializers import ProfileSerializer, UserSerializer,LoginSerializer,UpdatePasswordSerializer
 from .utils import patchMethod,deleteMethod, getMethod, postMethod, putMethod
+from rest_framework.mixins import CreateModelMixin,RetrieveModelMixin,DestroyModelMixin,ListModelMixin,UpdateModelMixin
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.generics import CreateAPIView,ListAPIView,UpdateAPIView,DestroyAPIView
 
 User = get_user_model()
 
 
+class LogoutView(APIView):
 
-class LoginView(APIView):
+	permission_classes = [IsAuthenticated,]
 
-	permission_classes = ()
-	authentication_classes = ()
+	def post(self,request,*args,**kwargs):
+
+		logout(request)
+
+		return Response({'detail':'You successfully logout'},status=status.HTTP_200_OK)
+
+class LoginViewSet(GenericViewSet,CreateAPIView):
+
+	serializer_class = LoginSerializer
 
 	def post(self,request,*args,**kwargs):
 
@@ -37,127 +49,46 @@ class LoginView(APIView):
 		else:
 			return Response({'success':False,'error_message':'username or password incorrect'},status=status.HTTP_400_BAD_REQUEST)
 
-class LogoutView(APIView):
 
-	permission_classes = [IsAuthenticated,]
+class CreateProfileViewSet(CreateModelMixin,GenericViewSet):
 
-	def post(self,request,*args,**kwargs):
-
-		logout(request)
-
-		return Response({'detail':'You successfully logout'},status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def user_list(request):
-	if getMethod(request):
-		print(request.user)
-		user = User.objects.all()
-		serializer = UserSerializer(user,many=True)
-
-		return Response({'success':True,'users':serializer.data},status=status.HTTP_200_OK)
-
-@api_view(['POST'])
-def user_create(request):	
-	if postMethod(request):
-		serializer = UserSerializer(data=request.data)
-		
-		if not request.data:
-			serializer.is_valid(raise_exception=True)
-			return Response({'success':False,'error':'Fields not provided!'},status=status.HTTP_400_BAD_REQUEST)
-
-		dob = None
-		phoneNumber = None
-		city = None
-
-
-		try:
-			dob = parser.parse(request.data.get('dob')).date()
-		except ValueError:
-			return Response({'success':False,'error':'Invalid Date'},status=status.HTTP_400_BAD_REQUEST)
-		
-		# Pattern to match cameroon phone numbers
-		if request.data.get('phone_number'):
-			phoneNumberPtn = re.compile(r"(\+)?(237)?6(\d+){8}")
-                                          
-			if phoneNumberPtn.match(request.data.get('phone_number')):
-				phoneNumber = request.data['phone_number']
-
-		if request.data.get('city'):
-			city = request.data['city']
-
-		if serializer.is_valid(raise_exception=True):
-			user = serializer.save()
-			Profile.objects.create(user=user,phone_number=phoneNumber,dob=dob,city=city)
-			
-			return Response({'success':True,'user':serializer.data},status=status.HTTP_201_CREATED)
-		else:
-			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET','PATCH','POST','DELETE'])
-@permission_classes([IsAuthenticated])
-def user_detail(request,id):
-
-	"""
-	Retrieve, update or delete a user instance
-	"""
-
-	def get_object(id):
-
-		return get_object_or_404(User,id=id)
-
-	if getMethod(request):
-		user = get_object(id)
-		if request.user != user and request.user.is_superuser==False:
-			return Response({'detail':'You are not allow'},status=status.HTTP_401_UNAUTHORIZED)
-		
-		serializer = UserSerializer(user)
-
-		return Response({'success':True,'user':serializer.data},status=status.HTTP_200_OK)
-
-	elif postMethod(request) or patchMethod(request):
-		user = get_object(id)
-
-		if request.user != user and request.user.is_superuser==False:
-			return Response({'detail':'You are not allow'},status=status.HTTP_401_UNAUTHORIZED)
-		
-		serializer = UserSerializer(user,data=request.data,partial=True)
-		if serializer.is_valid():
-			serializer.save()
-			return Response({'success':True,'user':serializer.data},status=status.HTTP_200_OK)
-		else:
-			return Response({'success':False,'errors':serializer.errors},status=status.HTTP_404_NOT_FOUND)
-
-	elif deleteMethod(request):
-		user = get_object(id)
-		if user != request.user:
-			return Response({'detail':'You can\'t delete a user accounts which is not yours' },status=status.HTTP_403_FORBIDDEN)
-		user.delete()
-
-		return Response({'success':True,'message':'User deleted'},status=status.HTTP_204_NO_CONTENT)
-
-
-class ProfileList(APIView):
-
-	permission_classes = (IsAuthenticated,)
 	serializer_class = ProfileSerializer
 
-	def get(self,request,*args,**kwargs):
 
-		profile = Profile.objects.all()
-		serializer = ProfileSerializer(profile,many=True)
+class ProfileViewSet(ListModelMixin,RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin,GenericViewSet):
 
-		return Response(data=serializer.data,status=status.HTTP_200_OK)
+	serializer_class = ProfileSerializer
+	permission_classes = [IsAuthenticated]
 
-	
-	def post(self,request,*args,**kwargs):
-		serializer = ProfileSerializer(data=request.data)
-		if serializer.is_valid(raise_exception=True):
-			serializer.save()
-			return Response(data=serializer.data,status=status.HTTP_201_CREATED)
-		else:
-			return Response({'success':False},status=status.HTTP_400_BAD_REQUEST)
+	def get_queryset(self):
+		return Profile.objects.filter(user=self.request.user)
+
+	def partial_update(self, request, *args, **kwargs):
+		
+		d = ProfileSerializer().update(self.get_object(),request.data)
+		print(d)
+
+		
+		return Response(ProfileSerializer(d).data)
+
+class ProfileList(GenericViewSet,RetrieveModelMixin,ListModelMixin,UpdateModelMixin,DestroyModelMixin):
+
+	permission_classes = (IsAuthenticated,IsAdminUser)
+	serializer_class = ProfileSerializer
+
+	def get_queryset(self):
+		return Profile.objects.all()
+
+	def update(self, request, *args, **kwargs):
+
+		profile = self.get_object()
+		serializer = ProfileSerializer(profile,data=request.data,partial=True)
+		serializer.is_valid(raise_exception=True)
+		serializer.save()
+		return Response(serializer.data)
+
+	def partial_update(self, request, *args, **kwargs):
+		return self.update(request,*args,**kwargs)
 
 class ProfileDetail(APIView):
 
