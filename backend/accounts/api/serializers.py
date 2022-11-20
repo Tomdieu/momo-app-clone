@@ -2,26 +2,33 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.views import Token
 
+from drf_writable_nested.serializers import WritableNestedModelSerializer
+
 from accounts.models import Profile
 from core.models import Account
 
 User = get_user_model()
 
-class ProfileSerializer(serializers.ModelSerializer):
 
-    class Meta:
+class LoginSerializer(serializers.Serializer):
 
-        model = Profile
-        fields = ['user','phone_number','dob','city','created_at','updated_at']
+    username = serializers.CharField(max_length=120)
+    password = serializers.CharField(max_length=120)
 
+class UpdatePasswordSerializer(serializers.Serializer):
 
+    old_password = serializers.CharField(max_length=120)
+    new_password = serializers.CharField(max_length=120)
+    confirm_password = serializers.CharField(max_length=120)
+    
+    
 class UserSerializer(serializers.ModelSerializer):
 
-    profile = ProfileSerializer(required=False)
+    # profile = ProfileSerializer(required=False)
 
     class Meta:
         model = User
-        fields = ['id','username','first_name','last_name','email','password','is_active','is_staff','is_superuser','profile','last_login','date_joined']
+        fields = ['id','username','first_name','last_name','email','password','is_active','is_staff','is_superuser','last_login','date_joined']
         extra_kwargs = {'password':{
             'write_only':True,
             'required':True
@@ -39,3 +46,36 @@ class UserSerializer(serializers.ModelSerializer):
         Account.objects.create(user=user)
         return user
 
+    def update_user(self,instance,validated_data):
+        serializer = UserSerializer(instance,data=validated_data,partial=True)
+        serializer.is_valid(raise_exception=True)
+        return serializer.save()
+        # return super(UserSerializer,self).update(instance,validated_data)
+
+class ProfileSerializer(WritableNestedModelSerializer):
+    user = UserSerializer()
+    class Meta:
+
+        model = Profile
+        fields = ['user','phone_number','dob','city','created_at','updated_at']
+
+    def create(self, validated_data):
+        user = validated_data.pop('user')
+        serializer = UserSerializer(data=user)
+        serializer.is_valid(raise_exception=True)
+        user_instance = serializer.save()
+
+        validated_data['user'] = user_instance
+
+        return Profile.objects.create(**validated_data)
+
+    def update(self,instance,validated_data):
+
+        nested_serializer = self.fields['user']
+        nested_instance = instance.user
+
+        nested_data = validated_data.pop('user')
+
+        nested_serializer.update_user(nested_instance,nested_data)
+
+        return super(ProfileSerializer,self).update(instance,validated_data)
