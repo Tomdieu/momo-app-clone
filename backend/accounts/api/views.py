@@ -94,4 +94,5 @@ class UpdatePasswordViewSet(GenericViewSet,CreateAPIView):
 		new_password = request.data.get('new_password')
 		confirm_password = request.data.get('confirm_password')
 
+
 		return Response('Updated')
