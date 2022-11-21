@@ -74,25 +74,38 @@ class ProfileList(GenericViewSet, RetrieveModelMixin, ListModelMixin, UpdateMode
     def get_queryset(self):
         return Profile.objects.all()
 
-class UpdatePasswordViewSet(GenericViewSet,CreateAPIView):
 
-	permission_classes = (IsAuthenticated)
-	serializer_class = UpdatePasswordSerializer
+class UpdatePasswordViewSet(GenericViewSet, CreateAPIView):
 
-	def create(self, request, *args, **kwargs):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UpdatePasswordSerializer
 
-		errors = {}
+    def create(self, request, *args, **kwargs):
 
-		must_contain = ['old_password','new_password','confirm_password']
+        errors = {}
 
-		# for (i,(k,v)) in enumerate(request.data.items()):
-		# 	if k not in must_contain:
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-		# 	if not v:
-		# 		pass
-		old_password = request.data.get('old_password')
-		new_password = request.data.get('new_password')
-		confirm_password = request.data.get('confirm_password')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        confirm_password = request.data.get('confirm_password')
 
+        if not request.user.check_password(old_password):
+            return Response({'detail':'old password don\'t match'},status=status.HTTP_400_BAD_REQUEST)
 
-		return Response('Updated')
+        if len(new_password) < 8:
+            return Response({'detail':'password is too short require atleast 8 characters'},status=status.HTTP_400_BAD_REQUEST)
+
+        if new_password != confirm_password:
+            return Response({'detail':'password don\'t match'},status=status.HTTP_400_BAD_REQUEST)
+
+        
+        user = request.user
+        user.set_password(new_password)
+        user.save()
+
+        if user.check_password(new_password):
+            return Response({'detail':'password updated successfully'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail':'Something went wrong'}, status=status.HTTP_400_BAD_REQUEST)
