@@ -46,5 +46,5 @@ urlpatterns = [
     path('api/',include('core.urls'),name='accounts'),
     path('api-auth/', include('rest_framework.urls'),name="api-auth"),
     path('api-doc/',include_docs_urls(title='Momo API')),
-    path('api/swagger/shema/',swagger_schema_view.with_ui('swagger',cache_timeout=0),name='swagger-schema')
+    path('api/swagger/',swagger_schema_view.with_ui('swagger',cache_timeout=0),name='swagger-schema')
 ]
