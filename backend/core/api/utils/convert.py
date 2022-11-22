@@ -40,9 +40,8 @@ class OffLineCurrencyConverter(Convert):
         self.data = json.load(f)
         self.currencies = self.data['rates']
 
-def converCurrency(from_currency:str,to_currency:str,amount:float|int) -> float:
+async def converCurrency(from_currency:str,to_currency:str,amount:float|int) -> float:
     """Convert a currency to another
-
     Arguments:
         from_currency (str): currency you want to convert from
         to_currency (str): currency you want to convert from
@@ -53,10 +52,10 @@ def converCurrency(from_currency:str,to_currency:str,amount:float|int) -> float:
     """
     
     try:
-        converter = RealTimeCurrencyConverter(url)
+        converter = await RealTimeCurrencyConverter(url)
         return converter.convert(from_currency,to_currency,amount)
     except:
-        converter = OffLineCurrencyConverter(url)
+        converter = await OffLineCurrencyConverter(url)
         return converter.convert(from_currency,to_currency,amount)
 
 if __name__ == '__main__':
