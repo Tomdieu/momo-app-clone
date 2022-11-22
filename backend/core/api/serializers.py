@@ -11,6 +11,12 @@ class AccountSerializer(serializers.ModelSerializer):
 
 		model = Account
 		fields = '__all__'
+
+		extra_kwargs = {
+			'pin_code':{
+				'write_only':True
+			}
+		}
 class AccountListSerializer(AccountSerializer):
 
 	user = UserSerializer()
@@ -20,6 +26,23 @@ class AccountListSerializer(AccountSerializer):
 		model = Account
 		fields = '__all__'
 
+class ChangePinSerializer(serializers.Serializer):
+
+	old_pin = serializers.CharField(max_length=50,help_text='The old pin account')
+	new_pin = serializers.CharField(max_length=50,help_text='The new pin account')
+	confirm_pin = serializers.CharField(max_length=50,help_text='The confirm new pin account')
+
+	class Meta:
+		extra_kwargs = {
+			'old_pin':{
+				'required':True
+			},
+			'new_pin':{
+				'required':True
+			},'confirm_pin':{
+				'required':True
+			}
+		}
 class DepositSerializer(serializers.ModelSerializer):
 
 	class Meta:
