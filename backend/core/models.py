@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.signals import pre_save,post_save
 from django.contrib.auth import get_user_model
 
 import uuid
@@ -21,12 +22,32 @@ class Account(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     is_agent = models.BooleanField(default=False,help_text='determines wether an account is a simple account or an agent account')
-
+    
+    
     class Meta:
         ordering = ['-balance']
-
+    
     def __str__(self):
         return f'Account of {self.user}'
+
+    def set_pincode(self,pincode):
+        self.pin_code = pincode
+        return self.save()
+        
+    def check_pincode(self,pincode):
+        return pincode == self.pin_code # custom account manager created to add verify_pin_code method
+
+# def account_pre_save(sender,instance,*args,**kwargs):
+#     pass
+
+
+# pre_save.connect(account_pre_save,sender=Account)
+
+# def account_post_save(*args,**kwargs):
+#     pass
+
+
+# post_save.connect(account_pre_save,sender=Account)
 
 
 class TransactionType(models.Model):
