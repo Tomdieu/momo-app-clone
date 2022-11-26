@@ -70,7 +70,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
         model = Profile
         fields = ['user', 'phone_number', 'dob',
-                  'city', 'created_at', 'updated_at']
+                  'city','lang', 'created_at', 'updated_at']
 
 
 class ProfileListSerializer(WritableNestedModelSerializer):
@@ -80,7 +80,7 @@ class ProfileListSerializer(WritableNestedModelSerializer):
 
         model = Profile
         fields = ['user', 'phone_number', 'dob',
-                  'city', 'created_at', 'updated_at']
+                  'city','lang', 'created_at', 'updated_at']
 
     def create(self, validated_data):
         user = validated_data.pop('user')
@@ -102,3 +102,14 @@ class ProfileListSerializer(WritableNestedModelSerializer):
         nested_serializer.update_user(nested_instance, nested_data)
 
         return super(ProfileSerializer, self).update(instance, validated_data)
+
+
+class UserLanguageSerializer(serializers.ModelSerializer):
+     class Meta:
+        model = Profile
+        fields = ['lang']
+        extra_kwargs = {
+            'lang':{
+                'required':True
+            }
+        }
