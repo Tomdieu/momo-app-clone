@@ -81,6 +81,8 @@ class TransferViewSet(ListModelMixin, CreateModelMixin, GenericViewSet):
 
     def create(self, request, *args, **kwargs):
 
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exeption=True)
         data = {}
 
         if (request.data.get('amount')) is None:
@@ -118,8 +120,8 @@ class TransferViewSet(ListModelMixin, CreateModelMixin, GenericViewSet):
                 data['sender'].amount -= float(data['amount'])
                 data['sender'].save()
 
-                data['sender'].amount -= float(amount_to_increase)
-                data['sender'].save()
+                data['reciever'].amount += float(amount_to_increase)
+                data['reciever'].save()
 
                 serializer = self.get_serializer(data=data)
                 serializer.is_valid(raise_exception=True)
