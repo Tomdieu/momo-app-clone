@@ -3,6 +3,7 @@ from django.db.models.signals import pre_save,post_save
 from django.contrib.auth import get_user_model
 from django.dispatch import receiver
 from core.api.utils import converCurrency
+from .validators import IsAgent
 
 import uuid
 
@@ -27,7 +28,7 @@ class Account(models.Model):
     
     
     class Meta:
-        ordering = ['-balance']
+        ordering = ['-created_at']
     
     def __str__(self):
         return f'Account of {self.user}'
@@ -100,7 +101,7 @@ class TransactionCharge(models.Model):
 class Transaction(models.Model):
     code = models.UUIDField(default=uuid.uuid4,unique=True,editable=False)
     amount = models.FloatField(help_text='the transaction amount')
-    created_at = models.DateTimeField(help_text='time at which the transaction was created')
+    created_at = models.DateTimeField(help_text='time at which the transaction was created',auto_now_add=True)
     
     class Meta:
         abstract = True
@@ -116,12 +117,12 @@ class Transfer(Transaction):
 
 
 class Withdraw(Transaction):
-    withdraw_from = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='withdraw_from',help_text='the account id of the agent making the transaction')
+    withdraw_from = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='withdraw_from',help_text='the account id of the agent making the transaction',validators=[IsAgent])
     agent = models.ForeignKey(Account,on_delete=models.CASCADE,related_name="agent",help_text='the account id of the user from which the money is withdraw from')
-    withdraw_charge = models.ForeignKey(TransactionCharge,on_delete=models.CASCADE,related_name='withdraw_charge',help_text='the transaction charge id')
+    withdraw_charge = models.ForeignKey(TransactionCharge,on_delete=models.CASCADE,blank=True,null=True,related_name='withdraw_charge',help_text='the transaction charge id')
 
 
 class Deposit(Transaction):
-    deposit_from = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='deposit_from',help_text='the account id which is depositing the money')
+    deposit_from = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='deposit_from',help_text='the account id which is depositing the money',validators=[IsAgent])
     deposit_to = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='deposit_to',help_text='the account id which is recieving the money')
     
