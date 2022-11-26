@@ -83,6 +83,11 @@ class TransferSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Transfer
 		fields = '__all__'
+		extra_kwargs = {
+			'charge':{
+				'required':False
+			}
+		}
 
 class TransferListserializer(TransferSerializer):
 
