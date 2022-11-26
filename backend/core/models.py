@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models.signals import pre_save,post_save
 from django.contrib.auth import get_user_model
+from django.dispatch import receiver
+from core.api.utils import converCurrency
 
 import uuid
 
@@ -37,13 +39,37 @@ class Account(models.Model):
     def check_pincode(self,pincode):
         return pincode == self.pin_code # custom account manager created to add verify_pin_code method
 
+
+# This pre_save signal is use to keep track of the currency meaning that if the currency of a user
+#  changes it must be converted from the old one to the new one 
+@receiver(pre_save,sender=Account)
+def checkAccount(sender,instance,**kwargs):
+
+    # If Instance/row is been created,then do nothing
+    if instance.id is None:
+        pass
+
+    # Else if it is being modified
+
+    else:
+        current = instance
+        previous = Account.objects.get(id=instance.id)
+
+        # if the previous currency is not equal to the current currency
+
+        if previous.currency != current.currency:
+            # convert the account balance to the new currency
+            new_balance = converCurrency(previous.currency,current.currency,current.balance)
+            print('New balance is : ',new_balance)
+            current.balance = new_balance
+
 # def account_pre_save(sender,instance,*args,**kwargs):
 #     pass
 
 
 # pre_save.connect(account_pre_save,sender=Account)
 
-# def account_post_save(*args,**kwargs):
+# def account_post_save(sender,instance,created,*args,**kwargs):
 #     pass
 
 
