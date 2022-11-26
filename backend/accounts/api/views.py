@@ -4,23 +4,18 @@ import json
 from dateutil import parser
 from django.contrib.auth import get_user_model, authenticate, logout
 from rest_framework import status
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.http import Http404
-from django.shortcuts import get_object_or_404
 from accounts.models import Profile
 
-from django.db import transaction
-
 from .serializers import (ProfileSerializer, ProfileListSerializer,
-                          UserSerializer, LoginSerializer, UpdatePasswordSerializer)
-from .utils import patchMethod, deleteMethod, getMethod, postMethod, putMethod
+                          UserLanguageSerializer, LoginSerializer, UpdatePasswordSerializer)
+
 from rest_framework.mixins import (
     CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, ListModelMixin, UpdateModelMixin)
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView,UpdateAPIView
 
 User = get_user_model()
 
@@ -65,8 +60,16 @@ class ProfileViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Destr
     def get_queryset(self):
         return Profile.objects.filter(user=self.request.user)
 
+class UserProfileViewSet(ListModelMixin,GenericViewSet):
 
-class ProfileList(GenericViewSet, RetrieveModelMixin, ListModelMixin, UpdateModelMixin, DestroyModelMixin):
+    serializer_class = ProfileListSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        return Profile.objects.filter(user=self.request.user)
+    
+
+
+class ProfileListView(GenericViewSet, RetrieveModelMixin, ListModelMixin, UpdateModelMixin, DestroyModelMixin):
 
     permission_classes = (IsAuthenticated, IsAdminUser)
     serializer_class = ProfileSerializer
@@ -109,3 +112,23 @@ class UpdatePasswordViewSet(GenericViewSet, CreateAPIView):
             return Response({'detail':'password updated successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'detail':'Something went wrong'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateLanguage(GenericViewSet,CreateModelMixin):
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserLanguageSerializer
+
+    def get_queryset(self):
+        return Profile.objects.filter(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        profile = request.user.profile
+        profile.lang = request.data.get('lang')
+        profile.save()
+
+        return  Response({'detail':'Language Updated','profile':ProfileListSerializer(profile).data})
