@@ -44,6 +44,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/',include('accounts.urls'),name='auth'),
     path('api/',include('core.urls'),name='momo'),
+    path('api/',include('notifications.urls')),
     path('api-auth/', include('rest_framework.urls'),name="api-auth"),
     path('api-doc/',include_docs_urls(title='Momo API')),
     path('api/swagger/',swagger_schema_view.with_ui('swagger',cache_timeout=0),name='swagger-schema')
