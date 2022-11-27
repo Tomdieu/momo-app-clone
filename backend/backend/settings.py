@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # local apps
     'accounts',
     'core',
+    'notifications',
 
     # Third party apps
     "corsheaders",
