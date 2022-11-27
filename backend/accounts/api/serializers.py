@@ -70,6 +70,18 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['user', 'phone_number', 'dob',
                   'city','lang', 'created_at', 'updated_at']
 
+        extra_kwargs = {
+            'phone_number':{
+                'required':True
+            },
+            'dob':{
+                'required':True
+            },
+            'city':{
+                'required':True
+            }
+        }
+
 
 class ProfileListSerializer(WritableNestedModelSerializer):
     user = UserSerializer()
@@ -111,3 +123,4 @@ class UserLanguageSerializer(serializers.ModelSerializer):
                 'required':True
             }
         }
+
