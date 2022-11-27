@@ -3,3 +3,5 @@
 env/
 test.c
 makefile
+*/migrations/0*
+./db.sqlite3
