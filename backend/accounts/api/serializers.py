@@ -53,8 +53,6 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validate_data)
         user.is_active = True
         user.save()
-        Token.objects.create(user=user)
-        Account.objects.create(user=user)
         return user
 
     def update_user(self, instance, validated_data):
