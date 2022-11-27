@@ -5,9 +5,20 @@ from django.dispatch import receiver
 from core.api.utils import converCurrency
 from .validators import IsAgent
 
-import uuid
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
+from django.db import transaction
+
+import uuid,binascii,os
+import datetime
+
+from accounts.models import Profile
+from rest_framework.authtoken.models import Token
 
 User = get_user_model()
+
+
 
 
 class Account(models.Model):
@@ -17,7 +28,7 @@ class Account(models.Model):
     STATUS = (('active','active'),('inactive','inactive'))
     account_number = models.UUIDField(default=uuid.uuid4,unique=True,editable=False)
     user = models.OneToOneField(User,on_delete=models.CASCADE,help_text='user id')
-    balance = models.BigIntegerField(default=0,help_text='User account balance')
+    balance = models.DecimalField(default=0,decimal_places=2,max_digits=20,help_text='User account balance')
     account_status = models.CharField(max_length=255,choices=STATUS,default='active')
     currency = models.CharField(max_length=3,default='XAF',help_text='currency',choices=CURRENCY)
     pin_code = models.CharField(max_length=5,default='00000',help_text='pin code use to manage transaction in a user account')
@@ -40,6 +51,17 @@ class Account(models.Model):
     def check_pincode(self,pincode):
         return pincode == self.pin_code # custom account manager created to add verify_pin_code method
 
+
+@receiver(post_save,sender=User)
+def createAccount(sender,instance,**kwargs):
+
+    if instance.id is not None:
+        # it means when the user is created 
+        Account.objects.create(user=instance)
+        Token.objects.create(user=instance)
+        p = Profile.objects.filter(user=instance)
+        if not p.exists():
+            Profile.objects.create(user=instance,dob=datetime.date.today())
 
 # This pre_save signal is use to keep track of the currency meaning that if the currency of a user
 #  changes it must be converted from the old one to the new one 
@@ -80,7 +102,7 @@ def checkAccount(sender,instance,**kwargs):
 class TransactionType(models.Model):
 
     TRANSACTION_TYPE = (
-        ('DEPOSIT','WITHDRAW'),
+        ('DEPOSIT','DESPOSIT'),
         ('TRANSFER','TRANSFER'),
         ('WITHDRAW','WITHDRAW')
     )
@@ -92,15 +114,23 @@ class TransactionType(models.Model):
         return f'Transaction Type {self.name}'
         
 class TransactionCharge(models.Model):
-    charge = models.FloatField(help_text="charge in % example 0.2 ")
-    type = models.ForeignKey(TransactionType,on_delete=models.CASCADE,related_name='transaction_type',help_text='transaction type id')
+    charge = models.FloatField(help_text="charge in % example 0.2 ",default=0)
+    type = models.OneToOneField(TransactionType,on_delete=models.CASCADE,related_name='transaction_type',help_text='transaction type id')
 
     def __str__(self):
-        return f'{self.charge}'
+        return f'{self.type.name} - Charge {self.charge}'
 
+
+def generateCode():
+    """
+    This function is use to generate a transaction code with 8 character
+    """
+    return binascii.hexlify(os.urandom(4)).decode()
 class Transaction(models.Model):
-    code = models.UUIDField(default=uuid.uuid4,unique=True,editable=False)
-    amount = models.FloatField(help_text='the transaction amount')
+
+    code = models.CharField(max_length=40,unique=True,editable=False)
+    amount = models.DecimalField(decimal_places=2,max_digits=20,help_text='the transaction amount')
+    currency = models.CharField(choices=Account().CURRENCY,max_length=3,blank=True,null=True,editable=False)
     created_at = models.DateTimeField(help_text='time at which the transaction was created',auto_now_add=True)
     
     class Meta:
@@ -108,21 +138,68 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f'Transaction {self.code} Amount : {self.amount}'
+    @classmethod
+    def generateCode(cls):
+        """
+        This function is use to generate a transaction code with 8 character
+        """
+        return binascii.hexlify(os.urandom(4)).decode()
+
+    def save(self,*args,**kwargs) -> None:
+        if not self.code:
+            self.code = self.generateCode()
+        return super().save(*args,**kwargs) 
 
 class Transfer(Transaction):
     
     sender = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='sender',help_text='the account sender id')
     reciever = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='reciever',help_text='the reciever account id')
-    charge = models.ForeignKey(TransactionCharge,on_delete=models.CASCADE,related_name='transaction_charge',help_text='the transaction type id')
+    charge = models.ForeignKey(TransactionCharge,on_delete=models.CASCADE,blank=True,editable=False,null=True,related_name='transaction_charge',help_text='the transaction type id')
+
+
+@receiver(pre_save,sender=Transfer)
+def checkIfUserCanUserMoney(sender,instance,**kwargs):
+
+    if instance.id is None:
+        sender_account = Account.objects.get(id=instance.sender.id)
+        balance = sender_account.balance
+        reciever_account = Account.objects.get(id=instance.reciever.id)
+
+        if sender_account.id == reciever_account.id:
+            raise ValidationError(_("You can not send money to you self"))
+
+            
+        amount = instance.amount
+        
+        if sender_account.balance >= amount:
+            with transaction.atomic():
+                
+                if sender_account.is_agent:
+                    charge = TransactionType.objects.filter(name__icontains='deposit').first().transaction_type
+                else:
+                    charge = TransactionType.objects.filter(name__icontains='transfer').first().transaction_type
+                
+                amount_charge = amount*charge.transaction_type.charge
+                amount_send = amount - amount_charge
+
+                sender_account.balance = balance - amount_send
+                sender_account.save()
+
+                new_amount = converCurrency(sender_account.currency,reciever_account.currency,float(amount_send))
+
+                reciever_account.balance =float(reciever_account.balance)+new_amount
+                reciever_account.save()
+
+                instance.currency = sender_account.currency
+
+                instance.charge = charge
+
+
+        else:
+            raise ValidationError(_('The %(value)s balance is insufficent to perform the transaction'),params={'value':sender_account})
 
 
 class Withdraw(Transaction):
     withdraw_from = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='withdraw_from',help_text='the account id of the agent making the transaction',validators=[IsAgent])
     agent = models.ForeignKey(Account,on_delete=models.CASCADE,related_name="agent",help_text='the account id of the user from which the money is withdraw from')
     withdraw_charge = models.ForeignKey(TransactionCharge,on_delete=models.CASCADE,blank=True,null=True,related_name='withdraw_charge',help_text='the transaction charge id')
-
-
-class Deposit(Transaction):
-    deposit_from = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='deposit_from',help_text='the account id which is depositing the money',validators=[IsAgent])
-    deposit_to = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='deposit_to',help_text='the account id which is recieving the money')
-    
