@@ -3,7 +3,7 @@ from rest_framework import serializers
 from accounts.api.serializers import UserSerializer
 
 
-from  core.models import Account,TransactionCharge,TransactionType,Transfer,Deposit,Withdraw
+from  core.models import Account,TransactionCharge,TransactionType,Transfer,Withdraw
 
 class AccountSerializer(serializers.ModelSerializer):
 
@@ -43,18 +43,6 @@ class ChangePinSerializer(serializers.Serializer):
 				'required':True
 			}
 		}
-class DepositSerializer(serializers.ModelSerializer):
-
-	class Meta:
-
-		model = Deposit
-
-		fields = '__all__'
-class DepositListSerializer(DepositSerializer):
-
-	deposit_from = AccountSerializer()
-	desposit_to = AccountSerializer()
-
 
 class TransactionTypeSerializer(serializers.ModelSerializer):
 
@@ -86,10 +74,16 @@ class TransferSerializer(serializers.ModelSerializer):
 		extra_kwargs = {
 			'charge':{
 				'required':False
+			},
+			'currency':{
+				'required':False
+			},
+			'code':{
+				'required':False
 			}
 		}
 
-class TransferListserializer(TransferSerializer):
+class TransferListSerializer(TransferSerializer):
 
 	sender = AccountSerializer()
 	reciever = AccountSerializer()
