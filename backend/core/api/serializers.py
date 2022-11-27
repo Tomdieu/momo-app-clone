@@ -71,23 +71,13 @@ class TransferSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Transfer
 		fields = '__all__'
-		extra_kwargs = {
-			'charge':{
-				'required':False
-			},
-			'currency':{
-				'required':False
-			},
-			'code':{
-				'required':False
-			}
-		}
 
 class TransferListSerializer(TransferSerializer):
 
 	sender = AccountSerializer()
 	reciever = AccountSerializer()
-	charge = TransactionChargeSerializer()
+	charge = TransactionListChargeSerializer()
+
 class WithdrawSerializer(serializers.ModelSerializer):
 
 	class Meta:
@@ -98,4 +88,4 @@ class WithdrawListSerializer(WithdrawSerializer):
 
 	withdraw_from = AccountSerializer()
 	agent= AccountSerializer()
-	withdraw_charge = TransactionChargeSerializer()
+	withdraw_charge = TransactionListChargeSerializer()

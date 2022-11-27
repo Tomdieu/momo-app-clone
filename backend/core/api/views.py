@@ -1,10 +1,11 @@
 
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import (AccountSerializer,AccountListSerializer, TransactionChargeSerializer,
-                          TransactionTypeSerializer, TransferSerializer, TransferListSerializer, ChangePinSerializer)
-from core.models import Account, TransactionCharge, TransactionType, Transfer
+from .serializers import (AccountSerializer, AccountListSerializer, TransactionChargeSerializer,
+                          TransactionTypeSerializer, TransactionListChargeSerializer,
+                          TransferSerializer, TransferListSerializer, ChangePinSerializer,
+                          WithdrawSerializer, WithdrawListSerializer)
+from core.models import Account, TransactionCharge, TransactionType, Transfer, Withdraw
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import (
     CreateModelMixin, UpdateModelMixin, DestroyModelMixin, ListModelMixin, RetrieveModelMixin)
@@ -18,22 +19,6 @@ from django.db import transaction
 from core.api.utils import converCurrency
 
 
-class UserAccountViewSet(GenericViewSet,ListModelMixin):
-
-    serializer_class = AccountListSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return Account.objects.filter(user=self.request.user)
-
-    def list(self,request,*args,**kwargs):
-
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset,many=True)
-        return Response(serializer.data[0])
-
-    
-
 class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateModelMixin):
 
     serializer_class = AccountSerializer
@@ -41,6 +26,12 @@ class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateM
 
     def get_queryset(self):
         return Account.objects.filter(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+
+        queryset = self.get_queryset()
+        serializer = AccountListSerializer(queryset, many=True)
+        return Response(serializer.data[0])
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -55,6 +46,13 @@ class TransactionChargeViewSet(RetrieveModelMixin, CreateModelMixin, ListModelMi
 
     serializer_class = TransactionChargeSerializer
     permission_classes = [IsAuthenticated]
+
+    def list(self, request, *args, **kwargs):
+
+        queryset = self.get_queryset()
+        serializer = TransactionListChargeSerializer(queryset, many=True)
+
+        return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
         if request.user.is_superuser:
@@ -77,12 +75,22 @@ class TransactionTypeViewSet(ListModelMixin, CreateModelMixin, GenericViewSet):
         else:
             return Response({'detail': 'Not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
 
-class TransferMoneyViewSet(CreateModelMixin, GenericViewSet):
+
+class TransferMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
 
     serializer_class = TransferSerializer
     permission_classes = [IsAuthenticated]
 
-    
+    def get_queryset(self):
+        return Transfer.objects.filter(Q(sender__user=self.request.user) | Q(reciever__user=self.request.user)).order_by('-created_at')
+
+    def list(self, request, *args, **kwargs):
+
+        queryset = self.get_queryset()
+        serializer = TransferListSerializer(queryset, many=True)
+
+        return Response(serializer.data)
+
     def create(self, request, *args, **kwargs):
 
         serializer = self.get_serializer(data=request.data)
@@ -100,14 +108,38 @@ class TransferMoneyViewSet(CreateModelMixin, GenericViewSet):
         else:
             return Response({'detail': 'Your account balance is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
 
-class MyTransactionTransferViewSet(ListModelMixin,GenericViewSet):
 
-    serializer_class = TransferListSerializer
-    permission_classes = [IsAuthenticated]
+class WithdrawMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
+    serializer_class = WithdrawSerializer
+    permision_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Transfer.objects.filter(Q(sender__user=self.request.user) | Q(reciever__user=self.request.user)).order_by('-created_at')
+        return Withdraw.objects.filter(Q(withdraw_from__user=self.request.user) | Q(agent__user=self.request.user)).order_by('-created_at')
 
+    def list(self, request, *args, **kwargs):
+
+        queryset = self.get_queryset()
+        serializer = WithdrawListSerializer(queryset, many=True)
+
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        withdraw_from = Account.objects.select_for_update().get(
+            user_id=request.data.get('withdraw_from'))
+        if not withdraw_from.is_agent:
+            return Response({'detail': 'Only agent are allow to make withdrawal'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if request.data['withdraw_from'] == request.data['agent']:
+            return Response({'detail': 'You can not withdraw money to you self'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if float(request.data['amount']) >= float(withdraw_from.balance):
+            instance = serializer.save()
+            return Response(WithdrawListSerializer(instance).data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'detail': f'The account balance of {withdraw_from.user} is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
