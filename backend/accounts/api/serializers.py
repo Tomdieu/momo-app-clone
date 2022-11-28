@@ -40,14 +40,15 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password',
                   'is_active', 'is_staff', 'is_superuser', 'last_login', 'date_joined']
-        extra_kwargs = {'password': {
-            'write_only': True,
-            'required': True
-        },
+        extra_kwargs = {
+            'password': {
+                'write_only': True,
+                'required': True
+            },
             'fist_name': {'required': True},
             'last_name': {'required': True},
             'email': {'required': True}
-        }
+            }
 
     def create(self, validate_data):
         user = User.objects.create_user(**validate_data)
@@ -67,8 +68,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Profile
-        fields = ['user', 'phone_number', 'dob',
-                  'city','lang', 'created_at', 'updated_at']
+        fields = '__all__'
 
         extra_kwargs = {
             'phone_number':{
