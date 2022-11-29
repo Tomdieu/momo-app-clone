@@ -51,6 +51,8 @@ class CreateProfileViewSet(CreateModelMixin, GenericViewSet):
 
     serializer_class = ProfileListSerializer
 
+    
+
 
 class ProfileViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):
 

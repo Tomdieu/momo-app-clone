@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from rest_framework.authtoken.views import Token
 
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
@@ -38,8 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password',
-                  'is_active', 'is_staff', 'is_superuser', 'last_login', 'date_joined']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password']
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -98,9 +96,13 @@ class ProfileListSerializer(WritableNestedModelSerializer):
         serializer.is_valid(raise_exception=True)
         user_instance = serializer.save()
 
-        validated_data['user'] = user_instance
+        profile = Profile(**validated_data)
+        profile.user = user_instance
+        profile.save()
 
-        return Profile.objects.create(**validated_data)
+        return profile
+        
+         
 
     def update(self, instance, validated_data):
 
