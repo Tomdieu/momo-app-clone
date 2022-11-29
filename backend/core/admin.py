@@ -48,6 +48,7 @@ class TransferAdmin(admin.ModelAdmin):
 admin.site.register(Transfer,TransferAdmin)
 
 class WithdrawAdmin(admin.ModelAdmin):
-	pass
+	
+	list_display = ('id','code','withdraw_from','agent','amount','state','created_at')
 
 admin.site.register(Withdraw,WithdrawAdmin)
