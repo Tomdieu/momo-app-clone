@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -22,7 +22,8 @@ class Profile(models.Model):
                             null=True, help_text='user\'s city ')
     lang = models.CharField(max_length=2, choices=LANGUAGES,
                             default='EN', help_text='user language')
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
