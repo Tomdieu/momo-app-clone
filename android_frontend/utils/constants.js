@@ -1,5 +1,0 @@
-
-export {
-	SPACING:8,
-	BORDER_RADUIS:5,
-}
