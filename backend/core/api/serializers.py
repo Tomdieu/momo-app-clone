@@ -84,6 +84,12 @@ class WithdrawSerializer(serializers.ModelSerializer):
 		model = Withdraw
 		fields = '__all__'
 
+		extra_kwargs = {
+			'state':{
+				'required':False
+			}
+		}
+
 class WithdrawListSerializer(WithdrawSerializer):
 
 	withdraw_from = AccountSerializer()
