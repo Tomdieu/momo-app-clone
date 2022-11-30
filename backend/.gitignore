@@ -3,5 +3,15 @@
 env/
 test.c
 makefile
-*/migrations/
-*.sqlite3
+
+# Byte-compiled / optimized / DLL files
+__pycache__
+**/__pycache__/**
+*.py[cod]
+*$py.class
+
+# migrations/**
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
+db.sqlite3
