@@ -14,6 +14,7 @@ router.register('withdraw-money', views.WithdrawMoneyViewSet,
                 basename="withdraw-money")
 router.register('change-pin-code', views.ChangePinCodeViewSet,
                 basename='change-pin-code')
+router.register('confirm-withdrawal',views.ConfirmWithdraw,basename='confirm withdrawal')
 
 urlpatterns = [
 ]

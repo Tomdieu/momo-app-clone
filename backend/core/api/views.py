@@ -1,4 +1,6 @@
 
+import datetime
+
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import (AccountSerializer, AccountListSerializer, TransactionChargeSerializer,
@@ -142,7 +144,33 @@ class WithdrawMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
             return Response({'detail': f'The account balance of {withdraw_from.user} is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ConfirmWithdraw(GenericViewSet,ListModelMixin,UpdateModelMixin):
+
+    def get_serializer_class(self):
+        
+        return WithdrawSerializer
+
+    def get_queryset(self):
+        n = 2  # n represents the amount of minutes for a withdrawal to be accepted or cancel after that it will be rejected
+        dt = datetime.datetime  # dt respresents the datetime.datetime function
+        td = datetime.timedelta  # td represents the datetime.timedelta function
+        now = dt.now()
+        return Withdraw.objects.filter(
+            Q(withdraw_from__user=self.request.user) &
+            Q(state='PENDING') &
+            Q(created_at__lte=now) &
+            Q(created_at__gte=now-td(minutes=2))
+        ).order_by('-created_at')
+
+
+
 class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
+    """
+        This api view helps to change a pin code of a user by 
+        sending the old one with the new one
+        if the old one corresponds to the actual account pin code
+        and the new account pin is valid we update the user account pin code'
+    """
     permission_classes = (IsAuthenticated,)
     serializer_class = ChangePinSerializer
 

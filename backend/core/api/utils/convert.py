@@ -11,7 +11,8 @@ class Convert:
 
     def convert(self,from_currency,to_currency,amount):
         
-        initial_amount = amount
+        initial_amount = float(amount)
+        amount = float(amount)
 
         if from_currency != 'USD':
             amount = amount / self.currencies[from_currency]
