@@ -165,3 +165,7 @@ REST_FRAMEWORK = {
 
 
 APP_NAME = 'TrixWallet' # this is the name i gaved to my backend system app
+
+REDOC_SETTINGS = {
+    'LAZY_RENDERING': False,
+}
