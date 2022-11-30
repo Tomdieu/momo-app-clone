@@ -162,3 +162,6 @@ REST_FRAMEWORK = {
 
     'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }
+
+
+APP_NAME = 'TrixWallet' # this is the name i gaved to my backend system app
