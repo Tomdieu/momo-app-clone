@@ -108,17 +108,16 @@ class ProfileListSerializer(WritableNestedModelSerializer):
         
          
 
-    # def update(self, instance, validated_data):
+    def update(self, instance, validated_data):
 
-    #     print(validated_data)
-    #     nested_serializer = self.fields['user']
-    #     nested_instance = instance.user
+        nested_serializer = self.fields['user']
+        nested_instance = instance.user
 
-    #     nested_data = validated_data.pop('user')
+        nested_data = validated_data.pop('user')
 
-    #     nested_serializer.update_user(nested_instance, nested_data)
+        nested_serializer.update_user(nested_instance, nested_data) 
 
-    #     return super(ProfileSerializer, self).update(instance, validated_data)
+        return super(ProfileSerializer, self).update(instance, validated_data)
 
 
 class UserLanguageSerializer(serializers.ModelSerializer):
