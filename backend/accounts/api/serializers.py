@@ -1,10 +1,12 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 from accounts.models import Profile
 from core.models import Account
+
 
 User = get_user_model()
 
@@ -89,6 +91,8 @@ class ProfileListSerializer(WritableNestedModelSerializer):
         model = Profile
         fields = ['user', 'phone_number', 'dob',
                   'city','lang', 'created_at', 'updated_at']
+        
+        
 
     def create(self, validated_data):
         user = validated_data.pop('user')
@@ -106,6 +110,7 @@ class ProfileListSerializer(WritableNestedModelSerializer):
 
     def update(self, instance, validated_data):
 
+        print(validated_data)
         nested_serializer = self.fields['user']
         nested_instance = instance.user
 
