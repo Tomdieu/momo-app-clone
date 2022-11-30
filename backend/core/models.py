@@ -5,7 +5,8 @@ from django.dispatch import receiver
 from core.api.utils import converCurrency
 from .validators import IsAgent
 
-from django.core.exceptions import ValidationError
+from django.conf import settings
+
 from django.utils.translation import gettext_lazy as _
 
 from django.db import transaction
@@ -33,7 +34,7 @@ class Account(models.Model):
     account_number = models.UUIDField(
         default=uuid.uuid4, unique=True, editable=False)
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, help_text='user id', related_name='user')
+        User, on_delete=models.CASCADE, help_text='user id', related_name='account')
     balance = models.DecimalField(
         default=0, decimal_places=2, max_digits=20, help_text='User account balance')
     account_status = models.CharField(
@@ -75,9 +76,21 @@ def createAccount(sender, instance, **kwargs):
             Account.objects.create(user=instance)
         if not Token.objects.filter(user=instance).exists():
             Token.objects.create(user=instance)
-        p = Profile.objects.filter(user=instance)
+        p = Profile.objects.select_related('user').filter(user=instance)
         if not p.exists():
             Profile.objects.create(user=instance, dob=datetime.date.today())
+        else:
+            profile = p.first()
+
+            lang = profile.lang
+            msg = ''
+
+            if lang == 'FR':
+                msg = f'Bienvenu sur {settings.APP_NAME}\nVotre code pin est [00000] et solde de votre compte est {profile.user.account.currency} {profile.user.account.balance}'
+            elif lang == 'EN':
+                msg = f'Welcome To {settings.APP_NAME} \nYour pin code is [00000] and account balance is {profile.user.account.currency} {profile.user.account.balance}'
+            
+            Notification.objects.create(user=profile.user,message=msg)
 
 # This pre_save signal is use to keep track of the currency meaning that if the currency of a user
 #  changes it must be converted from the old one to the new one
@@ -98,6 +111,8 @@ def checkAccount(sender, instance, **kwargs):
 
         # if the previous currency is not equal to the current currency
 
+        
+
         if previous.currency != current.currency:
             # convert the account balance to the new currency
             new_balance = converCurrency(
@@ -105,17 +120,25 @@ def checkAccount(sender, instance, **kwargs):
             print('New balance is : ', new_balance)
             current.balance = new_balance
 
-# def account_pre_save(sender,instance,*args,**kwargs):
-#     pass
+            lang = instance.user.profile.lang
 
+            if lang == 'FR':
+                msg = f'La monnaie de votre compte a ete changer de {previous.currency} a {instance.currency} Solde : {instance.currency} {instance.balance}'
+            else:
+                msg = f'The currency of your account have been changed from {previous.currency} to {instance.currency} New balance : {instance.currency} {instance.balance}'
+            
+            Notification.objects.create(user=instance.user,message=msg)
 
-# pre_save.connect(account_pre_save,sender=Account)
-
-# def account_post_save(sender,instance,created,*args,**kwargs):
-#     pass
-
-
-# post_save.connect(account_pre_save,sender=Account)
+        if instance.balance != previous.balance and instance.currency == previous.currency:
+            lang = instance.user.profile.lang
+            msg = ''
+            if lang == 'FR':
+                msg = f'Votre complte a ete crediter de {instance.currency} {instance.balance}'
+            else:
+                msg = f'Your account has been fill with {instance.currency} {instance.balance}'
+            
+            Notification.objects.create(user=instance.user,message=msg)
+        
 
 
 class TransactionType(models.Model):
@@ -134,9 +157,13 @@ class TransactionType(models.Model):
     def __str__(self):
         return f'Transaction Type {self.name}'
 
+    @classmethod
+    def getTypes(cls):
+        return ['DEPOSIT','TRANSFER','WITHDRAW']
+
 
 class TransactionCharge(models.Model):
-    charge = models.FloatField(help_text="charge in % example 0.2 ", default=0)
+    charge = models.FloatField(help_text="charge in % example 0.02 ", default=0)
     type = models.OneToOneField(TransactionType, on_delete=models.CASCADE,
                                 related_name='transaction_type', help_text='transaction type id')
 
@@ -224,22 +251,21 @@ def checkIfUserCanTransferMoney(sender, instance, **kwargs):
 
         amount = float(instance.amount)
 
-
         if sender_account.id == reciever_account.id:
             msg = ''
             if sender_account.user.profile.lang == 'FR':
                 msg = 'Desoler ! vous ne pouvez pas vous envoyer de l\'argent!'
             elif sender_account.user.profile.lang == 'EN':
                 msg = 'Sorry ! You can\'t send mney to your self!'
-            
+
             Notification.objects.create(
                 user=sender_account.user, message=msg, type=notification_status.NOTIFICATION_ALERT)
-            Notification.objects.create(user=sender_account.user, message='Transfer could not be achieve successfully!', type="TRANSFER_REJECTED")
+            Notification.objects.create(
+                user=sender_account.user, message='Transfer could not be achieve successfully!', type="TRANSFER_REJECTED")
 
             instance.status = 'REJECTED'
 
             # raise ValidationError(_("You can not send money to you self"))
-
 
         else:
 
@@ -296,7 +322,7 @@ class Withdraw(Transaction):
 
     WITHDRAW_STATE = (
         ('PENDING', 'PENDING'),
-        ('REJECTED','REJECTED'),
+        ('REJECTED', 'REJECTED'),
         ('CANCEL', 'CANCEL'),
         ('ACCEPTED', 'ACCEPTED')
     )
@@ -307,64 +333,53 @@ class Withdraw(Transaction):
                               help_text='the account id of the user from which the money is withdraw from')
 
     state = models.CharField(max_length=20, choices=WITHDRAW_STATE, default='PENDING',
-                             help_text="state here represents the different state of withdraw wich can either be 'pending','cancel','accepted'")
+                             help_text="state here represents the different state of withdraw wich can either be 'pending','cancel','accepted','rejected'")
 
 
 @receiver(pre_save, sender=Withdraw)
 def checkIfUserCanWithdrawMoney(sender, instance, **kwargs):
 
     if instance.id is not None:
-        
+
         withdraw_from = Account.objects.select_related(
             'user').get(id=instance.withdraw_from.id)
         agent = Account.objects.select_related(
             'user').get(id=instance.agent.id)
         balance = withdraw_from.balance
-        
+
         amount = instance.amount
 
-
         if instance.state == 'CANCEL':
-            
-            msg = ''
+
+            sender_msg = ''
+            receiver_msg = ''
 
             lang = withdraw_from.user.profile.lang
+            lang1 = agent.user.profile.lang
+
             if lang == 'EN':
-                msg = f'The withdrawal of {instance.currency} {instance.amount} from your account by'
+                sender_msg = f'The withdrawal of {instance.currency} {instance.amount} from your account {withdraw_from.account_number} by {agent.user.first_name} {agent.user.last_name} [{agent.user}] has been cancel'
             elif lang == 'FR':
-                pass
+                sender_msg = f'La demande de retrait de {instance.currency} {instance.amount} de votre compte {agent.account_number} par {agent.user.first_name} {agent.user.last_name} [{agent.user}] a ete annulez'
+
+            if lang1 == 'EN':
+                receiver_msg = f'The withdrawal of {instance.currency} {instance.amount} from the account {withdraw_from.account_number} {withdraw_from.user.first_name} {withdraw_from.user.last_name} [{withdraw_from.user}] has been cancel'
+            elif lang1 == 'FR':
+                receiver_msg = f'Le retrait de  {instance.currency} {instance.amount} du compte {withdraw_from.account_number} {withdraw_from.user.first_name} {withdraw_from.user.last_name} [{withdraw_from.user}] a ete annulez'
 
             Notification.objects.create(
                 user=instance.withdraw_from.user,
-                msg = '',
-                type = notification_status.NOTIFICATION_WITHDRAW_CANCEL
+                msg=sender_msg,
+                type=notification_status.NOTIFICATION_WITHDRAW_CANCEL
+            )
+
+            Notification.objects.create(
+                user=instance.agent.user,
+                msg=receiver_msg,
+                type=notification_status.NOTIFICATION_WITHDRAW_CANCEL
             )
 
         elif instance.state == 'ACCEPTED':
-            pass
-
-    if instance.id is None:
-
-        withdraw_from = Account.objects.select_related(
-            'user').get(id=instance.withdraw_from.id)
-        agent = Account.objects.select_related(
-            'user').get(id=instance.agent.id)
-        balance = withdraw_from.balance
-        
-        amount = instance.amount
-
-
-        if withdraw_from.id == agent.id:
-            # raise ValidationError(
-            #     _("You can not withdraw money from your self"))
-            msg = ''
-            if agent.user.profile.lang == 'FR':
-                msg = 'Desoler ! vous ne pouvez pas vous retirez de l\'argent!'
-            elif agent.user.profile.lang == 'EN':
-                msg = 'Sorry ! You can\'t withdraw money from your self!'
-            Notification.objects.create(
-                user=agent.user, message=msg, type=notification_status.NOTIFICATION_ALERT)
-        else:
 
             if float(withdraw_from.balance) >= float(amount):
                 with transaction.atomic():
@@ -386,12 +401,52 @@ def checkIfUserCanWithdrawMoney(sender, instance, **kwargs):
 
             else:
                 instance.status = 'REJECTED'
-                
+
                 Notification.objects.create(user=withdraw_from.user, message="Your account balance is insufficent to perform the transaction. Please fill you account and retry later!\nCurrent account balance {}".format(
                     withdraw_from.get_balance()), type=notification_status.NOTIFCATION_WITHDRAW_REJECTED)
+
+    if instance.id is None:
+
+        withdraw_from = Account.objects.select_related(
+            'user').get(id=instance.withdraw_from.id)
+        agent = Account.objects.select_related(
+            'user').get(id=instance.agent.id)
+        balance = withdraw_from.balance
+
+        amount = instance.amount
+
+        if withdraw_from.id == agent.id:
+            # raise ValidationError(
+            #     _("You can not withdraw money from your self"))
+            msg = ''
+            if agent.user.profile.lang == 'FR':
+                msg = 'Desoler ! vous ne pouvez pas vous retirez de l\'argent!'
+            elif agent.user.profile.lang == 'EN':
+                msg = 'Sorry ! You can\'t withdraw money from your self!'
+            Notification.objects.create(
+                user=agent.user, message=msg, type=notification_status.NOTIFICATION_ALERT)
+        else:
+
+            if float(withdraw_from.balance) >= float(amount):
+            
+                charge = TransactionType.objects.select_related('transaction_type').filter(
+                    name__icontains='withdraw').first().transaction_type
+
+                instance.currency = withdraw_from.currency
+
+                instance.charge = charge
+
+            else:
                 
+                instance.status = 'REJECTED'
+
+                Notification.objects.create(user=withdraw_from.user, message="Your account balance is insufficent to perform the transaction. Please fill you account and retry later!\nCurrent account balance {}".format(
+                    withdraw_from.get_balance()), type=notification_status.NOTIFCATION_WITHDRAW_REJECTED)
+
                 # raise ValidationError(_('The %(value)s balance is insufficent to perform the transaction'), params={
                 #                     'value': withdraw_from})
 
-# @receiver(post_save,sender=Withdraw)
-# def
+
+@receiver(post_save, sender=Withdraw)
+def concludeWithdraw(sender, instance, created, **kwargs):
+    pass
