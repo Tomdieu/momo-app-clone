@@ -1,4 +1,4 @@
-# Momo Backend
+# TrixWallet Backend
 
 ## How to run
 
