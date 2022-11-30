@@ -10,11 +10,6 @@
 - **Django Rest Framework(DRF)** for the `api`
 - **React native** (for the android frontend)
 - **Rest Framework Swagger** to generate the api documentation
-## UML Diagram of the app
-
-<a href="./UML/momo-app-clone.drawio.png">
-<img src="./UML/momo-app-clone.drawio.png">
-</a>
 
 
 ## Django Backend
