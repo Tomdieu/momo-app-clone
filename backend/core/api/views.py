@@ -166,10 +166,11 @@ class ConfirmWithdraw(GenericViewSet,ListModelMixin,UpdateModelMixin):
 
 class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
     """
+        \n
         This api view helps to change a pin code of a user by 
         sending the old one with the new one
         if the old one corresponds to the actual account pin code
-        and the new account pin is valid we update the user account pin code'
+        and the new account pin is valid we update the user account pin code
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = ChangePinSerializer
