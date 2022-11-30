@@ -23,7 +23,7 @@ class Notification(models.Model):
 
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     message = models.TextField(max_length=800)
-    type = models.CharField(max_length=20,choices=NOTIFICATION_TYPE)
+    type = models.CharField(max_length=20,choices=NOTIFICATION_TYPE,default='NORMAL')
 
     created_at = models.DateTimeField(auto_now_add=True)
 
