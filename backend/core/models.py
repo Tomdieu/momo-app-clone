@@ -446,7 +446,3 @@ def checkIfUserCanWithdrawMoney(sender, instance, **kwargs):
                 # raise ValidationError(_('The %(value)s balance is insufficent to perform the transaction'), params={
                 #                     'value': withdraw_from})
 
-
-@receiver(post_save, sender=Withdraw)
-def concludeWithdraw(sender, instance, created, **kwargs):
-    pass
