@@ -11,7 +11,7 @@
         ```
         python -m venv env
         ```
-    - <p>Or</p>
+        Or
     - 
         ```
         virtualenv env
