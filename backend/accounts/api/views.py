@@ -33,9 +33,11 @@ class LoginViewSet(GenericViewSet, CreateAPIView):
     serializer_class = LoginSerializer
 
     def create(self, request, *args, **kwargs):
-
+        
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         username = request.data.get('username')
-        password = request.data.get('password')
+        password = request.data.get('password')                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
         user = authenticate(username=username, password=password)
         if user is not None:
