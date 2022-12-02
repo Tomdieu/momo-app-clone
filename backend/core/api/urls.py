@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
 from rest_framework.routers import DefaultRouter
 
@@ -17,6 +17,6 @@ router.register('change-pin-code', views.ChangePinCodeViewSet,
 router.register('confirm-withdrawal',views.ConfirmWithdraw,basename='confirm withdrawal')
 
 urlpatterns = [
+    path('',include(router.urls))
 ]
 
-urlpatterns += router.urls
