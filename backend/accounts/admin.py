@@ -20,6 +20,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
 	@admin.display
 	def age(self,obj):
-		return datetime.date.today().year - int(obj.dob.year) 
+		a = datetime.date.today().year - int(obj.dob.year)
+		return f'{a} yrs'
 
 admin.site.register(Profile,ProfileAdmin)
