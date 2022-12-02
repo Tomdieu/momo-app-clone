@@ -1,9 +1,9 @@
 from django.urls import path,include
 # from .models import TransactionType,TransactionCharge
 
-urlpatterns = [
-	path('momo/',include('core.api.urls')),
-]
+# urlpatterns = [
+# 	path('momo/',include('core.api.urls')),
+# ]
 
 # This part down here is use to create the different transactiontype 
 
