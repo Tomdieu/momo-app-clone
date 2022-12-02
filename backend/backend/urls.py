@@ -33,8 +33,6 @@ schema_view = swagger_get_schema_view(
     public=True
 )
 
-# schema_view = get_swagger_view(title='Momo API')
-
 admin.site.site_header = 'TrixWallet Admin'
 admin.site.site_title = "TrixWallet Admin"
 # admin.site.site_url = "https:trix-car-backend.vercel.app"
@@ -44,13 +42,21 @@ admin.empty_value_display = "**Empty**"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/',include('accounts.urls'),name='auth'),
-    path('api/',include('core.urls'),name='momo'),
-    path('api/',include('notifications.urls')),
+    path('',include('accounts.urls'),name="accounts"),
+    path('api/v3/',
+        include([
+            path('auth/',include(('accounts.api.urls','accounts'),namespace='accounts')),
+            path('momo/',include(('core.api.urls','core'),namespace='momo')),
+            path('notifications/',include(('notifications.api.urls','notifications'),namespace='notifications')),
+
+            #docs urls
+            path('docs/',include([
+                path('',include_docs_urls(title='TrixWallet API',description="TrixWallet Api documentation")),
+                re_path(r'swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+                re_path(r'swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+                re_path(r'redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+            ]))
+        ]
+    )),
     path('api-auth/', include('rest_framework.urls'),name="api-auth"),
-    path('api/docs/',include_docs_urls(title='TrixWallet API')),
-    re_path(r'^api/swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    re_path(r'^api/swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    re_path(r'^api/redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-    # path('api/swagger/',schema_view.with_ui('swagger',cache_timeout=0),name='swagger-schema')
 ]
