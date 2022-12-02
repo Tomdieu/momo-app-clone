@@ -25,6 +25,8 @@ from notifications import status as notification_status
 User = get_user_model()
 
 
+#---------------------------------Models-----------------------------------
+
 class Account(models.Model):
 
     CURRENCY = [('USD', 'USD'), ('AED', 'AED'), ('AFN', 'AFN'), ('ALL', 'ALL'), ('AMD', 'AMD'), ('ANG', 'ANG'), ('AOA', 'AOA'), ('ARS', 'ARS'), ('AUD', 'AUD'), ('AWG', 'AWG'), ('AZN', 'AZN'), ('BAM', 'BAM'), ('BBD', 'BBD'), ('BDT', 'BDT'), ('BGN', 'BGN'), ('BHD', 'BHD'), ('BIF', 'BIF'), ('BMD', 'BMD'), ('BND', 'BND'), ('BOB', 'BOB'), ('BRL', 'BRL'), ('BSD', 'BSD'), ('BTN', 'BTN'), ('BWP', 'BWP'), ('BYN', 'BYN'), ('BZD', 'BZD'), ('CAD', 'CAD'), ('CDF', 'CDF'), ('CHF', 'CHF'), ('CLP', 'CLP'), ('CNY', 'CNY'), ('COP', 'COP'), ('CRC', 'CRC'), ('CUP', 'CUP'), ('CVE', 'CVE'), ('CZK', 'CZK'), ('DJF', 'DJF'), ('DKK', 'DKK'), ('DOP', 'DOP'), ('DZD', 'DZD'), ('EGP', 'EGP'), ('ERN', 'ERN'), ('ETB', 'ETB'), ('EUR', 'EUR'), ('FJD', 'FJD'), ('FKP', 'FKP'), ('FOK', 'FOK'), ('GBP', 'GBP'), ('GEL', 'GEL'), ('GGP', 'GGP'), ('GHS', 'GHS'), ('GIP', 'GIP'), ('GMD', 'GMD'), ('GNF', 'GNF'), ('GTQ', 'GTQ'), ('GYD', 'GYD'), ('HKD', 'HKD'), ('HNL', 'HNL'), ('HRK', 'HRK'), ('HTG', 'HTG'), ('HUF', 'HUF'), ('IDR', 'IDR'), ('ILS', 'ILS'), ('IMP', 'IMP'), ('INR', 'INR'), ('IQD', 'IQD'), ('IRR', 'IRR'), ('ISK', 'ISK'), ('JEP', 'JEP'), ('JMD', 'JMD'), ('JOD', 'JOD'), ('JPY', 'JPY'), ('KES', 'KES'), ('KGS', 'KGS'), ('KHR', 'KHR'), ('KID', 'KID'), ('KMF', 'KMF'), ('KRW', 'KRW'), ('KWD', 'KWD'), ('KYD', 'KYD'), ('KZT', 'KZT'),
@@ -65,80 +67,6 @@ class Account(models.Model):
 
     def get_balance(self):
         return f"{self.currency} {self.balance}"
-
-
-@receiver(post_save, sender=User)
-def createAccount(sender, instance, **kwargs):
-
-    if instance.id is not None:
-        # it means when the user is created
-        if not Account.objects.select_related('user').filter(user=instance).exists():
-            Account.objects.create(user=instance)
-        if not Token.objects.filter(user=instance).exists():
-            Token.objects.create(user=instance)
-        p = Profile.objects.select_related('user').filter(user=instance)
-        if not p.exists():
-            Profile.objects.create(user=instance, dob=datetime.date.today())
-        else:
-            profile = p.first()
-
-            lang = profile.lang
-            msg = ''
-
-            if lang == 'FR':
-                msg = f'Bienvenu sur {settings.APP_NAME}\nVotre code pin est [00000] et solde de votre compte est {profile.user.account.currency} {profile.user.account.balance}'
-            elif lang == 'EN':
-                msg = f'Welcome To {settings.APP_NAME} \nYour pin code is [00000] and account balance is {profile.user.account.currency} {profile.user.account.balance}'
-            
-            Notification.objects.create(user=profile.user,message=msg)
-
-# This pre_save signal is use to keep track of the currency meaning that if the currency of a user
-#  changes it must be converted from the old one to the new one
-
-
-@receiver(pre_save, sender=Account)
-def checkAccount(sender, instance, **kwargs):
-
-    # If Instance/row is been created,then do nothing
-    if instance.id is None:
-        pass
-
-    # Else if it is being modified
-
-    else:
-        current = instance
-        previous = Account.objects.get(id=instance.id)
-
-        # if the previous currency is not equal to the current currency
-
-        
-
-        if previous.currency != current.currency:
-            # convert the account balance to the new currency
-            new_balance = converCurrency(
-                previous.currency, current.currency, current.balance)
-            print('New balance is : ', new_balance)
-            current.balance = new_balance
-
-            lang = instance.user.profile.lang
-
-            if lang == 'FR':
-                msg = f'La monnaie de votre compte a ete changer de {previous.currency} a {instance.currency} Solde : {instance.currency} {instance.balance}'
-            else:
-                msg = f'The currency of your account have been changed from {previous.currency} to {instance.currency} New balance : {instance.currency} {instance.balance}'
-            
-            Notification.objects.create(user=instance.user,message=msg)
-
-        if instance.balance != previous.balance and instance.currency == previous.currency:
-            lang = instance.user.profile.lang
-            msg = ''
-            if lang == 'FR':
-                msg = f'Votre complte a ete crediter de {instance.currency} {instance.balance}'
-            else:
-                msg = f'Your account has been fill with {instance.currency} {instance.balance}'
-            
-            Notification.objects.create(user=instance.user,message=msg)
-        
 
 
 class TransactionType(models.Model):
@@ -239,6 +167,103 @@ class Transfer(Transaction):
         return {'sender_message': sender_message, 'reciever_message': reciever_message}
 
 
+class Withdraw(Transaction):
+
+    # state here represents the different state of withdraw wich can either be 'pending','cancel','accepted'
+
+    WITHDRAW_STATE = (
+        ('PENDING', 'PENDING'),
+        ('REJECTED', 'REJECTED'),
+        ('CANCEL', 'CANCEL'),
+        ('ACCEPTED', 'ACCEPTED')
+    )
+
+    withdraw_from = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='withdraw_from',
+                                      help_text='the account id of the agent making the transaction', validators=[IsAgent])
+    agent = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="agent",
+                              help_text='the account id of the user from which the money is withdraw from')
+
+    state = models.CharField(max_length=20, choices=WITHDRAW_STATE, default='PENDING',
+                             help_text="state here represents the different state of withdraw wich can either be 'pending','cancel','accepted','rejected'")
+
+
+# --------------------------------Django SIgnals------------------------------------------
+
+@receiver(post_save, sender=User)
+def createAccount(sender, instance, **kwargs):
+
+    if instance.id is not None:
+        # it means when the user is created
+        if not Account.objects.select_related('user').filter(user=instance).exists():
+            Account.objects.create(user=instance)
+        if not Token.objects.filter(user=instance).exists():
+            Token.objects.create(user=instance)
+        p = Profile.objects.select_related('user').filter(user=instance)
+        if not p.exists():
+            Profile.objects.create(user=instance, dob=datetime.date.today())
+        else:
+            profile = p.first()
+
+            lang = profile.lang
+            msg = ''
+
+            if lang == 'FR':
+                msg = f'Bienvenu sur {settings.APP_NAME}\nVotre code pin est [00000] et solde de votre compte est {profile.user.account.currency} {profile.user.account.balance}'
+            elif lang == 'EN':
+                msg = f'Welcome To {settings.APP_NAME} \nYour pin code is [00000] and account balance is {profile.user.account.currency} {profile.user.account.balance}'
+            
+            Notification.objects.create(user=profile.user,message=msg)
+
+        
+# This pre_save signal is use to keep track of the currency meaning that if the currency of a user
+#  changes it must be converted from the old one to the new one
+
+
+@receiver(pre_save, sender=Account)
+def checkAccount(sender, instance, **kwargs):
+
+    # If Instance/row is been created,then do nothing
+    if instance.id is None:
+        pass
+
+    # Else if it is being modified
+
+    else:
+        current = instance
+        previous = Account.objects.get(id=instance.id)
+
+        # if the previous currency is not equal to the current currency
+
+        
+
+        if previous.currency != current.currency:
+            # convert the account balance to the new currency
+            new_balance = converCurrency(
+                previous.currency, current.currency, current.balance)
+            print('New balance is : ', new_balance)
+            current.balance = new_balance
+
+            lang = instance.user.profile.lang
+
+            if lang == 'FR':
+                msg = f'La monnaie de votre compte a ete changer de {previous.currency} a {instance.currency} Solde : {instance.currency} {instance.balance}'
+            else:
+                msg = f'The currency of your account have been changed from {previous.currency} to {instance.currency} New balance : {instance.currency} {instance.balance}'
+            
+            Notification.objects.create(user=instance.user,message=msg)
+
+        if instance.balance != previous.balance and instance.currency == previous.currency:
+            lang = instance.user.profile.lang
+            msg = ''
+            if lang == 'FR':
+                msg = f'Votre complte a ete crediter de {instance.currency} {instance.balance}'
+            else:
+                msg = f'Your account has been fill with {instance.currency} {instance.balance}'
+            
+            Notification.objects.create(user=instance.user,message=msg)
+
+
+
 @receiver(pre_save, sender=Transfer)
 def checkIfUserCanTransferMoney(sender, instance, **kwargs):
 
@@ -316,24 +341,6 @@ def sendNotificationsToAccounst(sender, instance, created, **kwargs):
                 instance.srecieverender.user.profile.lang)["reciever_message"], type=notification_status.NOTIFICATION_NORMAL)
 
 
-class Withdraw(Transaction):
-
-    # state here represents the different state of withdraw wich can either be 'pending','cancel','accepted'
-
-    WITHDRAW_STATE = (
-        ('PENDING', 'PENDING'),
-        ('REJECTED', 'REJECTED'),
-        ('CANCEL', 'CANCEL'),
-        ('ACCEPTED', 'ACCEPTED')
-    )
-
-    withdraw_from = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='withdraw_from',
-                                      help_text='the account id of the agent making the transaction', validators=[IsAgent])
-    agent = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="agent",
-                              help_text='the account id of the user from which the money is withdraw from')
-
-    state = models.CharField(max_length=20, choices=WITHDRAW_STATE, default='PENDING',
-                             help_text="state here represents the different state of withdraw wich can either be 'pending','cancel','accepted','rejected'")
 
 
 @receiver(pre_save, sender=Withdraw)
