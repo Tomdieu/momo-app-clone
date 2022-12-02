@@ -1,0 +1,12 @@
+{% extends 'base.html' %} {% load static %} {% block styles %}
+<link rel="stylesheet" href="{% static 'css/main.css' %}" />
+
+{% endblock styles %} {% block content %}
+<main class="container row">
+  <div class="col-3 h-100 bg-white">
+    <h4>{{title}}</h4>
+    <h5>2021 - {{date}}</h5>
+  </div>
+  <div class="col-9 h-100 bg-black">World</div>
+</main>
+{% endblock content %}
