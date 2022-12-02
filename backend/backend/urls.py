@@ -43,7 +43,7 @@ admin.empty_value_display = "**Empty**"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('accounts.urls'),name="accounts"),
-    path('api/v3/',
+    path('api/',
         include([
             path('auth/',include(('accounts.api.urls','accounts'),namespace='accounts')),
             path('momo/',include(('core.api.urls','core'),namespace='momo')),
@@ -51,10 +51,11 @@ urlpatterns = [
 
             #docs urls
             path('docs/',include([
-                path('',include_docs_urls(title='TrixWallet API',description="TrixWallet Api documentation")),
                 re_path(r'swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+                re_path(r'', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
                 re_path(r'swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
                 re_path(r'redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+                path('default/',include_docs_urls(title='TrixWallet API',description="TrixWallet Api documentation")),
             ]))
         ]
     )),
