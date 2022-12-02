@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from .views import (LogoutView, LoginViewSet, ProfileViewSet,
                     CreateProfileViewSet,UpdatePasswordViewSet,UpdateLanguage,UserProfileViewSet)
 
@@ -14,7 +14,8 @@ router.register('update-password',UpdatePasswordViewSet,basename='updated-passwo
 router.register('update-language',UpdateLanguage,basename='language')
 
 urlpatterns = [
+    path('',include(router.urls),name='auth'),
     path('logout/', LogoutView.as_view(), name='logout'),
 ]
 
-urlpatterns += router.urls
+# urlpatterns += router.urls
