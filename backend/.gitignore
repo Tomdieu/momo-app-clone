@@ -157,8 +157,8 @@ cython_debug/
 ./env
 /env/
 env/
-test.c
 makefile
+db.sqlite3
 
 # Byte-compiled / optimized / DLL files
 __pycache__
