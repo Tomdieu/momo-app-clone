@@ -3,7 +3,7 @@ from django.db.models.signals import pre_save, post_save
 from django.contrib.auth import get_user_model
 from django.dispatch import receiver
 from core.api.utils import converCurrency
-from .validators import IsAgent
+from .validators import IsAgent, validate_pin_code
 
 from django.conf import settings
 
@@ -25,7 +25,7 @@ from notifications import status as notification_status
 User = get_user_model()
 
 
-#---------------------------------Models-----------------------------------
+# ---------------------------------Models-----------------------------------
 
 class Account(models.Model):
 
@@ -37,14 +37,14 @@ class Account(models.Model):
         default=uuid.uuid4, unique=True, editable=False)
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, help_text='user id', related_name='account')
-    balance = models.DecimalField(
-        default=0, decimal_places=2, max_digits=20, help_text='User account balance')
+    balance = models.FloatField(
+        default=0,help_text='User account balance')
     account_status = models.CharField(
         max_length=255, choices=STATUS, default='active')
     currency = models.CharField(
         max_length=3, default='XAF', help_text='currency', choices=CURRENCY)
-    pin_code = models.CharField(max_length=5, default='00000',
-                                help_text='pin code use to manage transaction in a user account')
+    pin_code = models.CharField(max_length=5, default='00000', validators=[validate_pin_code],
+                                help_text='pin code use to authorize transaction in a user account')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -87,11 +87,12 @@ class TransactionType(models.Model):
 
     @classmethod
     def getTypes(cls):
-        return ['DEPOSIT','TRANSFER','WITHDRAW']
+        return ['DEPOSIT', 'TRANSFER', 'WITHDRAW']
 
 
 class TransactionCharge(models.Model):
-    charge = models.FloatField(help_text="charge in % example 0.02 ", default=0)
+    charge = models.FloatField(
+        help_text="charge in % example 0.02 ", default=0)
     type = models.OneToOneField(TransactionType, on_delete=models.CASCADE,
                                 related_name='transaction_type', help_text='transaction type id')
 
@@ -211,10 +212,10 @@ def createAccount(sender, instance, **kwargs):
                 msg = f'Bienvenu sur {settings.APP_NAME}\nVotre code pin est [00000] et solde de votre compte est {profile.user.account.currency} {profile.user.account.balance}'
             elif lang == 'EN':
                 msg = f'Welcome To {settings.APP_NAME} \nYour pin code is [00000] and account balance is {profile.user.account.currency} {profile.user.account.balance}'
-            
-            Notification.objects.create(user=profile.user,message=msg)
 
-        
+            Notification.objects.create(user=profile.user, message=msg)
+
+
 # This pre_save signal is use to keep track of the currency meaning that if the currency of a user
 #  changes it must be converted from the old one to the new one
 
@@ -234,8 +235,6 @@ def checkAccount(sender, instance, **kwargs):
 
         # if the previous currency is not equal to the current currency
 
-        
-
         if previous.currency != current.currency:
             # convert the account balance to the new currency
             new_balance = converCurrency(
@@ -249,8 +248,8 @@ def checkAccount(sender, instance, **kwargs):
                 msg = f'La monnaie de votre compte a ete changer de {previous.currency} a {instance.currency} Solde : {instance.currency} {instance.balance}'
             else:
                 msg = f'The currency of your account have been changed from {previous.currency} to {instance.currency} New balance : {instance.currency} {instance.balance}'
-            
-            Notification.objects.create(user=instance.user,message=msg)
+
+            Notification.objects.create(user=instance.user, message=msg)
 
         if instance.balance != previous.balance and instance.currency == previous.currency:
             lang = instance.user.profile.lang
@@ -259,9 +258,8 @@ def checkAccount(sender, instance, **kwargs):
                 msg = f'Votre complte a ete crediter de {instance.currency} {instance.balance}'
             else:
                 msg = f'Your account has been fill with {instance.currency} {instance.balance}'
-            
-            Notification.objects.create(user=instance.user,message=msg)
 
+            Notification.objects.create(user=instance.user, message=msg)
 
 
 @receiver(pre_save, sender=Transfer)
@@ -339,8 +337,6 @@ def sendNotificationsToAccounst(sender, instance, created, **kwargs):
 
             Notification.objects.create(user=instance.reciever, message=instance.sender.generateMessage(
                 instance.srecieverender.user.profile.lang)["reciever_message"], type=notification_status.NOTIFICATION_NORMAL)
-
-
 
 
 @receiver(pre_save, sender=Withdraw)
@@ -435,7 +431,7 @@ def checkIfUserCanWithdrawMoney(sender, instance, **kwargs):
         else:
 
             if float(withdraw_from.balance) >= float(amount):
-            
+
                 charge = TransactionType.objects.select_related('transaction_type').filter(
                     name__icontains='withdraw').first().transaction_type
 
@@ -444,7 +440,7 @@ def checkIfUserCanWithdrawMoney(sender, instance, **kwargs):
                 instance.charge = charge
 
             else:
-                
+
                 instance.status = 'REJECTED'
 
                 Notification.objects.create(user=withdraw_from.user, message="Your account balance is insufficent to perform the transaction. Please fill you account and retry later!\nCurrent account balance {}".format(
@@ -452,4 +448,3 @@ def checkIfUserCanWithdrawMoney(sender, instance, **kwargs):
 
                 # raise ValidationError(_('The %(value)s balance is insufficent to perform the transaction'), params={
                 #                     'value': withdraw_from})
-
