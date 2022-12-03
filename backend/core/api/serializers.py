@@ -95,3 +95,10 @@ class WithdrawListSerializer(WithdrawSerializer):
 	withdraw_from = AccountSerializer()
 	agent= AccountSerializer()
 	withdraw_charge = TransactionListChargeSerializer()
+
+
+class ConvertCurrencySerializer(serializers.Serializer):
+
+	from_currency = serializers.CharField(max_length=3)
+	to_currency = serializers.CharField(max_length=3)
+	amount = serializers.FloatField()
