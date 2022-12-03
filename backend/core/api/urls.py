@@ -16,6 +16,8 @@ router.register('change-pin-code', views.ChangePinCodeViewSet,
                 basename='change-pin-code')
 router.register('confirm-withdrawal',views.ConfirmWithdraw,basename='confirm withdrawal')
 
+router.register('convert-currency',views.ConvertCurrencyViewSet,basename='convert-currency')
+
 urlpatterns = [
     path('',include(router.urls))
 ]
