@@ -6,7 +6,7 @@ from rest_framework import status
 from .serializers import (AccountSerializer, AccountListSerializer, TransactionChargeSerializer,
                           TransactionTypeSerializer, TransactionListChargeSerializer,
                           TransferSerializer, TransferListSerializer, ChangePinSerializer,
-                          WithdrawSerializer, WithdrawListSerializer)
+                          WithdrawSerializer, WithdrawListSerializer,ConvertCurrencySerializer)
 from core.models import Account, TransactionCharge, TransactionType, Transfer, Withdraw
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import (
@@ -44,7 +44,7 @@ class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateM
 class TransactionChargeViewSet(RetrieveModelMixin, CreateModelMixin, ListModelMixin, GenericViewSet, UpdateModelMixin, DestroyModelMixin):
 
     def get_queryset(self):
-        return TransactionCharge.objects.all()
+        return TransactionCharge.objects.select_related('type').all()
 
     serializer_class = TransactionChargeSerializer
     permission_classes = [IsAuthenticated]
@@ -197,3 +197,22 @@ class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
             account.set_pincode(new_pin)
 
             return Response({'detail': 'pin code updated successfully'})
+
+
+class ConvertCurrencyViewSet(GenericViewSet,CreateAPIView):
+
+    serializer_class = ConvertCurrencySerializer
+    
+    def create(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        from_currency = serializer.validated_data['from_currency']
+        to_currency = serializer.validated_data['to_currency']
+        amount = serializer.validated_data['amount']
+
+
+        result = converCurrency(from_currency,to_currency,amount)
+
+        return Response({'data':f'{to_currency} {result}'})
