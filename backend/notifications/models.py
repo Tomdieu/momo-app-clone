@@ -21,7 +21,7 @@ class Notification(models.Model):
         ('ALERT','ALERT')
     )
 
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='user_notifications')
     message = models.TextField(max_length=800)
     type = models.CharField(max_length=20,choices=NOTIFICATION_TYPE,default='NORMAL')
 
