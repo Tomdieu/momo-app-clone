@@ -46,7 +46,7 @@ class UserSerializer(serializers.ModelSerializer):
                 'required': True
             },
             'fist_name': {'required': True},
-            'last_name': {'required': True},
+            'last_name': {'required': False},
             'email': {'required': True}
             }
 
