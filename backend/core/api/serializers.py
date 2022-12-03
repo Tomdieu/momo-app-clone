@@ -26,6 +26,12 @@ class AccountListSerializer(AccountSerializer):
 		model = Account
 		fields = '__all__'
 
+		extra_kwargs = {
+			'pin_code':{
+				'write_only':True
+			}
+		}
+
 class ChangePinSerializer(serializers.Serializer):
 
 	old_pin = serializers.CharField(max_length=50,help_text='The old pin account')
@@ -72,6 +78,9 @@ class TransferSerializer(serializers.ModelSerializer):
 		model = Transfer
 		fields = '__all__'
 
+	pin_code = serializers.CharField(max_length=5,help_text="This pin code represent the pin code to the account transfering the money")
+	
+
 class TransferListSerializer(TransferSerializer):
 
 	sender = AccountSerializer()
@@ -79,6 +88,8 @@ class TransferListSerializer(TransferSerializer):
 	charge = TransactionListChargeSerializer()
 
 class WithdrawSerializer(serializers.ModelSerializer):
+
+	pin_code = serializers.CharField(max_length=5,help_text="This pin code represent the pin code to the account initiating the withdrawal")
 
 	class Meta:
 		model = Withdraw
