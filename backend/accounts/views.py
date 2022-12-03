@@ -7,7 +7,7 @@ from django.views import View
 
 class LandingPage(View):
 
-    template_name = 'index.html'
+    template_name = 'cover.html'
 
 
     def get(self,request,*args,**kwargs):
