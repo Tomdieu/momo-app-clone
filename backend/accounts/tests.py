@@ -1,9 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase,Client
 
 # Create your tests here.
 
 class AccountsTest(TestCase):
 
-    def create_account_test(self):
+    def test2(self):
 
-        pass
+        self.assertEqual(1+1,2)
