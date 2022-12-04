@@ -163,7 +163,7 @@ class Transfer(Transaction):
             reciever_message = f'Vous avez recus un montant de {self.currency} {self.amount} dans votre compte {self.reciever.account_number} de la part de {self.sender.user.first_name} {self.sender.user.last_name} [{self.sender.user}] a {self.created_at}.\nVotre nouveaux solde est de {self.currency} {self.reciever.balance}'
         elif lang == 'EN':
             sender_message = f'You have successfully send an amount of {self.currency} {self.amount} to the account number {self.reciever.account_number} belonging to {self.reciever.user.first_name} {self.reciever.user.last_name} [{self.reciever.user}] at {self.created_at} transaction id {self.code}.\nYour new account balance is {self.currency} {self.sender.balance}'
-            reciever_message = f'You have recieve an amount of {self.currency} {self.amount} dans votre compte {self.reciever.account_number} from {self.sender.user.first_name} {self.sender.user.last_name} [{self.sender.user}] at {self.created_at}.\nYour new account balance is {self.currency} {self.reciever.balance}'
+            reciever_message = f'You have recieve an amount of {self.currency} {self.amount} in your account {self.reciever.account_number} from {self.sender.user.first_name} {self.sender.user.last_name} [{self.sender.user}] at {self.created_at}.\nYour new account balance is {self.currency} {self.reciever.balance}'
 
         return {'sender_message': sender_message, 'reciever_message': reciever_message}
 
@@ -180,13 +180,14 @@ class Withdraw(Transaction):
     )
 
     withdraw_from = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='withdraw_from',
-                                      help_text='the account id of the agent making the transaction', validators=[IsAgent])
+                                      help_text='the account id of the agent making the transaction')
     agent = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="agent",
-                              help_text='the account id of the user from which the money is withdraw from')
+                              help_text='the account id of the user from which the money is withdraw from',validators=[IsAgent])
 
     state = models.CharField(max_length=20, choices=WITHDRAW_STATE, default='PENDING',
                              help_text="state here represents the different state of withdraw wich can either be 'pending','cancel','accepted','rejected'")
-
+    
+    charge = models.ForeignKey(TransactionCharge,on_delete=models.CASCADE)
 
 # --------------------------------Django SIgnals------------------------------------------
 
@@ -302,7 +303,7 @@ def checkIfUserCanTransferMoney(sender, instance, **kwargs):
                         charge = TransactionType.objects.select_related('transaction_type').filter(
                             name__icontains='transfer').first().transaction_type
 
-                    amount_charge = amount*charge.transaction_type.charge
+                    amount_charge = amount*charge.charge
                     amount_send = amount - amount_charge
 
                     sender_account.balance = balance - amount_send
@@ -331,12 +332,12 @@ def checkIfUserCanTransferMoney(sender, instance, **kwargs):
 def sendNotificationsToAccounst(sender, instance, created, **kwargs):
 
     if created:
-        if instance.state == 'SUCCESSFULL':
-            Notification.objects.create(user=instance.sender, message=instance.sender.generateMessage(
+        if instance.status == 'SUCCESSFULL':
+            Notification.objects.create(user=instance.sender.user, message=instance.generateMessage(
                 instance.sender.user.profile.lang)["sender_message"], type=notification_status.NOTIFICATION_TRANSFER_SUCCESSFULL)
 
-            Notification.objects.create(user=instance.reciever, message=instance.sender.generateMessage(
-                instance.srecieverender.user.profile.lang)["reciever_message"], type=notification_status.NOTIFICATION_NORMAL)
+            Notification.objects.create(user=instance.reciever.user, message=instance.generateMessage(
+                instance.reciever.user.profile.lang)["reciever_message"], type=notification_status.NOTIFICATION_NORMAL)
 
 
 @receiver(pre_save, sender=Withdraw)
@@ -389,8 +390,8 @@ def checkIfUserCanWithdrawMoney(sender, instance, **kwargs):
 
                     charge = TransactionType.objects.select_related('transaction_type').filter(
                         name__icontains='withdraw').first().transaction_type
-                    amount_charge = amount*charge.transaction_type.charge
-                    amount_to_withdraw = amount - amount_charge
+                    amount_charge = float(amount)*float(charge.charge)
+                    amount_to_withdraw = float(amount) - float(amount_charge)
 
                     withdraw_from.balance = float(balance) - amount_to_withdraw
                     withdraw_from.save()
