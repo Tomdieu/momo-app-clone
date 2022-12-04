@@ -50,8 +50,8 @@ class UserSerializer(serializers.ModelSerializer):
             'email': {'required': True}
             }
 
-    def create(self, validate_data):
-        user = User.objects.create_user(**validate_data)
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
         user.is_active = True
         user.save()
         return user
