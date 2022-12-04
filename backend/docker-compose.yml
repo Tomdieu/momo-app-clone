@@ -1,11 +1,10 @@
-version: '3.8'
+version: '3.4'
+
 services:
-  app:
-    build: .
-    volumes:
-      - .:/django_backend
+  backend:
+    image: backend
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     ports:
       - 8000:8000
-    image: app:django_backend
-    container_name: django_container
-    command: python manage.py runserver 0.0.0.0:8000
