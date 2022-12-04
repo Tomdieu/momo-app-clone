@@ -3,9 +3,12 @@ from django.utils.translation import gettext_lazy as _
 
 import re
 
-def IsAgent(id):
+def IsAgent(account):
     from .models import Account
-    instance = Account.objects.get(pk=id)
+    if isinstance(account,Account):
+        instance = Account.objects.get(pk=account.id)
+    else:
+        instance = Account.objects.get(pk=account)   
     if instance.is_agent == False:
         raise ValidationError(_('%(value)s is not an agent account!'),params={'value':instance})
 
