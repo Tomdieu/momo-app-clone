@@ -58,9 +58,3 @@
     ```
     python manage.py runserver
     ```
-- To find the different api routes in the system
-    - Navigate to the route `http://localhost:8000/api-doc/`
-
-    - The page will look like this
-
-    <img src="./UML/image-doc.png">
