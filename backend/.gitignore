@@ -161,6 +161,8 @@ env/
 makefile
 db.sqlite3
 
+other/
+
 # Byte-compiled / optimized / DLL files
 __pycache__
 **/__pycache__/**
