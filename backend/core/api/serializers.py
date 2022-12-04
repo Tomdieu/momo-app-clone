@@ -72,14 +72,42 @@ class TransactionChargeSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 
+
+class TransferCreateSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Transfer
+		fields = '__all__'
+
+		extra_kwargs = {
+			'status':{
+				'read_only':True
+			}
+		}
+
+	pin_code = serializers.CharField(max_length=5,help_text="This pin code represent the pin code to the account transfering the money")
+	
+
+	def create(self, validated_data):
+
+		validated_data.pop('pin_code')
+		print(validated_data)
+		transfer = Transfer.objects.create(**validated_data)
+
+		return transfer
+
 class TransferSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Transfer
 		fields = '__all__'
 
-	pin_code = serializers.CharField(max_length=5,help_text="This pin code represent the pin code to the account transfering the money")
-	
+		extra_kwargs = {
+			'status':{
+				'read_only':True
+			}
+		}
+
 
 class TransferListSerializer(TransferSerializer):
 
@@ -87,7 +115,8 @@ class TransferListSerializer(TransferSerializer):
 	reciever = AccountSerializer()
 	charge = TransactionListChargeSerializer()
 
-class WithdrawSerializer(serializers.ModelSerializer):
+
+class WithdrawCreateSerializer(serializers.ModelSerializer):
 
 	pin_code = serializers.CharField(max_length=5,help_text="This pin code represent the pin code to the account initiating the withdrawal")
 
@@ -97,15 +126,25 @@ class WithdrawSerializer(serializers.ModelSerializer):
 
 		extra_kwargs = {
 			'state':{
-				'required':False
+				'read_only':True
+			},
+			'charge':{
+				'read_only':True
 			}
 		}
+class WithdrawSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Withdraw
+		fields = '__all__'
+
+		
 
 class WithdrawListSerializer(WithdrawSerializer):
 
 	withdraw_from = AccountSerializer()
 	agent= AccountSerializer()
-	withdraw_charge = TransactionListChargeSerializer()
+	charge = TransactionListChargeSerializer()
 
 
 class ConvertCurrencySerializer(serializers.Serializer):
