@@ -1,19 +1,8 @@
-from channels.routing import ProtocolTypeRouter,URLRouter
-from channels.security.websocket import AllowedHostsOriginValidator
-from django.urls import path
+from django.urls import re_path,path
 
-from notifications.middlewares import TokenAuthMiddleWare
+from . import consumers
 
-application = ProtocolTypeRouter(
-    {
-        "websocket":TokenAuthMiddleWare(
-            AllowedHostsOriginValidator(
-                URLRouter(
-                    [
-                        # path("",)
-                    ]
-                )
-            )
-        )
-    }
-)
+websocket_urlpatterns = [
+    re_path(r'ws/notifications/(?P<user_id>\d+)/',consumers.UserNotification.as_asgi()),
+    path('ws/notifications/<int:id>/',consumers.UserNotification.as_asgi())
+]
