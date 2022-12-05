@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+
+from django.dispatch import receiver
+from django.db.models.signals import post_save,pre_save
+
 # Create your models here.
 
 User = get_user_model()
@@ -32,3 +36,14 @@ class Notification(models.Model):
 
     def __str__(self):
         return f'{self.user} notification'
+
+
+# signals for notification
+
+
+@receiver(post_save, sender=Notification)
+def sendSocketNotifications(sender, instance, created, **kwargs):
+
+    if created:
+
+        pass
