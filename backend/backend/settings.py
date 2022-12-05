@@ -31,6 +31,10 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+
+    # channels
+    # "daphne",
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,7 +51,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "drf_yasg",
-    "rest_framework.authtoken"
+    "rest_framework.authtoken",
+
 ]
 
 MIDDLEWARE = [
@@ -80,6 +85,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
+# ASGI_APPLICATION = 'backend.asgi.application'
+
 
 
 # Database
@@ -177,6 +184,22 @@ REDOC_SETTINGS = {
 }
 
 # Channels configurations
+
+
+# With Redis
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("127.0.0.1", 6379)],
+#         },
+#     },
+# }
+
+
+# With internal memoryChannelLayer
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND":
