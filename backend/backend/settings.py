@@ -153,7 +153,7 @@ CORS_ALLOW_METHODS = [
     "PUT",
 ]
 
-#REST FRAMEWORK CONFIGURATIONS
+# REST FRAMEWORK CONFIGURATIONS
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -164,14 +164,22 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSIONS_CLASSES': (
         'rest_framework.permissions.IsAuthenticated'
     ),
-    'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 
     'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }
 
 
-APP_NAME = 'TrixWallet' # this is the name i gaved to my backend system app
+APP_NAME = 'TrixWallet'  # this is the name i gaved to my backend system app
 
 REDOC_SETTINGS = {
     'LAZY_RENDERING': False,
+}
+
+# Channels configurations
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND":
+        "channels.layers.InMemoryChannelLayer",
+    }
 }
