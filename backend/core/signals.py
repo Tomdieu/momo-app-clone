@@ -84,15 +84,15 @@ def checkAccount(sender, instance, **kwargs):
 
             Notification.objects.create(user=instance.user, message=msg)
 
-        if instance.balance != previous.balance and instance.currency == previous.currency:
-            lang = instance.user.profile.lang
-            msg = ''
-            if lang == 'FR':
-                msg = f'Votre complte a ete crediter de {instance.currency} {instance.balance}'
-            else:
-                msg = f'Your account has been fill with {instance.currency} {instance.balance}'
+        # if instance.balance != previous.balance and instance.currency == previous.currency:
+        #     lang = instance.user.profile.lang
+        #     msg = ''
+        #     if lang == 'FR':
+        #         msg = f'Votre complte a ete crediter de {instance.currency} {instance.balance}'
+        #     else:
+        #         msg = f'Your account has been fill with {instance.currency} {instance.balance}'
 
-            Notification.objects.create(user=instance.user, message=msg)
+        #     Notification.objects.create(user=instance.user, message=msg)
 
 
 @receiver(pre_save, sender=Transfer)
