@@ -1,11 +1,43 @@
 from django.shortcuts import render,redirect
 from datetime import datetime
 
+from django.contrib.auth import authenticate,login,logout
+
 # from django.views.generic import CreateView,View,TemplateView
-from django.views import View
-from .forms import ProfileForm,UserForm
+from django.views import View,generic
+from .forms import ProfileForm,UserForm,LoginForm
 
 # Create your views here.
+
+
+class LoginPage(View):
+
+
+    template_name = 'accounts/login.html'
+
+    def get(self,request,*args,**kwargs):
+
+        context = {
+            'form':LoginForm
+        }
+        return render(request,self.template_name,context)
+    
+    def post(self,request,*args,**kwargs):
+        login_form = LoginForm(data=request.POST)
+
+        if login_form.is_valid():
+            dt = request.POST
+            user = authenticate(username=dt['username'],password=dt['password'])
+            login(request,user)
+
+            return redirect('index')
+
+
+        context = {
+            'form':login_form
+        }
+        return render(request,self.template_name,context)
+    
 
 class LandingPage(View):
 

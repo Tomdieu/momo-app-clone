@@ -3,8 +3,6 @@ from core.api.utils import converCurrency
 from django.http.response import HttpResponse
 from django.core import serializers
 
-from .api.serializers import AccountSerializer
-from rest_framework.response import Response
 # Register your models here.
 
 from .models import Account,TransactionType,TransactionCharge,Transfer,Withdraw
@@ -21,7 +19,7 @@ class AccountAdmin(admin.ModelAdmin):
 	search_fields = ('user__username','currency','account_status',)
 	list_per_page = 25
 
-	actions = ['to_agent','make_inactive','make_active']
+	actions = ['to_agent','to_normal','make_inactive','make_active']
 
 	@admin.display(description="Account Balance",ordering='-created_at')
 	def amount(self,obj):
@@ -33,9 +31,14 @@ class AccountAdmin(admin.ModelAdmin):
 
 	# Account Actions
 
-	@admin.action(description="Set Account As Agent")
+	@admin.action(description="Switch To agent account")
 	def to_agent(self,request,queryset):
 		queryset.update(is_agent=True)
+
+	@admin.action(description="Switch to normal account")
+	def to_normal(self,request,queryset):
+		queryset.update(is_agent=False)
+	
 
 	@admin.action
 	def make_inactive(self, request, queryset):
@@ -50,6 +53,7 @@ admin.site.register(Account,AccountAdmin)
 
 class TransactionTypeAdmin(admin.ModelAdmin):
 	list_display = ('name','description')
+	list_per_page = 25
 
 admin.site.register(TransactionType,TransactionTypeAdmin)
 
@@ -59,6 +63,7 @@ class TransactionChargeAdmin(admin.ModelAdmin):
 		return obj.type.name
 
 	list_display = ('transaction_type','charge')
+	list_per_page = 25
 
 	search_fields = ('type__name','charge')
 	
@@ -70,6 +75,8 @@ class TransferAdmin(admin.ModelAdmin):
 	list_display = ('id','code','sender','reciever','status','transaction_amount','created_at')
 	search_fields = ('code','sender__user__username','reciever__user__username')
 	readonly_fields = ('code','currency')
+	list_per_page = 25
+
 
 	@admin.display
 	def transaction_amount(self,obj):

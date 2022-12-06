@@ -46,6 +46,9 @@
         <a class="nav-link active" aria-current="page" href="#">Home</a>
         <a class="nav-link" href="#">Features</a>
         <a class="nav-link" href="#">Contact</a>
+        {% if request.user.is_authenticated %}
+          {{request.user}}
+        {% endif %}
       </nav>
     </div>
   </header>
