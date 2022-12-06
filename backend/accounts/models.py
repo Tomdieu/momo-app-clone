@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
+from django.utils.translation import gettext_lazy as _
+
 
 User = get_user_model()
 
@@ -17,7 +19,7 @@ class Profile(models.Model):
         User, on_delete=models.CASCADE, primary_key=True)
     phone_number = models.CharField(
         max_length=255, null=True, blank=True, help_text='user phone number')
-    dob = models.DateField(null=True, blank=True,
+    dob = models.DateField(_("Date of birth"),null=True, blank=True,
                            help_text='user date of birth')
     city = models.CharField(max_length=255, blank=True,
                             null=True, help_text='user\'s city ')
