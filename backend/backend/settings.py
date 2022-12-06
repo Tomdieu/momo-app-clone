@@ -53,6 +53,9 @@ INSTALLED_APPS = [
     "drf_yasg",
     "rest_framework.authtoken",
 
+    "crispy_forms",
+    "crispy_bootstrap5"
+
 ]
 
 MIDDLEWARE = [
@@ -206,3 +209,11 @@ CHANNEL_LAYERS = {
         "channels.layers.InMemoryChannelLayer",
     }
 }
+
+
+
+
+# Crispy configurations
+
+
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
