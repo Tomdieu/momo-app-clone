@@ -2,10 +2,13 @@ from rest_framework import serializers
 
 from accounts.api.serializers import UserSerializer
 
+from core.api.utils import converCurrency
 
 from  core.models import Account,TransactionCharge,TransactionType,Transfer,Withdraw
 
 class AccountSerializer(serializers.ModelSerializer):
+
+	convertedCurrency = serializers.SerializerMethodField()
 
 	class Meta:
 
@@ -17,6 +20,10 @@ class AccountSerializer(serializers.ModelSerializer):
 				'write_only':True
 			}
 		}
+
+	def convertedCurrency(self,obj:Account):
+
+		return converCurrency(obj.currency,obj.display_currency,obj.balance)
 class AccountListSerializer(AccountSerializer):
 
 	user = UserSerializer()

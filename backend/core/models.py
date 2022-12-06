@@ -1,26 +1,16 @@
 from django.db import models
-from django.db.models.signals import pre_save, post_save
 from django.contrib.auth import get_user_model
-from django.dispatch import receiver
-from core.api.utils import converCurrency
+
 from .validators import IsAgent, validate_pin_code
 
-from django.conf import settings
+from django.core.exceptions import ValidationError
 
 from django.utils.translation import gettext_lazy as _
-
-from django.db import transaction
 
 import uuid
 import binascii
 import os
-import datetime
 
-from accounts.models import Profile
-from rest_framework.authtoken.models import Token
-from notifications.models import Notification
-
-from notifications import status as notification_status
 
 User = get_user_model()
 
@@ -42,7 +32,9 @@ class Account(models.Model):
     account_status = models.CharField(
         max_length=255, choices=STATUS, default='active')
     currency = models.CharField(
-        max_length=3, default='XAF', help_text='currency', choices=CURRENCY)
+        max_length=3, default='XAF', help_text='currency')
+    display_currency = models.CharField(
+        max_length=3, default='XAF', choices=CURRENCY)
     pin_code = models.CharField(max_length=5, default='00000', validators=[validate_pin_code],
                                 help_text='pin code use to authorize transaction in a user account')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -155,6 +147,16 @@ class Transfer(Transaction):
     def __str__(self):
         return f"Transfer {self.code} {self.status}"
 
+    def clean_fields(self, exclude=None):
+        super().clean_fields(exclude)
+        if self.sender == self.reciever:
+            raise ValidationError(_("You Can't Transfer Money To Your Self"))
+        else:
+            if self.amount > self.sender.balance:
+                raise ValidationError({
+                    "sender": _("This account is not able to transfer money because the account balance is insufficient! {} > {}".format(self.amount, self.sender.balance))
+                })
+
     def generateMessage(self, lang: str):
         sender_message = ''
         reciever_message = ''
@@ -188,3 +190,17 @@ class Withdraw(Transaction):
                              help_text="state here represents the different state of withdraw wich can either be 'pending','cancel','accepted','rejected'")
 
     charge = models.ForeignKey(TransactionCharge, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.code} {self.state}'
+
+    def clean_fields(self, exclude=None) -> None:
+        super().clean_fields(exclude)
+
+        if self.withdraw_from == self.agent:
+            raise ValidationError(_("You Can't Withdraw Money From Your self"))
+
+        else:
+            if self.amount > self.withdraw_from.balance:
+                raise ValidationError({'withdraw_from': _(
+                    "You can't withdraw money from the account the account balance is insufficent")})
