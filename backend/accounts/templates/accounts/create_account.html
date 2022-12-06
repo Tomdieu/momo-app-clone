@@ -1,0 +1,38 @@
+{% load crispy_forms_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | TrixWallet</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+</head>
+<body>
+    <div class="container">
+        <div class="container-fluid m-2">
+            <h1>Create Account</h1>
+            <form method="post" class="d-lg-flex gap-2 flex-row row-cols-lg-2">
+                {% csrf_token %}
+                <div>
+                    {{user_form|crispy}}
+                </div>
+                <div>
+                    {{profile_form|crispy}}
+                    <div class="d-flex flex-column">
+                        <a href="#" class="link link-primary text-decoration-none text-center m-2">Already Have An Account</a>
+                        <button class="btn btn-primary">Create Account</button>
+                    </div>
+                </div>
+            </form>
+            <div class="text-center m-3">2021 - 2022</div>
+        </div>
+    </div>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        var dob = document.getElementsByName('dob')[0];
+        dob.type = 'date';
+    </script>
+</body>
+</html>
