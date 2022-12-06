@@ -153,6 +153,7 @@ def checkIfUserCanTransferMoney(sender, instance, **kwargs):
                     instance.charge = charge
 
             else:
+                instance.currency = sender_account.currency
                 instance.status = 'REJECTED'
                 Notification.objects.create(user=sender_account.user, message="Your account balance is insufficent to perform the transaction. Please fill you account and retry later!\nCurrent account balance {}".format(
                     sender_account.get_balance()), type="TRANSFER_REJECTED")
