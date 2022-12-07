@@ -1,5 +1,5 @@
 
-from django.contrib.auth import get_user_model, authenticate, logout
+from django.contrib.auth import get_user_model, authenticate, logout,login
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -41,6 +41,7 @@ class LoginViewSet(GenericViewSet, CreateAPIView):
 
         user = authenticate(username=username, password=password)
         if user is not None:
+            login(request,user)
             return Response({'success': True, 'token': user.auth_token.key})
         else:
             return Response({'success': False, 'error_message': 'username or password incorrect'}, status=status.HTTP_400_BAD_REQUEST)
