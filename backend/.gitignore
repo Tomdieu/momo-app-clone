@@ -175,3 +175,4 @@ __pycache__
 !**/migrations/__init__.py
 
 *.rdb
+celerybeat-schedule
