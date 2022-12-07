@@ -16,7 +16,7 @@ from rest_framework.generics import (CreateAPIView)
 
 from django.db.models import Q
 
-
+from django.conf import settings
 from core.api.utils import converCurrency
 
 
@@ -190,7 +190,7 @@ class ConfirmWithdraw(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Gene
         return WithdrawSerializer
 
     def get_queryset(self):
-        n = 2  # n represents the amount of minutes for a withdrawal to be accepted or cancel after that it will be rejected
+        n = settings.WITHDRAW_MONEY_MINUTES  # n represents the amount of minutes for a withdrawal to be accepted or cancel after that it will be rejected
         dt = datetime.datetime  # dt respresents the datetime.datetime function
         td = datetime.timedelta  # td represents the datetime.timedelta function
         now = dt.now()

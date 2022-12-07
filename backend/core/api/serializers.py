@@ -8,7 +8,7 @@ from  core.models import Account,TransactionCharge,TransactionType,Transfer,With
 
 class AccountSerializer(serializers.ModelSerializer):
 
-	convertedCurrency = serializers.SerializerMethodField()
+	converted_currency = serializers.SerializerMethodField()
 
 	class Meta:
 
@@ -20,9 +20,10 @@ class AccountSerializer(serializers.ModelSerializer):
 				'write_only':True
 			}
 		}
-	@property
-	def get_convertedCurrency(self,obj:Account):
-		return converCurrency(obj.currency,obj.display_currency,obj.balance)
+
+	def get_converted_currency(self,obj:Account):
+		r = converCurrency(obj.currency,obj.display_currency,obj.balance)
+		return f'{obj.currency} {r}'
 class AccountListSerializer(AccountSerializer):
 
 	user = UserSerializer()
