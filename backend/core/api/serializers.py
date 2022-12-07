@@ -20,13 +20,13 @@ class AccountSerializer(serializers.ModelSerializer):
 				'write_only':True
 			}
 		}
-
-	def convertedCurrency(self,obj:Account):
-
+	@property
+	def get_convertedCurrency(self,obj:Account):
 		return converCurrency(obj.currency,obj.display_currency,obj.balance)
 class AccountListSerializer(AccountSerializer):
 
 	user = UserSerializer()
+	convertedCurrency = serializers.SerializerMethodField()
 
 	class Meta:
 
@@ -39,6 +39,9 @@ class AccountListSerializer(AccountSerializer):
 			}
 		}
 
+	def convertedCurrency(self,obj:Account):
+
+		return converCurrency(obj.currency,obj.display_currency,obj.balance)
 class ChangePinSerializer(serializers.Serializer):
 
 	old_pin = serializers.CharField(max_length=50,help_text='The old pin account')
