@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     "drf_yasg",
     "rest_framework.authtoken",
 
+    "django_celery_beat",
+
     "crispy_forms",
     "crispy_bootstrap5"
 
@@ -210,6 +212,10 @@ CHANNEL_LAYERS = {
     }
 }
 
+# Celery
+
+CELERY_BROKER_URL = "redis://redis:6397"
+CELERY_RESULT_BACKEND = "redis://redis:6397"
 
 
 
