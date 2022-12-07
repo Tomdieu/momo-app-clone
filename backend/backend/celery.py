@@ -13,6 +13,9 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
+
+from core.tasks import *
+
 # app.conf.beat_schedule={
 #     'every_10_minutes':{
 #         'task':'scrape_hacker_new_rss_feed',

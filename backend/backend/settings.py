@@ -188,34 +188,47 @@ REDOC_SETTINGS = {
     'LAZY_RENDERING': False,
 }
 
+# Celery
+
+# CELERY_BROKER_URL = "redis://redis:6397"
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+
+# CELERY_RESULT_BACKEND = "redis://redis:6397"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
+CELERY_TASK_TRACK_STARTED = True
+CELERY_ACKS_LATE = True
+CELERY_WORKER_SEND_TASK_EVENTS = True
+CELERY_TASK_SEND_SENT_EVENT = True
 # Channels configurations
 
 
 # With Redis
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6379)],
-#         },
-#     },
-# }
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts":["redis://localhost:6379/0"]
+            # "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 
 # With internal memoryChannelLayer
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND":
-        "channels.layers.InMemoryChannelLayer",
-    }
-}
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND":
+#         "channels.layers.InMemoryChannelLayer",
+#     }
+# }
 
-# Celery
-
-CELERY_BROKER_URL = "redis://redis:6397"
-CELERY_RESULT_BACKEND = "redis://redis:6397"
 
 
 
@@ -223,3 +236,10 @@ CELERY_RESULT_BACKEND = "redis://redis:6397"
 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
+
+
+# TrixWallet Cnfigurations
+
+# -------------- Withdraw minutes valid ---------------
+
+WITHDRAW_MONEY_MINUTES = 2
