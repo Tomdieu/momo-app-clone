@@ -1,5 +1,6 @@
 node_modules/
 .expo/
+.env
 dist/
 npm-debug.*
 *.jks
@@ -12,3 +13,6 @@ web-build/
 
 # macOS
 .DS_Store
+
+
+help/
