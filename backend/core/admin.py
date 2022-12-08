@@ -12,7 +12,7 @@ from .models import Account,TransactionType,TransactionCharge,Transfer,Withdraw
 
 class AccountAdmin(admin.ModelAdmin):
 
-	list_display = ('user','is_agent','amount','convertedAmount','account_status','display_currency')
+	list_display = ('id','user','is_agent','amount','convertedAmount','account_status','display_currency')
 	list_filter=('balance','account_status')
 	readonly_fields = ('currency','user') 
 

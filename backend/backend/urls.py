@@ -44,9 +44,9 @@ urlpatterns = [
     path('',include('accounts.urls'),name="accounts"),
     path('api/',
         include([
-            path('auth/',include(('accounts.api.urls','accounts'),namespace='accounts')),
-            path('momo/',include(('core.api.urls','core'),namespace='momo')),
-            path('notifications/',include(('notifications.api.urls','notifications'),namespace='notifications')),
+            path('auth/',include(('accounts.api.urls','accounts'),namespace='accounts'),name="auth-api"),
+            path('momo/',include(('core.api.urls','core'),namespace='momo'),name="momo-api"),
+            path('notifications/',include(('notifications.api.urls','notifications'),namespace='notifications'),name="notification-api"),
 
             #docs urls
             path('docs/',include([
@@ -57,6 +57,6 @@ urlpatterns = [
                 re_path(r'^default/',include_docs_urls(title='TrixWallet API',description="TrixWallet Api documentation"),name='default-docs'),
             ]))
         ]
-    )),
+    ),name='api'),
     path('api-auth/', include('rest_framework.urls'),name="api-auth"),
 ]

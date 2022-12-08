@@ -104,6 +104,30 @@ DATABASES = {
     }
 }
 
+# MySql Database
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'OPTIONS': {
+#             'read_default_file': BASE_DIR/'backend/my.cnf',
+#         },
+#     }
+# }
+
+# DATABASES = {  
+#     'default': {  
+#         'ENGINE': 'django.db.backends.mysql',  
+#         'NAME': 'my_database',  
+#         'USER': 'root',  
+#         'PASSWORD': 'your_password',  
+#         'HOST': '127.0.0.1',  
+#         'PORT': '3306',  
+#         'OPTIONS': {  
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
+#         }  
+#     }  
+# }  
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -182,7 +206,6 @@ REST_FRAMEWORK = {
 }
 
 
-APP_NAME = 'TrixWallet'  # this is the name i gaved to my backend system app
 
 REDOC_SETTINGS = {
     'LAZY_RENDERING': False,
@@ -239,6 +262,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 
 # TrixWallet Cnfigurations
+
+APP_NAME = 'TrixWallet'  # this is the name i gaved to my backend system app
 
 # -------------- Withdraw minutes valid ---------------
 
