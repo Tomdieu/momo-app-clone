@@ -3,7 +3,7 @@ import React from 'react'
 
 const Register = () => {
   return (
-    <View>
+    <View style={styles.screen}>
       <Text>Register</Text>
     </View>
   )
@@ -11,4 +11,8 @@ const Register = () => {
 
 export default Register
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  screen:{
+    flex:1
+  }
+})
