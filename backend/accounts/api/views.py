@@ -54,8 +54,13 @@ class CreateProfileViewSet(CreateModelMixin, GenericViewSet):
 
 class ProfileViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):
     
-    serializer_class = ProfileSerializer
+    # serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method.upper() in ['GET']:
+            return ProfileListSerializer
+        return ProfileSerializer
 
     def get_queryset(self):
         return Profile.objects.filter(user=self.request.user)
