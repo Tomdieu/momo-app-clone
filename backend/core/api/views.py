@@ -220,9 +220,9 @@ class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        old_pin = serializer.validated_data('old_pin')
-        new_pin = serializer.validated_data('new_pin')
-        confirm_pin = serializer.validated_data('confirm_pin')
+        old_pin = serializer.validated_data.get('old_pin')
+        new_pin = serializer.validated_data.get('new_pin')
+        confirm_pin = serializer.validated_data.get('confirm_pin')
 
         if not request.user.account.check_pincode(old_pin):
             return Response({'detail': 'pin code incorrect!'}, status=status.HTTP_400_BAD_REQUEST)

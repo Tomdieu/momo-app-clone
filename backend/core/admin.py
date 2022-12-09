@@ -3,6 +3,8 @@ from core.api.utils import converCurrency
 from django.http.response import HttpResponse
 from django.core import serializers
 
+from django.conf import settings
+
 # Register your models here.
 
 from .models import Account,TransactionType,TransactionCharge,Transfer,Withdraw
@@ -14,12 +16,12 @@ class AccountAdmin(admin.ModelAdmin):
 
 	list_display = ('id','user','is_agent','amount','convertedAmount','account_status','display_currency')
 	list_filter=('balance','account_status')
-	readonly_fields = ('currency','user') 
+	readonly_fields = ('currency','user','pin_code',) 
 
 	search_fields = ('user__username','currency','account_status',)
 	list_per_page = 25
 
-	actions = ['to_agent','to_normal','make_inactive','make_active']
+	actions = ['to_agent','to_normal','make_inactive','make_active','reset_pin']
 
 	@admin.display(description="Account Balance",ordering='-created_at')
 	def amount(self,obj):
@@ -40,13 +42,17 @@ class AccountAdmin(admin.ModelAdmin):
 		queryset.update(is_agent=False)
 	
 
-	@admin.action
+	@admin.action(description='Make account inactive')
 	def make_inactive(self, request, queryset):
 		queryset.update(account_status='inactive')
 
-	@admin.action
+	@admin.action(description='Make account active')
 	def make_active(self, request, queryset):
 		queryset.update(account_status='active')
+
+	@admin.action(description='Reset Account pin code')
+	def reset_pin(self,request,queryset):
+		queryset.update(pin_code=settings.WALLET_DEFAULT_PIN_CODE)
 
 
 admin.site.register(Account,AccountAdmin)

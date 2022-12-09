@@ -11,8 +11,8 @@ RUN apk update && apk add gcc python3-dev musl-dev python3-virtualenv
 
 # ENV VIRTUAL_ENV=/opt/venv
 
-#RUN python -m virtualenv --python=/usr/bin/python3 $VIRTUAL_ENV
-#ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# RUN python -m virtualenv --python=/usr/bin/python3 $VIRTUAL_ENV
+# ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
@@ -24,6 +24,7 @@ RUN python -m pip install --upgrade pip
 
 # Install pip requirements
 COPY requirements.txt requirements.txt
+RUN pypthon install "setuptools<58"
 RUN python -m pip install -r requirements.txt   
 
 

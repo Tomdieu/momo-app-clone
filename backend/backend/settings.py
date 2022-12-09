@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 
+import environ
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -54,6 +59,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
 
     "django_celery_beat",
+    # "django_celery_results",
 
     "crispy_forms",
     "crispy_bootstrap5"
@@ -93,41 +99,34 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 ASGI_APPLICATION = 'backend.asgi.application'
 
 
-
 # Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# MySql Database
+# https: // docs.djangoproject.com/en/4.1/ref/settings/  # databases
 
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'OPTIONS': {
-#             'read_default_file': BASE_DIR/'backend/my.cnf',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#         "TEST": {
+#             "NAME": BASE_DIR /"db_test.sqlite3",
 #         },
 #     }
 # }
 
-# DATABASES = {  
-#     'default': {  
-#         'ENGINE': 'django.db.backends.mysql',  
-#         'NAME': 'my_database',  
-#         'USER': 'root',  
-#         'PASSWORD': 'your_password',  
-#         'HOST': '127.0.0.1',  
-#         'PORT': '3306',  
-#         'OPTIONS': {  
-#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
-#         }  
-#     }  
-# }  
+# MySql Database
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'trix_database',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -206,7 +205,6 @@ REST_FRAMEWORK = {
 }
 
 
-
 REDOC_SETTINGS = {
     'LAZY_RENDERING': False,
 }
@@ -236,7 +234,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts":["redis://localhost:6379/0"]
+            "hosts": ["redis://localhost:6379/0"]
             # "hosts": [("127.0.0.1", 6379)],
         },
     },
@@ -253,8 +251,6 @@ CHANNEL_LAYERS = {
 # }
 
 
-
-
 # Crispy configurations
 
 
@@ -268,3 +264,5 @@ APP_NAME = 'TrixWallet'  # this is the name i gaved to my backend system app
 # -------------- Withdraw minutes valid ---------------
 
 WITHDRAW_MONEY_MINUTES = 2
+
+WALLET_DEFAULT_PIN_CODE = '00000'

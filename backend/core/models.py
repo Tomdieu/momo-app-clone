@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 
 from django.utils.translation import gettext_lazy as _
 
+from django.conf import settings
+
 import uuid
 import binascii
 import os
@@ -35,7 +37,7 @@ class Account(models.Model):
         max_length=3, default='XAF', help_text='currency')
     display_currency = models.CharField(
         max_length=3, default='XAF', choices=CURRENCY)
-    pin_code = models.CharField(max_length=5, default='00000', validators=[validate_pin_code],
+    pin_code = models.CharField(max_length=5, default=settings.WALLET_DEFAULT_PIN_CODE, validators=[validate_pin_code],
                                 help_text='pin code use to authorize transaction in a user account')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

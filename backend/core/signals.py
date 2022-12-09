@@ -36,19 +36,37 @@ def createAccount(sender, instance,created, **kwargs):
             Token.objects.create(user=instance)
         p = Profile.objects.select_related('user').filter(user=instance)
         if not p.exists():
-            Profile.objects.create(user=instance, dob=datetime.date.today())
+            profile = Profile.objects.create(user=instance, dob=datetime.date.today())
         else:
             profile = p.first()
 
-            lang = profile.lang
-            msg = ''
+        lang = profile.lang
+        msg = ''
 
-            if lang == 'FR':
-                msg = f'Bienvenu sur {settings.APP_NAME}\nVotre code pin est [00000] et solde de votre compte est {profile.user.account.currency} {profile.user.account.balance}'
-            elif lang == 'EN':
-                msg = f'Welcome To {settings.APP_NAME} \nYour pin code is [00000] and account balance is {profile.user.account.currency} {profile.user.account.balance}'
+        if lang == 'FR':
+            msg = f'Bienvenu sur {settings.APP_NAME}\nVotre code pin est [00000] et solde de votre compte est {profile.user.account.currency} {profile.user.account.balance}'
+        elif lang == 'EN':
+            msg = f'Welcome To {settings.APP_NAME} \nYour pin code is [00000] and account balance is {profile.user.account.currency} {profile.user.account.balance}'
 
-            Notification.objects.create(user=profile.user, message=msg)
+        Notification.objects.create(user=profile.user, message=msg)
+
+
+@receiver(pre_save,sender=Profile)
+def passThroughProfile(sender,instance,*args,**kwargs):
+
+    current = instance
+    previous = Profile.objects.get(user=instance.user)
+
+    if current.lang != previous.lang:
+
+        lang = instance.user.profile.lang
+
+        if lang == 'FR':
+            msg = f'La langue de votre compte a ete changer de {previous.lang} a {instance.lang}'
+        else:
+            msg = f'The language of your account have been changed from {previous.lang} to {instance.lang}'
+
+        Notification.objects.create(user=instance.user, message=msg)
 
 
 # This pre_save signal is use to keep track of the currency meaning that if the currency of a user
@@ -70,19 +88,26 @@ def checkAccount(sender, instance, **kwargs):
 
         # if the previous currency is not equal to the current currency
 
-        if previous.currency != current.currency:
+        if previous.display_currency != current.display_currency:
             # convert the account balance to the new currency
-            new_balance = converCurrency(
-                previous.currency, current.currency, current.balance)
-            print('New balance is : ', new_balance)
-            current.balance = new_balance
+            
 
             lang = instance.user.profile.lang
 
             if lang == 'FR':
-                msg = f'La monnaie de votre compte a ete changer de {previous.currency} a {instance.currency} Solde : {instance.currency} {instance.balance}'
+                msg = f'La monnaie de votre compte a ete changer de {previous.display_currency} a {instance.display_currency}'
             else:
-                msg = f'The currency of your account have been changed from {previous.currency} to {instance.currency} New balance : {instance.currency} {instance.balance}'
+                msg = f'The currency of your account have been changed from {previous.display_currency} to {instance.display_currency}'
+
+            Notification.objects.create(user=instance.user, message=msg)
+
+        if previous.pin_code != current.pin_code:
+            lang = instance.user.profile.lang
+            msg = ''
+            if lang == 'FR':
+                msg = f'Votre code pin a ete changer de {previous.pin_code} a {instance.pin_code}'
+            else:
+                msg = f'Your account pin code has been change successfully from  {previous.pin_code} to {instance.pin_code}'
 
             Notification.objects.create(user=instance.user, message=msg)
 
