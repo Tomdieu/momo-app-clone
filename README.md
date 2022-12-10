@@ -8,7 +8,7 @@
 ## Technology used
 - **Django**
 - **Django Rest Framework(DRF)** for the `api`
-- **React native** (for the android frontend)
+- **React Native** (for the android frontend)
 - **Rest Framework Swagger** to generate the api documentation
 
 

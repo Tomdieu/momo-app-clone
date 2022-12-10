@@ -13,9 +13,10 @@ User = get_user_model()
 
 class UserForm(ModelForm):
     
-    confirm_password = forms.CharField(max_length=120)
-    last_name = forms.CharField(max_length=120,help_text="last name optional",required=False)
-    first_name = forms.CharField(max_length=120)
+    confirm_password = forms.CharField(max_length=120,widget=forms.PasswordInput)
+    password = forms.CharField(max_length=120,widget=forms.PasswordInput)
+    last_name = forms.CharField(max_length=120,help_text=_("Last name optional"),required=False)
+    first_name = forms.CharField(max_length=120,help_text=_('First name require'))
     
     class Meta:
 

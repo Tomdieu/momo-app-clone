@@ -9,7 +9,7 @@ import json
 class AccountTestCase(APITestCase):
 
     def setUp(self) -> None:
-        self.user = self.create_account()
+        self.user = json.loads(self.create_account().content)
 
     
 
@@ -19,7 +19,7 @@ class AccountTestCase(APITestCase):
 
         data = {
             "user": {
-                "username": "ivantom",
+                "username": "ivantom1",
                 "first_name": "navi",
                 "last_name": "gg",
                 "email": "ivantomdio@gmail.com",
@@ -57,10 +57,12 @@ class AccountTestCase(APITestCase):
 
 
     def test_1(self):
-        acc = self.create_account()
-        user = json.loads(acc.content)
+        print(self.user)
+        # acc = self.create_account()
+        # user = json.loads(acc.content)
+        # print(user,acc.status_code)
         # authentication_response = json.loads(self.authenticate().content)
 
-    def test_2(self):
-        self.fetch_transaction_charges()
+    # def test_2(self):
+    #     self.fetch_transaction_charges()
 

@@ -10,6 +10,7 @@ from .models import Account,Transfer,Withdraw,TransactionType
 from notifications.models import Notification
 from accounts.models import Profile
 
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
@@ -30,16 +31,16 @@ def createAccount(sender, instance,created, **kwargs):
 
     if created:
         # it means when the user is created
+    
         if not Account.objects.select_related('user').filter(user=instance).exists():
             Account.objects.create(user=instance)
         if not Token.objects.filter(user=instance).exists():
             Token.objects.create(user=instance)
-        p = Profile.objects.select_related('user').filter(user=instance)
-        if not p.exists():
-            profile = Profile.objects.create(user=instance, dob=datetime.date.today())
+        if not Profile.objects.filter(user=instance):
+            profile = Profile.objects.create(user=instance, dob=timezone.now().date())
         else:
-            profile = p.first()
-
+            profile = Profile.objects.select_related('profile').get(user=instance)
+        
         lang = profile.lang
         msg = ''
 
@@ -53,20 +54,21 @@ def createAccount(sender, instance,created, **kwargs):
 
 @receiver(pre_save,sender=Profile)
 def passThroughProfile(sender,instance,*args,**kwargs):
+    if instance.user is not None:
+        current = instance
+        previous = Profile.objects.filter(user=instance.user)
+        if previous.exists():
+            previous = previous.first()
+            if current.lang != previous.lang:
 
-    current = instance
-    previous = Profile.objects.get(user=instance.user)
+                lang = instance.user.profile.lang
 
-    if current.lang != previous.lang:
+                if lang == 'FR':
+                    msg = f'La langue de votre compte a ete changer de {previous.lang} a {instance.lang}'
+                else:
+                    msg = f'The language of your account have been changed from {previous.lang} to {instance.lang}'
 
-        lang = instance.user.profile.lang
-
-        if lang == 'FR':
-            msg = f'La langue de votre compte a ete changer de {previous.lang} a {instance.lang}'
-        else:
-            msg = f'The language of your account have been changed from {previous.lang} to {instance.lang}'
-
-        Notification.objects.create(user=instance.user, message=msg)
+                Notification.objects.create(user=instance.user, message=msg)
 
 
 # This pre_save signal is use to keep track of the currency meaning that if the currency of a user

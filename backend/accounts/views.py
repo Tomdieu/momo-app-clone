@@ -74,8 +74,14 @@ class CreateProfile(View):
         profile_form = ProfileForm(data=request.POST)
 
         if user_form.is_valid():
-            print(user_form.visible_fields['username'])
-            return redirect('index')
+            if profile_form.is_valid():
+                user = user_form.save()
+                profile = profile_form.save(commit=False)
+                profile.user = user
+                profile.save()
+                login(request,user)
+
+                return redirect('index')
 
         context = {
             'user_form':user_form,

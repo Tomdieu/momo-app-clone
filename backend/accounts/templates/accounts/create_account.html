@@ -20,13 +20,16 @@
             align-items: center;
             /* width: 100%; */
         }
+        .expand-up{
+            margin:5px;
+        }
     </style>
 </head>
 <body>
-    <div class="container full-height d-flex justify-center align-content-center">
-        <div class="container-fluid m-2">
-            <h4>Create Account</h4>
-            <form method="post" class="d-lg-flex gap-lg-2 flex-row row-cols-lg-2 form-control">
+    <div class="container-lg full-height d-flex justify-center align-content-center">
+        <div class="container-fluid expand-up">
+            <h1 class="text-center text-color">Signup</h1>
+            <form method="post" class="d-lg-flex gap-lg-2 flex-row row-cols-lg-2">
                 {% csrf_token %}
                 <div>
                     {{user_form|crispy}}
@@ -39,7 +42,7 @@
                     </div>
                 </div>
             </form>
-            <div class="text-center m-3">2021 - 2022</div>
+            <div class="text-center m-3">&copy; Trixwallet 2021 - 2022</div>
         </div>
     </div>
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>

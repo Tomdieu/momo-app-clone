@@ -28,15 +28,42 @@
             align-items: center;
             align-self: center;
             flex-direction: column;
+            /* color:white; */
+        }
+
+        .grey{
+            /* background-color: aliceblue; */
+            background-color: rgb(37, 94, 145);
+            
+        }
+
+        .blur{
+            background-color: rgba(255, 255, 255, 0.63);
+            /* filter: blur(1px);       */
+            opacity:.7;
+            animation: bluranim 1s ease;
+        }
+
+        @keyframes bluranim {
+            from{
+                filter: blur(3px);
+                transform:scale(1.4,1.4);
+                z-index:99;
+            }
+            to{
+                z-index:0;
+                filter: blur(0px);
+                tranform:scale(1,1);
+            }
         }
 
     </style>
 </head>
-<body>
+<body class="grey">
     <div class="container full-size center">
-        <div class="center">
-            <h4>Login</h4>
-            <form method="post" class="form-control p-4">
+        <div class="center p-4 rounded-3 blur">
+            <h3>Login | TrixWallet</h3>
+            <form method="post" class="container-fluid">
                 {% csrf_token %}
                 <div class="m-3 border-4">
                 {{form|crispy}}
