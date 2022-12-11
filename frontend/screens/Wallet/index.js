@@ -1,6 +1,5 @@
 import { View, Text } from "react-native";
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -12,47 +11,59 @@ import Info from "./Info";
 
 const Tab = createBottomTabNavigator();
 
-const index = () => {
+const WalletStack = ({ navigation, route }) => {
   return (
-    <NavigationContainer>
-      <Tab.Navigator
+    <Tab.Navigator>
+      <Tab.Screen
         name="Info"
         screen={Info}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
+            <MaterialCommunityIcons name="account" color={color} size={size} />
           ),
         }}
-      ></Tab.Navigator>
-      <Tab.Navigator
-        name="Info"
+      />
+      <Tab.Screen
+        name="Transfer"
         screen={Transfer}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
+            <MaterialCommunityIcons
+              name="bank-transfer-in"
+              color={color}
+              size={size}
+            />
           ),
         }}
-      ></Tab.Navigator>
-      <Tab.Navigator
-        name="Info"
+      />
+      <Tab.Screen
+        name="Withdraw"
         screen={Withdraw}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
+            <MaterialCommunityIcons
+              name="bank-transfer-out"
+              color={color}
+              size={size}
+            />
           ),
         }}
-      ></Tab.Navigator>
-      <Tab.Navigator
-        name="Info"
+      />
+      <Tab.Screen
+        name="Deposit"
         screen={Deposit}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
+            <MaterialCommunityIcons
+              name="bank-transfer"
+              color={color}
+              size={size}
+            />
           ),
         }}
-      ></Tab.Navigator>
-    </NavigationContainer>
+      />
+    </Tab.Navigator>
   );
 };
 
-export default index;
+export default WalletStack;

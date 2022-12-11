@@ -1,4 +1,4 @@
 import { createContext } from "react";
 
 
-AccountContext = createContext();
+WalletContext = createContext();

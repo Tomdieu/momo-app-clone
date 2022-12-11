@@ -1,63 +1,20 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import AuthProvider from "./provider/AuthProvider";
+import WalletProvider from "./provider/WalletProvider";
 
+import Navigation from "./Navigation";
 
-// screens
-import Home from "./screens/Home";
-import Login from "./screens/Login";
-import Profile from "./screens/Profile";
-
-
-const Tab = createBottomTabNavigator();
-
-export default function App() {
+const App = () => {
   return (
-    <>
-      <NavigationContainer>
-        <Tab.Navigator style={{padding:10}}>
-          <Tab.Screen
-            name="Home"
-            component={Home}
-            options={{
-              title: "My Account",
-              tabBarLabel: "Home",
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="home" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Login"
-            component={Login}
-            options={{
-              headerShown:false,
-              title: "Login",
-              tabBarLabel: "Login",
-              tabBarButton: () => null,
-              tabBarVisible:false,
-              tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="account" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name="Settings"
-            component={Profile}
-            options={{
-              title: "Settings",
-              tabBarLabel: "Settings",
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="settings" color={color} size={size} />
-              ),
-            }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </>
-  );
+    <AuthProvider>
+      <WalletProvider>
+        <Navigation />
+      </WalletProvider>
+    </AuthProvider>
+  )
 }
+
+export default App;
+
+
