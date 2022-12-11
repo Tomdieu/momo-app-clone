@@ -32,3 +32,4 @@ build_files.sh
 vercel.json
 env
 .vscode
+.vercel
