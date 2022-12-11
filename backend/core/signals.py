@@ -16,8 +16,6 @@ from django.conf import settings
 
 from core import state
 
-import datetime
-
 from core.api.utils import converCurrency
 from notifications import status as notification_status
 
@@ -70,11 +68,6 @@ def passThroughProfile(sender,instance,*args,**kwargs):
 
                 Notification.objects.create(user=instance.user, message=msg)
 
-
-# This pre_save signal is use to keep track of the currency meaning that if the currency of a user
-#  changes it must be converted from the old one to the new one
-
-
 @receiver(pre_save, sender=Account)
 def checkAccount(sender, instance, **kwargs):
 
@@ -113,16 +106,6 @@ def checkAccount(sender, instance, **kwargs):
 
             Notification.objects.create(user=instance.user, message=msg)
 
-        # if instance.balance != previous.balance and instance.currency == previous.currency:
-        #     lang = instance.user.profile.lang
-        #     msg = ''
-        #     if lang == 'FR':
-        #         msg = f'Votre complte a ete crediter de {instance.currency} {instance.balance}'
-        #     else:
-        #         msg = f'Your account has been fill with {instance.currency} {instance.balance}'
-
-        #     Notification.objects.create(user=instance.user, message=msg)
-
 
 @receiver(pre_save, sender=Transfer)
 def checkIfUserCanTransferMoney(sender, instance, **kwargs):
@@ -149,8 +132,6 @@ def checkIfUserCanTransferMoney(sender, instance, **kwargs):
                 user=sender_account.user, message='Transfer could not be achieve successfully!', type="TRANSFER_REJECTED")
 
             instance.status = state.WITHDRAW_REJECTED
-
-            # raise ValidationError(_("You can not send money to you self"))
 
         else:
 
@@ -186,10 +167,7 @@ def checkIfUserCanTransferMoney(sender, instance, **kwargs):
                 instance.status = state.TRANSFER_REJECTED
                 Notification.objects.create(user=sender_account.user, message="Your account balance is insufficent to perform the transaction. Please fill you account and retry later!\nCurrent account balance {}".format(
                     sender_account.get_balance()), type=notification_status.NOTIFCATION_WITHDRAW_REJECTED)
-                # raise ValidationError(_('The %(value)s balance is insufficent to perform the transaction'), params={
-                #                       'value': sender_account})
-
-
+                
 @receiver(post_save, sender=Transfer)
 def sendNotificationsToAccounst(sender, instance, created, **kwargs):
 
@@ -260,7 +238,6 @@ def accept_or_deny(sender,instance,created,**kwargs):
                 agent.balance = float(agent.balance) + amount_to_withdraw
                 agent.save()
 
-
                 instance.charge = charge
 
                 instance.save()
@@ -289,8 +266,6 @@ def checkIfUserCanWithdrawMoney(sender, instance, **kwargs):
         amount = instance.amount
 
         if withdraw_from.id == agent.id:
-            # raise ValidationError(
-            #     _("You can not withdraw money from your self"))
             msg = ''
             if agent.user.profile.lang == 'FR':
                 msg = 'Desoler ! vous ne pouvez pas vous retirez de l\'argent!'
@@ -312,6 +287,3 @@ def checkIfUserCanWithdrawMoney(sender, instance, **kwargs):
 
                 Notification.objects.create(user=withdraw_from.user, message="Your account balance is insufficent to perform the transaction. Please fill you account and retry later!\nCurrent account balance {}".format(
                     withdraw_from.get_balance()), type=notification_status.NOTIFCATION_WITHDRAW_REJECTED)
-
-                # raise ValidationError(_('The %(value)s balance is insufficent to perform the transaction'), params={
-                #                     'value': withdraw_from})
