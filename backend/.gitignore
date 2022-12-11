@@ -159,7 +159,8 @@ cython_debug/
 /env/
 env/
 makefile
-db.sqlite3
+
+^db.sqlite3$
 
 other/
 
