@@ -23,7 +23,8 @@ def cancel_withdrawal_with_pending_state_greater_than_2_minute():
             Q(created_at__lt=now-td(minutes=m))
         ).order_by('-created_at')
 
-    print(f'\n[{timezone.now()}] pass througth {len(queryset)} withdrawals\n')
+    if(len(queryset) > 0):
+        print(f'\n[{timezone.now()}] pass througth {len(queryset)} withdrawals\n')
 
 
     queryset.update(state='CANCEL')
