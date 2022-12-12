@@ -1,0 +1,79 @@
+{% load crispy_forms_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | TrixWallet</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+    <style>
+        .full-size{
+            width: 100vw;
+            height: 100vh;
+            
+        }
+        body{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* width: 100%; */
+        }
+
+        .center{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-self: center;
+            flex-direction: column;
+            /* color:white; */
+        }
+
+        .grey{
+            /* background-color: aliceblue; */
+            background-color: rgb(37, 94, 145);
+            
+        }
+
+        .blur{
+            background-color: rgba(255, 255, 255, 0.63);
+            /* filter: blur(1px);       */
+            opacity:.7;
+            animation: bluranim 1s ease;
+        }
+
+        @keyframes bluranim {
+            from{
+                filter: blur(3px);
+                transform:scale(1.4,1.4);
+                z-index:99;
+            }
+            to{
+                z-index:0;
+                filter: blur(0px);
+                tranform:scale(1,1);
+            }
+        }
+
+    </style>
+</head>
+<body class="grey">
+    <div class="container full-size center">
+        <div class="center p-4 rounded-3 blur">
+            <h3>Login | TrixWallet</h3>
+            <form method="post" class="container-fluid">
+                {% csrf_token %}
+                <div class="m-3 border-4">
+                {{form|crispy}}
+                    <a href="#" class="d-block link text-decoration-none text-center">Don't have an account ?</a>
+                    <button class="btn btn-primary btn-lg form-control">Login</button>
+                </div>
+            </form>
+            <div class="text-center m-3">&copy; Trixwallet 2021 - 2022</div>
+        </div>
+    </div>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

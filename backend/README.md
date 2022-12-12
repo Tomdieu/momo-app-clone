@@ -1,4 +1,4 @@
-# Momo Backend
+# TrixWallet Backend
 
 ## How to run
 
@@ -11,7 +11,7 @@
         ```
         python -m venv env
         ```
-    - <p>Or</p>
+        Or
     - 
         ```
         virtualenv env
@@ -41,4 +41,26 @@
 - Run the command
     ```
     python manage.py test
+    ```
+
+
+## Commands
+
+ - Make sure you have install `redis`
+ - after installing all the dependencies
+ - Run Django Server with 
+    ```
+    python manage.py runserver
+    ```
+ - Run Redis
+    ```
+    redis-server
+    ```
+ - Run Celery
+    ```
+    celery -A backend worker -l INFO
+    ```
+ - Run Celery beat
+    ```
+    celery -A backend beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     ```

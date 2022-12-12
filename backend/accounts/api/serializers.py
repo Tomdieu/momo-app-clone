@@ -1,11 +1,12 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from rest_framework.authtoken.views import Token
+from django.utils import timezone
 
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 from accounts.models import Profile
 from core.models import Account
+
 
 User = get_user_model()
 
@@ -38,23 +39,21 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password',
-                  'is_active', 'is_staff', 'is_superuser', 'last_login', 'date_joined']
-        extra_kwargs = {'password': {
-            'write_only': True,
-            'required': True
-        },
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password']
+        extra_kwargs = {
+            'password': {
+                'write_only': True,
+                'required': True
+            },
             'fist_name': {'required': True},
-            'last_name': {'required': True},
+            'last_name': {'required': False},
             'email': {'required': True}
-        }
+            }
 
-    def create(self, validate_data):
-        user = User.objects.create_user(**validate_data)
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
         user.is_active = True
         user.save()
-        Token.objects.create(user=user)
-        Account.objects.create(user=user)
         return user
 
     def update_user(self, instance, validated_data):
@@ -69,8 +68,19 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Profile
-        fields = ['user', 'phone_number', 'dob',
-                  'city', 'created_at', 'updated_at']
+        fields = '__all__'
+
+        extra_kwargs = {
+            'phone_number':{
+                'required':True
+            },
+            'dob':{
+                'required':True
+            },
+            'city':{
+                'required':True
+            }
+        }
 
 
 class ProfileListSerializer(WritableNestedModelSerializer):
@@ -80,7 +90,9 @@ class ProfileListSerializer(WritableNestedModelSerializer):
 
         model = Profile
         fields = ['user', 'phone_number', 'dob',
-                  'city', 'created_at', 'updated_at']
+                  'city','lang', 'created_at', 'updated_at']
+        
+        
 
     def create(self, validated_data):
         user = validated_data.pop('user')
@@ -88,17 +100,33 @@ class ProfileListSerializer(WritableNestedModelSerializer):
         serializer.is_valid(raise_exception=True)
         user_instance = serializer.save()
 
-        validated_data['user'] = user_instance
+        profile = Profile(**validated_data)
+        profile.user = user_instance
+        profile.save()
 
-        return Profile.objects.create(**validated_data)
+        return profile
+        
+         
 
     def update(self, instance, validated_data):
-
+        print('Context : ',self.context)
         nested_serializer = self.fields['user']
         nested_instance = instance.user
 
         nested_data = validated_data.pop('user')
 
-        nested_serializer.update_user(nested_instance, nested_data)
+        nested_serializer.update_user(nested_instance, nested_data) 
 
         return super(ProfileSerializer, self).update(instance, validated_data)
+
+
+class UserLanguageSerializer(serializers.ModelSerializer):
+     class Meta:
+        model = Profile
+        fields = ['lang']
+        extra_kwargs = {
+            'lang':{
+                'required':True
+            }
+        }
+

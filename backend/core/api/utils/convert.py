@@ -11,7 +11,8 @@ class Convert:
 
     def convert(self,from_currency,to_currency,amount):
         
-        initial_amount = amount
+        initial_amount = float(amount)
+        amount = float(amount)
 
         if from_currency != 'USD':
             amount = amount / self.currencies[from_currency]
@@ -42,7 +43,6 @@ class OffLineCurrencyConverter(Convert):
 
 def converCurrency(from_currency:str,to_currency:str,amount:float|int) -> float:
     """Convert a currency to another
-
     Arguments:
         from_currency (str): currency you want to convert from
         to_currency (str): currency you want to convert from
@@ -56,7 +56,7 @@ def converCurrency(from_currency:str,to_currency:str,amount:float|int) -> float:
         converter = RealTimeCurrencyConverter(url)
         return converter.convert(from_currency,to_currency,amount)
     except:
-        converter = OffLineCurrencyConverter(url)
+        converter = OffLineCurrencyConverter()
         return converter.convert(from_currency,to_currency,amount)
 
 if __name__ == '__main__':

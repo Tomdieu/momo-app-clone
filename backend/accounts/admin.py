@@ -12,14 +12,15 @@ User = get_user_model()
 
 class ProfileAdmin(admin.ModelAdmin):
 
-	list_display = ('user','phone_number','age','city','created_at','updated_at')
+	list_display = ('user','phone_number','age','city','lang','created_at','updated_at')
 	search_fields=('user__username','city','phone_number')
-	list_filter = ('user','city','dob')
+	list_filter = ('user','city','dob','lang')
 	list_per_page = 25
 
 
 	@admin.display
 	def age(self,obj):
-		return datetime.date.today().year - int(obj.dob.year) 
+		a = datetime.date.today().year - int(obj.dob.year)
+		return f'{a} yrs'
 
 admin.site.register(Profile,ProfileAdmin)

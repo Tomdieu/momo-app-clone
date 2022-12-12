@@ -1,55 +1,65 @@
 
-from rest_framework.views import APIView
+import datetime
+
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import (AccountSerializer,DepositSerializer,TransactionChargeSerializer,TransactionTypeSerializer,TransferSerializer)
-from core.models import Account,Deposit,TransactionCharge,TransactionType,Transfer
+from .serializers import (AccountSerializer, AccountListSerializer, TransactionChargeSerializer,
+                          TransactionTypeSerializer, TransactionListChargeSerializer,
+                          TransferSerializer, TransferCreateSerializer, TransferListSerializer, ChangePinSerializer,
+                          WithdrawSerializer, WithdrawCreateSerializer, WithdrawListSerializer, ConvertCurrencySerializer)
+from core.models import Account, TransactionCharge, TransactionType, Transfer, Withdraw
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.mixins import (CreateModelMixin,UpdateModelMixin,DestroyModelMixin,ListModelMixin,RetrieveModelMixin)
+from rest_framework.mixins import (
+    CreateModelMixin, UpdateModelMixin, DestroyModelMixin, ListModelMixin, RetrieveModelMixin)
 from rest_framework.viewsets import (GenericViewSet)
+from rest_framework.generics import (CreateAPIView)
+
 from django.db.models import Q
-from django.db import transaction
 
-
+from django.conf import settings
 from core.api.utils import converCurrency
 
-class AccountViewSet(RetrieveModelMixin,GenericViewSet,ListModelMixin,UpdateModelMixin):
 
-    serializer_class = AccountSerializer
+class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateModelMixin):
+
+    def get_serializer_class(self):
+
+        if self.request.method.upper() in ['GET']:
+
+            return AccountListSerializer
+        return AccountSerializer
+
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Account.objects.filter(user=self.request.user)
-    
+
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.user == request.user:
             return super().partial_update(request, *args, **kwargs)
 
-class DespositViewSet(RetrieveModelMixin,CreateModelMixin,ListModelMixin,GenericViewSet):
 
-    
-    serializer_class = DepositSerializer
-    permission_classes = [IsAuthenticated]
+class TransactionChargeViewSet(RetrieveModelMixin, CreateModelMixin, ListModelMixin, GenericViewSet, UpdateModelMixin, DestroyModelMixin):
 
     def get_queryset(self):
-        return Deposit.objects.filter(Q(deposit_from__user=self.request.user) | Q(deposit_to__user=self.request.user))
+        return TransactionCharge.objects.select_related('type').all()
 
-class TransactionChargeViewSet(RetrieveModelMixin,CreateModelMixin,ListModelMixin,GenericViewSet,UpdateModelMixin,DestroyModelMixin):
+    def get_serializer_class(self):
+        if self.request.method.upper() in ['GET']:
+            return TransactionListChargeSerializer
+        return TransactionChargeSerializer
 
-    def get_queryset(self):
-        return TransactionCharge.objects.all()
-
-    serializer_class = TransactionChargeSerializer
     permission_classes = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
         if request.user.is_superuser:
             return super().update(request, *args, **kwargs)
         else:
-            return Response({'detail':'Not allowed'},status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail': 'You are not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
 
-class TransactionTypeViewSet(ListModelMixin,CreateModelMixin,GenericViewSet):
+
+class TransactionTypeViewSet(ListModelMixin, CreateModelMixin, GenericViewSet):
 
     def get_queryset(self):
         return TransactionType.objects.all()
@@ -61,149 +71,197 @@ class TransactionTypeViewSet(ListModelMixin,CreateModelMixin,GenericViewSet):
         if request.user.is_superuser:
             return super().create(request, *args, **kwargs)
         else:
-            return Response({'detail':'Not allowed'},status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'detail': 'You are not allowed'}, status=status.HTTP_401_UNAUTHORIZED)
 
-class TransferViewSet(ListModelMixin,CreateModelMixin,GenericViewSet):
 
-    serializer_class = TransferSerializer
+class TransferMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
+
     permission_classes = [IsAuthenticated]
 
+    def get_serializer_class(self):
+        if self.request.method.upper() in ['GET']:
+
+            return TransferListSerializer
+
+        elif self.request.method.upper() in ['POST']:
+
+            return TransferCreateSerializer
+
+        else:
+            return TransferSerializer
+
     def get_queryset(self):
-        return Transfer.objects.filter(Q(sender__user=self.request.user)|Q(reciever__user=self.request.user)).order_by('-created_at')
+        return Transfer.objects.filter(Q(sender__user=self.request.user) | Q(reciever__user=self.request.user)).order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
-        
-        data = {}
 
-        if(request.data.get('amount')) is None:
-            return Response({'detail':'Amount needed'})
-        else:
-            data['amount'] = request.data.get('amount')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        if request.data.get('sender') is None:
-            return Response({'detail':'sender id is require!'},status=status.HTTP_400_BAD_REQUEST)
-        else:
-            data['sender'] = Account.objects.select_for_update().get(user=request.user)
-        
-        if request.data.get('reciever') is None:
-            return Response({'detail':'reciever id is require!'},status=status.HTTP_400_BAD_REQUEST)
-        else:
-            # data['reciever'] = get_object_or_404(Account,id=request.data.get('reciever'))
-            data['reciever'] = Account.objects.select_for_update().get(user_id=request.data.get('reciever'))
-        
-        data['charge'] = TransactionCharge.objects.filter(type_name__iequals='transfer')
+        # this line verify if the user accoun id matches the id to the account send in the request
+        print(self.request.user.account.id, " ",
+              serializer.validated_data['sender'].id)
+        if self.request.user.account.id != serializer.validated_data['sender'].id:
+            return Response({'detail': "You are not authorized to make this transfer your id does not correspond"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        if data['sender'] == data['reciever']:
-            return Response({'detail':'You can not send money to your self!'},status=status.HTTP_400)
+        # This line checks if the user account pin code matches the pin code send in the request
+        if not self.request.user.account.check_pincode(serializer.validated_data['pin_code']):
+            return Response({'detail': 'Incorrect pin code'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        if data['amount'] >= data['sender'].balance:
-            from_currency = data['sender'].currency
-            to_currency = data['reciever'].currency
+        # this line simply checks if the sender id matches the reciever id
+        if request.data['sender'] == request.data['reciever']:
+            return Response({'detail': 'You can not send money to your self!'}, status=status.HTTP_400_BAD_REQUEST)
 
-            amount_to_increase = converCurrency(from_currency,to_currency,data['amount'])
+        sender = Account.objects.select_for_update().get(
+            user_id=request.data.get('sender'))
 
-            with transaction.atomic():
-                data['sender'].amount -= float(data['amount'])
-                data['sender'].save()
-                
-                data['sender'].amount -= float(amount_to_increase)
-                data['sender'].save()
+        # this line checks if the amount to transfer is >= to the account balance of the user account sending the money
 
-                serializer = self.get_serializer(data=data)
-                serializer.is_valid(raise_exception=True)
+        if float(request.data['amount']) <= float(sender.balance):
+            # this line checks if the sender account id equals to the user transfering the money
+            if request.user.account.id == sender.id:
+                # request.data.pop('pin_code')
                 instance = serializer.save()
-                return Response(TransferSerializer(instance).data,status=status.HTTP_201_CREATED)
-
+                return Response(TransferListSerializer(instance).data, status=status.HTTP_201_CREATED)
+            else:
+                return Response({'detail': 'You are not authorized to make this transfer'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return Response({'detail':'Your account balance is insufficent!'},status=status.HTTP_400_BAD_REQUEST)
-
-# class AccountList(APIView):
-#     permission_classes = (IsAuthenticated,)
-#     serializer_class = AccountSerializer
+            return Response({'detail': 'Your account balance is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-#     def get(self,request,*args,**kwargs):
+class WithdrawMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
 
-#         accounts = Account.objects.all()
+    permision_classes = [IsAuthenticated]
 
-#         serializer = AccountSerializer(accounts,many=True)
+    def get_serializer_class(self):
 
-#         return Response({'accounts':serializer.data},status=status.HTTP_200_OK)
+        if self.request.method.upper() in ['GET']:
+            return WithdrawListSerializer
+        elif self.request.method.upper() in ['POST']:
+            return WithdrawCreateSerializer
+        else:
+            return WithdrawSerializer
 
- 
-# class AccountDetail(APIView):
+    def get_queryset(self):
+        # this line gets all the withdrawals of an account of user
+        return Withdraw.objects.filter(Q(withdraw_from__user=self.request.user) | Q(agent__user=self.request.user)).order_by('-created_at')
 
-#     permission_classes = (IsAuthenticated,)
-#     serializer_class = AccountSerializer
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-#     def get_object(self,id):
+        # this line verify if the user accoun id matches the id to the account send in the request
+        if not request.user.account.check_pincode(serializer.validated_data['pin_code']):
+            return Response({'detail': 'Incorrect pin code'}, status=status.HTTP_401_UNAUTHORIZED)
 
-#         return get_object_or_404(Account,pk=id)
+            # return Response({'detail':"Your account balance is insufficent to perform the transaction!"},status=status.HTTP_401_UNAUTHORIZED)
 
-#     def get(self,request,id,*args,**kwargs):
-#         account = self.get_object(id)
-#         serializer = AccountSerializer(account)
-#         return Response({'account':serializer.data},status=status.HTTP_200_OK)
+        withdraw_from = Account.objects.select_for_update().get(
+            user_id=request.data.get('withdraw_from'))
 
-#     def put(self,request,id,*args,**kwargs):
+        agent = serializer.validated_data['agent']
+        serializer.validated_data.pop('pin_code')
+        if not agent.is_agent:
+            return Response({'detail': 'Only agent are allow to make withdrawal'}, status=status.HTTP_401_UNAUTHORIZED)
 
-#         account = self.get_object(id)
+        if request.data['withdraw_from'] == request.data['agent']:
+            return Response({'detail': 'You can not withdraw money to you self'}, status=status.HTTP_400_BAD_REQUEST)
 
-#         serializer = AccountSerializer(account,data=request.data)
+        if float(request.data['amount']) <= float(withdraw_from.balance):
+            instance = serializer.save()
+            return Response(WithdrawListSerializer(instance).data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'detail': f'The account balance of {withdraw_from.user} is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
 
-#         if serializer.is_valid(raise_exception=True):
 
-#             serializer.save()
+class ConfirmWithdraw(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
 
-#             return Response({'account':serializer.data},status=status.HTTP_201_CREATED)
+    """
+        This api view helps to updated a withdrawal information created withing 2 minutes
+        you can either approve or cancel the withdrawal
+        Note : you can only approve or cancel withdrawal created after 2 minutes
 
-class ChangePinCode(APIView):
+    """
+
     permission_classes = (IsAuthenticated,)
 
-    def post(self,request,*args,**kwargs):
-        account = Account.objects.get(user=request.user)
-        serializer = AccountSerializer(account,data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response({'account':serializer.data},status=status.HTTP_200_OK)
+    def get_serializer_class(self):
+
+        return WithdrawSerializer
+
+    def get_queryset(self):
+        n = settings.WITHDRAW_MONEY_MINUTES  # n represents the amount of minutes for a withdrawal to be accepted or cancel after that it will be rejected
+        dt = datetime.datetime  # dt respresents the datetime.datetime function
+        td = datetime.timedelta  # td represents the datetime.timedelta function
+        now = dt.now()
+
+        # this query fetches all the withdrawal created within 2 minutes
+        return Withdraw.objects.filter(
+            Q(withdraw_from__user=self.request.user) &
+            Q(state='PENDING') &
+            Q(created_at__lte=now) &
+            Q(created_at__gte=now-td(minutes=n))
+        ).order_by('-created_at')
+
+
+class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
+    """
+        \n
+        This api view helps to change a pin code of a user by 
+        sending the old one with the new one
+        if the old one corresponds to the actual account pin code
+        and the new account pin is valid we update the user account pin code
+    """
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ChangePinSerializer
+
+    def create(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        old_pin = serializer.validated_data.get('old_pin')
+        new_pin = serializer.validated_data.get('new_pin')
+        confirm_pin = serializer.validated_data.get('confirm_pin')
+
+        if not request.user.account.check_pincode(old_pin):
+            return Response({'detail': 'pin code incorrect!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(new_pin) < 5:
+            return Response({'detail': 'new pin code must be atleast 5 digits'}, status=status.HTTP_400_BAD_REQUEST)
+        if new_pin != confirm_pin:
+            return Response({'detail': 'pin code don\'t match'}, status=status.HTTP_400_BAD_REQUEST)
+
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            account = request.user.account
+            account.set_pincode(new_pin)
 
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def sendMoney(request):        
+            return Response({'detail': 'pin code updated successfully'})
 
-#     if request.method == 'POST':
-#         from_account = Account.objects.select_for_update().get(user=request.user)
-#         to_account = Account.objects.select_for_update().get(user_id=request.data.get('to_account_id'))
-        
-#         ammount = request.data.get('ammount')
 
-#         if to_account is None:
-#             return Response({'detail':'The account you are willing to send money doesn\'t exists!'},status=status.HTTP_400_BAD_REQUEST)
-        
-#         if ammount is None:
-#             return Response({'detail':'The ammount must be provided!'},status=status.HTTP_400_BAD_REQUEST)
+class ConvertCurrencyViewSet(GenericViewSet, CreateAPIView):
+    """
+    This APi view helps to convert from one currency to another
+    example the POST data can be
 
-#         if int(ammount > from_account.ammount):
-#             return Response({'detail':'Your account balance is insufficient!'},status=status.HTTP_400_BAD_REQUEST)
+        {
+            "from_currency":"USD",
+            "to_currency":"XAF",
+            "amount":5000
+        }    
+    """
 
-#         with transaction.atomic():
-#             from_account.ammount -= int(ammount)
-#             from_account.save()
-            
-#             to_account.ammount += int(ammount)
-#             to_account.save()
+    serializer_class = ConvertCurrencySerializer
 
-#             t = Transaction.objects.create(
-#                 transaction_type=Transaction.TRANSACTION_TYPE[0][1],
-#                 from_account=from_account,
-#                 to_account=to_account,
-#                 ammount=ammount
-#             )
+    def create(self, request, *args, **kwargs):
 
-#             serializer = TransactionSerializer(t)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-#             return Response({'transaction':serializer.data},status=status.HTTP_201_CREATED)
+        from_currency = serializer.validated_data['from_currency']
+        to_currency = serializer.validated_data['to_currency']
+        amount = serializer.validated_data['amount']
 
-#     pass
+        result = converCurrency(from_currency, to_currency, amount)
+
+        return Response({'data': f'{to_currency} {result}'})

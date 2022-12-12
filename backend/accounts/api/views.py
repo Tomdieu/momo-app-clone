@@ -1,22 +1,14 @@
 
-import json
-
-from dateutil import parser
-from django.contrib.auth import get_user_model, authenticate, logout
+from django.contrib.auth import get_user_model, authenticate, logout,login
 from rest_framework import status
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.http import Http404
-from django.shortcuts import get_object_or_404
 from accounts.models import Profile
 
-from django.db import transaction
-
 from .serializers import (ProfileSerializer, ProfileListSerializer,
-                          UserSerializer, LoginSerializer, UpdatePasswordSerializer)
-from .utils import patchMethod, deleteMethod, getMethod, postMethod, putMethod
+                          UserLanguageSerializer, LoginSerializer, UpdatePasswordSerializer)
+
 from rest_framework.mixins import (
     CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, ListModelMixin, UpdateModelMixin)
 from rest_framework.viewsets import GenericViewSet
@@ -41,12 +33,15 @@ class LoginViewSet(GenericViewSet, CreateAPIView):
     serializer_class = LoginSerializer
 
     def create(self, request, *args, **kwargs):
-
+        
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         username = request.data.get('username')
-        password = request.data.get('password')
+        password = request.data.get('password')                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
         user = authenticate(username=username, password=password)
         if user is not None:
+            login(request,user)
             return Response({'success': True, 'token': user.auth_token.key})
         else:
             return Response({'success': False, 'error_message': 'username or password incorrect'}, status=status.HTTP_400_BAD_REQUEST)
@@ -58,22 +53,28 @@ class CreateProfileViewSet(CreateModelMixin, GenericViewSet):
 
 
 class ProfileViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):
-
-    serializer_class = ProfileSerializer
+    
+    # serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method.upper() in ['GET']:
+            return ProfileListSerializer
+        return ProfileSerializer
 
     def get_queryset(self):
         return Profile.objects.filter(user=self.request.user)
 
+class UserProfileViewSet(ListModelMixin,GenericViewSet, RetrieveModelMixin):
 
-class ProfileList(GenericViewSet, RetrieveModelMixin, ListModelMixin, UpdateModelMixin, DestroyModelMixin):
+    serializer_class = ProfileListSerializer
+    permission_classes = [IsAuthenticated]
 
-    permission_classes = (IsAuthenticated, IsAdminUser)
-    serializer_class = ProfileSerializer
+    lookup_field = 'pk'
 
     def get_queryset(self):
         return Profile.objects.all()
-
+    
 
 class UpdatePasswordViewSet(GenericViewSet, CreateAPIView):
 
@@ -81,8 +82,6 @@ class UpdatePasswordViewSet(GenericViewSet, CreateAPIView):
     serializer_class = UpdatePasswordSerializer
 
     def create(self, request, *args, **kwargs):
-
-        errors = {}
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -109,3 +108,23 @@ class UpdatePasswordViewSet(GenericViewSet, CreateAPIView):
             return Response({'detail':'password updated successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'detail':'Something went wrong'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateLanguage(GenericViewSet,CreateModelMixin):
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserLanguageSerializer
+
+    def get_queryset(self):
+        return Profile.objects.filter(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        profile = request.user.profile
+        profile.lang = request.data.get('lang')
+        profile.save()
+
+        return  Response({'detail':'Language Updated','profile':ProfileListSerializer(profile).data})

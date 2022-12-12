@@ -23,4 +23,13 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+LICENSE
 README.md
+
+
+other
+build_files.sh
+vercel.json
+env
+.vscode
+.vercel
