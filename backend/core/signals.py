@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 
 from django.db import transaction
 
-
 from .models import Account,Transfer,Withdraw,TransactionType
 from notifications.models import Notification
 from accounts.models import Profile
@@ -26,6 +25,14 @@ User = get_user_model()
 
 @receiver(post_save, sender=User)
 def createAccount(sender, instance,created, **kwargs):
+    """ ## User post Save signal
+    
+        This signal is use to create the profile,token,and account of a ussr when it is created
+    Args:
+        sender (User): the User model
+        instance (User): the instance of a User created
+        created (bool): a boolean true if the object is been created other wise false
+    """
 
     if created:
         # it means when the user is created
@@ -109,7 +116,7 @@ def checkAccount(sender, instance, **kwargs):
 
 @receiver(pre_save, sender=Transfer)
 def checkIfUserCanTransferMoney(sender, instance, **kwargs):
-
+    
     if instance.id is None:
         sender_account = Account.objects.select_related(
             'user').get(id=instance.sender.id)
@@ -170,6 +177,10 @@ def checkIfUserCanTransferMoney(sender, instance, **kwargs):
                 
 @receiver(post_save, sender=Transfer)
 def sendNotificationsToAccounst(sender, instance, created, **kwargs):
+    """
+     ## Transfer ModelPost ave Signal for
+     
+    """
 
     if created:
         if instance.status == 'SUCCESSFULL':
@@ -182,6 +193,13 @@ def sendNotificationsToAccounst(sender, instance, created, **kwargs):
 
 @receiver(post_save,sender=Withdraw)
 def accept_or_deny(sender,instance,created,**kwargs):
+    """_summary_
+
+    Args:
+        sender (Withdraw): _description_
+        instance (Withdraw): _description_
+        created (boolean): _description_
+    """    
     withdraw_from = Account.objects.select_related(
             'user').get(id=instance.withdraw_from.id)
     agent = Account.objects.select_related(

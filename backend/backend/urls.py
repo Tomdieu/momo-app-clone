@@ -24,9 +24,9 @@ from drf_yasg.views import get_schema_view as swagger_get_schema_view
 schema_view = swagger_get_schema_view(
     openapi.Info(
         title="TrixWallet Api",
-        default_version="4.10.6",
+        default_version="v4.10.6",
         description="Api documentation of TrixWallet",
-        contact=openapi.Contact(email='ivantomdio@gmail.com'),
+        contact=openapi.Contact(name='ivantom',url='https://github.com/tomdieu',email='ivantomdio@gmail.com'),
         license=openapi.License(name='BSD Licence')
     ),
     public=True

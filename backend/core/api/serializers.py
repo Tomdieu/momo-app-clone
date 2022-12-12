@@ -41,7 +41,6 @@ class AccountListSerializer(AccountSerializer):
 		}
 
 	def convertedCurrency(self,obj:Account):
-
 		return converCurrency(obj.currency,obj.display_currency,obj.balance)
 class ChangePinSerializer(serializers.Serializer):
 

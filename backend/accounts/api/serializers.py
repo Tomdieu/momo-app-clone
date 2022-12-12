@@ -109,7 +109,7 @@ class ProfileListSerializer(WritableNestedModelSerializer):
          
 
     def update(self, instance, validated_data):
-
+        print('Context : ',self.context)
         nested_serializer = self.fields['user']
         nested_instance = instance.user
 
