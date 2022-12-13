@@ -4,7 +4,7 @@ services:
 
   # Redis
   redis:
-    image: redis:alpine
+    image: redis:7.0.6-alpine
     container_name: redis
   
   # Database Postgres
