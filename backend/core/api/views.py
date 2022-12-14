@@ -99,27 +99,29 @@ class TransferMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         serializer.is_valid(raise_exception=True)
 
         # this line verify if the user accoun id matches the id to the account send in the request
-        print(self.request.user.account.id, " ",
-              serializer.validated_data['sender'].id)
-        if self.request.user.account.id != serializer.validated_data['sender'].id:
-            return Response({'detail': "You are not authorized to make this transfer your id does not correspond"}, status=status.HTTP_401_UNAUTHORIZED)
+        # print(self.request.user.account.id, " ",
+        #       serializer.validated_data['sender'].id)
+        # if self.request.user.account.id == serializer.validated_data['reciever'].id:
+        #     return Response({'detail': "You are not authorized to make this transfer your id does not correspond"}, status=status.HTTP_401_UNAUTHORIZED)
 
         # This line checks if the user account pin code matches the pin code send in the request
-        if not self.request.user.account.check_pincode(serializer.validated_data['pin_code']):
+        if not request.user.account.check_pincode(serializer.validated_data['pin_code']):
             return Response({'detail': 'Incorrect pin code'}, status=status.HTTP_401_UNAUTHORIZED)
 
         # this line simply checks if the sender id matches the reciever id
-        if request.data['sender'] == request.data['reciever']:
+        if request.user.account.id == serializer.validated_data['reciever'].id:
             return Response({'detail': 'You can not send money to your self!'}, status=status.HTTP_400_BAD_REQUEST)
 
-        sender = Account.objects.select_for_update().get(
-            user_id=request.data.get('sender'))
+        # sender = Account.objects.select_for_update().get(
+        #     user_id=request.data.get('sender'))
+
+        sender = request.user.account
 
         # this line checks if the amount to transfer is >= to the account balance of the user account sending the money
 
         if float(request.data['amount']) <= float(sender.balance):
             # this line checks if the sender account id equals to the user transfering the money
-            if request.user.account.id == sender.id:
+            if serializer.validated_data['reciever'] != request.user.account:
                 # request.data.pop('pin_code')
                 instance = serializer.save()
                 return Response(TransferListSerializer(instance).data, status=status.HTTP_201_CREATED)

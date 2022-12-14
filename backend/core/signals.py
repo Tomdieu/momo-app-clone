@@ -126,6 +126,8 @@ def checkIfUserCanTransferMoney(sender, instance, **kwargs):
 
         amount = float(instance.amount)
 
+        instance.currency = sender_account.currency
+
         if sender_account.id == reciever_account.id:
             msg = ''
             if sender_account.user.profile.lang == 'FR':
@@ -165,7 +167,7 @@ def checkIfUserCanTransferMoney(sender, instance, **kwargs):
                         reciever_account.balance)+new_amount
                     reciever_account.save()
 
-                    instance.currency = sender_account.currency
+                    
 
                     instance.charge = charge
 

@@ -80,7 +80,7 @@ class TransferAdmin(admin.ModelAdmin):
 	
 	list_display = ('id','code','sender','reciever','status','transaction_amount','created_at')
 	search_fields = ('code','sender__user__username','reciever__user__username')
-	readonly_fields = ('code','currency')
+	readonly_fields = ('code','currency','status')
 	list_per_page = 25
 
 

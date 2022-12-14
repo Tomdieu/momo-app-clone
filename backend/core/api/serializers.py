@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from rest_framework.fields import CurrentUserDefault
+
 from accounts.api.serializers import UserSerializer
 
 from core.api.utils import converCurrency
@@ -92,6 +94,9 @@ class TransferCreateSerializer(serializers.ModelSerializer):
 		extra_kwargs = {
 			'status':{
 				'read_only':True
+			},
+			'sender':{
+				'read_only':True
 			}
 		}
 
@@ -102,6 +107,7 @@ class TransferCreateSerializer(serializers.ModelSerializer):
 
 		validated_data.pop('pin_code')
 		print(validated_data)
+		validated_data['sender'] = self.context['request'].user.account
 		transfer = Transfer.objects.create(**validated_data)
 
 		return transfer
@@ -117,6 +123,11 @@ class TransferSerializer(serializers.ModelSerializer):
 				'read_only':True
 			}
 		}
+
+	# def save(self):
+		# user  = self.context.get('request').user
+		# user = CurrentUserDefault()
+
 
 
 class TransferListSerializer(TransferSerializer):
