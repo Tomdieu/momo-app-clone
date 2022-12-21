@@ -75,6 +75,10 @@ def passThroughProfile(sender,instance,*args,**kwargs):
 
                 Notification.objects.create(user=instance.user, message=msg)
 
+
+# @receiver(p)
+
+
 @receiver(pre_save, sender=Account)
 def checkAccount(sender, instance, **kwargs):
 

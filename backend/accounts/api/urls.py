@@ -1,12 +1,11 @@
 from django.urls import path, include
 from .views import (LogoutView, LoginViewSet, ProfileViewSet,
-                    CreateProfileViewSet, UpdatePasswordViewSet, UpdateLanguage, UserProfileViewSet, userExists)
+                    CreateProfileViewSet, UpdatePasswordViewSet, UpdateLanguage, userExists)
 
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register('profile', ProfileViewSet, basename='users')
-router.register('user-profiles', UserProfileViewSet, basename='user-profile')
 router.register('register', CreateProfileViewSet, basename='create profile')
 router.register('login', LoginViewSet, basename="login")
 router.register('update-password', UpdatePasswordViewSet,

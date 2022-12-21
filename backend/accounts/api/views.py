@@ -69,16 +69,6 @@ class ProfileViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Destr
         return Profile.objects.filter(user=self.request.user)
 
 
-class UserProfileViewSet(ListModelMixin, GenericViewSet, RetrieveModelMixin):
-
-    serializer_class = ProfileListSerializer
-    permission_classes = [IsAuthenticated]
-
-    lookup_field = 'pk'
-
-    def get_queryset(self):
-        return Profile.objects.all()
-
 
 class UpdatePasswordViewSet(GenericViewSet, CreateAPIView):
 

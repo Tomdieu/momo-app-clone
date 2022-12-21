@@ -128,8 +128,6 @@ class TransferSerializer(serializers.ModelSerializer):
 		# user  = self.context.get('request').user
 		# user = CurrentUserDefault()
 
-
-
 class TransferListSerializer(TransferSerializer):
 
 	sender = AccountSerializer()
