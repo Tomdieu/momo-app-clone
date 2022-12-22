@@ -6,7 +6,7 @@ from accounts.api.serializers import UserSerializer
 
 from core.api.utils import converCurrency
 
-from  core.models import Account,TransactionCharge,TransactionType,Transfer,Withdraw
+from  core.models import Account,TransactionCharge,TransactionType,Transfer,Withdraw,Deposit
 
 class AccountSerializer(serializers.ModelSerializer):
 
@@ -124,9 +124,6 @@ class TransferSerializer(serializers.ModelSerializer):
 			}
 		}
 
-	# def save(self):
-		# user  = self.context.get('request').user
-		# user = CurrentUserDefault()
 
 class TransferListSerializer(TransferSerializer):
 
@@ -165,6 +162,36 @@ class WithdrawListSerializer(WithdrawSerializer):
 	agent= AccountSerializer()
 	charge = TransactionListChargeSerializer()
 
+
+class CreateDepositSerializer(serializers.ModelSerializer):
+
+	pin_code = serializers.CharField(max_length=5,help_text="This pin code represent the pin code to the account initiating the withdrawal")
+
+	class Meta:
+		model = Deposit
+		fields = '__all__'
+
+		extra_kwargs = {
+			'status':{
+				'read_only':True
+			},
+			'sender':{
+				'read_only':True
+			}
+		}
+
+class DepositSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Deposit
+		fields = '__all__'
+	
+
+class DepositListSerializer(DepositSerializer):
+	
+	sender = AccountSerializer()
+	reciever = AccountSerializer()
+	charge = TransactionListChargeSerializer()
 
 class ConvertCurrencySerializer(serializers.Serializer):
 

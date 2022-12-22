@@ -6,8 +6,9 @@ from rest_framework import status
 from .serializers import (AccountSerializer, AccountListSerializer, TransactionChargeSerializer,
                           TransactionTypeSerializer, TransactionListChargeSerializer,
                           TransferSerializer, TransferCreateSerializer, TransferListSerializer, ChangePinSerializer,
-                          WithdrawSerializer, WithdrawCreateSerializer, WithdrawListSerializer, ConvertCurrencySerializer)
-from core.models import Account, TransactionCharge, TransactionType, Transfer, Withdraw
+                          WithdrawSerializer, WithdrawCreateSerializer, WithdrawListSerializer, ConvertCurrencySerializer,
+                          DepositSerializer, CreateDepositSerializer, DepositListSerializer)
+from core.models import Account, TransactionCharge, TransactionType, Transfer, Withdraw, Deposit
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import (
     CreateModelMixin, UpdateModelMixin, DestroyModelMixin, ListModelMixin, RetrieveModelMixin)
@@ -17,8 +18,9 @@ from rest_framework.generics import (CreateAPIView)
 from django.db.models import Q
 
 from django.conf import settings
+from core.api.utils.permisions import IsAgent
 from core.api.utils import converCurrency
-
+    
 
 class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateModelMixin):
 
@@ -98,12 +100,6 @@ class TransferMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # this line verify if the user accoun id matches the id to the account send in the request
-        # print(self.request.user.account.id, " ",
-        #       serializer.validated_data['sender'].id)
-        # if self.request.user.account.id == serializer.validated_data['reciever'].id:
-        #     return Response({'detail': "You are not authorized to make this transfer your id does not correspond"}, status=status.HTTP_401_UNAUTHORIZED)
-
         # This line checks if the user account pin code matches the pin code send in the request
         if not request.user.account.check_pincode(serializer.validated_data['pin_code']):
             return Response({'detail': 'Incorrect pin code'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -111,9 +107,6 @@ class TransferMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         # this line simply checks if the sender id matches the reciever id
         if request.user.account.id == serializer.validated_data['reciever'].id:
             return Response({'detail': 'You can not send money to your self!'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # sender = Account.objects.select_for_update().get(
-        #     user_id=request.data.get('sender'))
 
         sender = request.user.account
 
@@ -127,6 +120,50 @@ class TransferMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
                 return Response(TransferListSerializer(instance).data, status=status.HTTP_201_CREATED)
             else:
                 return Response({'detail': 'You are not authorized to make this transfer'}, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response({'detail': 'Your account balance is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DepositViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
+    permision_classes = [IsAuthenticated]
+
+
+    def get_serializer_class(self):
+
+        if self.request.method.upper() in ['GET']:
+            return DepositListSerializer
+        elif self.request.method.upper() in ['POST']:
+            return CreateDepositSerializer
+        else:
+            return DepositSerializer
+
+    def get_queryset(self):
+        return Deposit.objects.filter(Q(sender__user=self.request.user) | Q(reciever__user=self.request.user)).order_by('-created_at')
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # This line checks if the user account pin code matches the pin code send in the request
+        if not request.user.account.check_pincode(serializer.validated_data['pin_code']):
+            return Response({'detail': 'Incorrect pin code'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # this line simply checks if the sender id matches the reciever id
+        if request.user.account.id == serializer.validated_data['reciever'].id:
+            return Response({'detail': 'You can not send money to your self!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        sender = request.user.account
+
+        # this line checks if the amount to transfer is >= to the account balance of the user account sending the money
+
+        if float(request.data['amount']) <= float(sender.balance):
+            # this line checks if the sender account id equals to the user transfering the money
+            if serializer.validated_data['reciever'] != request.user.account:
+                # request.data.pop('pin_code')
+                instance = serializer.save()
+                return Response(TransferListSerializer(instance).data, status=status.HTTP_201_CREATED)
+            else:
+                return Response({'detail': 'You are not authorized to make this deposit'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response({'detail': 'Your account balance is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -192,7 +229,8 @@ class ConfirmWithdraw(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Gene
         return WithdrawSerializer
 
     def get_queryset(self):
-        n = settings.WITHDRAW_MONEY_MINUTES  # n represents the amount of minutes for a withdrawal to be accepted or cancel after that it will be rejected
+        # n represents the amount of minutes for a withdrawal to be accepted or cancel after that it will be rejected
+        n = settings.WITHDRAW_MONEY_MINUTES
         dt = datetime.datetime  # dt respresents the datetime.datetime function
         td = datetime.timedelta  # td represents the datetime.timedelta function
         now = dt.now()

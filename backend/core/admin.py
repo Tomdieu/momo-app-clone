@@ -14,9 +14,9 @@ from .models import Account,TransactionType,TransactionCharge,Transfer,Withdraw
 
 class AccountAdmin(admin.ModelAdmin):
 
-	list_display = ('id','user','is_agent','amount','convertedAmount','account_status','display_currency')
+	list_display = ('id','user','account_number','is_agent','amount','convertedAmount','account_status','display_currency')
 	list_filter=('balance','account_status')
-	readonly_fields = ('currency','user','pin_code',) 
+	readonly_fields = ('currency','user','pin_code','account_number') 
 
 	search_fields = ('user__username','currency','account_status',)
 	list_per_page = 25
