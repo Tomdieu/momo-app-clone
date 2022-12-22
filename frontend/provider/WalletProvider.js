@@ -20,6 +20,8 @@ export const WalletProvider = ({ children }) => {
         isLoading,
         setIsLoading,
       }}
-    ></AccountContext.Provider>
+    >
+      {children}
+    </AccountContext.Provider>
   );
 };

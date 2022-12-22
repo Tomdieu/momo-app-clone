@@ -125,7 +125,7 @@ class TransferMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
 
 
 class DepositViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
-    permision_classes = [IsAuthenticated]
+    permision_classes = [IsAuthenticated,IsAgent]
 
 
     def get_serializer_class(self):
@@ -135,7 +135,7 @@ class DepositViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         elif self.request.method.upper() in ['POST']:
             return CreateDepositSerializer
         else:
-            return DepositSerializer
+            return DepositSerializer0000000
 
     def get_queryset(self):
         return Deposit.objects.filter(Q(sender__user=self.request.user) | Q(reciever__user=self.request.user)).order_by('-created_at')
