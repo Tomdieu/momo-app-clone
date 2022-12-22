@@ -11,8 +11,6 @@ class AccountTestCase(APITestCase):
     def setUp(self) -> None:
         self.user = json.loads(self.create_account().content)
 
-    
-
     def create_account(self):
         # token = 'f52ff4c495dff4c05e6f869ef2f3b8250c45c5e2'
         # self.client.credentials(HTTP_AUTHORIZATION=f"token {token}")
@@ -31,7 +29,7 @@ class AccountTestCase(APITestCase):
             "lang": 'EN'
         }
 
-        response = self.client.post('/api/auth/create-account/',data)
+        response = self.client.post('/api/auth/register/',data)
 
         return response
 
