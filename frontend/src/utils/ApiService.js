@@ -32,7 +32,7 @@ export default class Trixwallet {
    * @param {object} data
    */
   static async register(data) {
-    const url = this.endPoint + '/api/create-account/'
+    const url = this.endPoint + '/api/auth/register/'
     const res = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(data),
