@@ -24,6 +24,8 @@ router.register('confirm-withdrawal', views.ConfirmWithdraw,
 router.register('convert-currency', views.ConvertCurrencyViewSet,
                 basename='convert-currency')
 
+router.register('get-account',views.GetAccountViewSet,basename='search-account')
+
 urlpatterns = [
     path('', include(router.urls))
 ]

@@ -35,7 +35,7 @@ class AccountTestCase(APITestCase):
 
     def authenticate(self):
         data = {
-            'username':'ivantom',
+            'username':'ivantom1',
             'password':'1234'
         }
         response = self.client.post('/api/auth/login/',data)

@@ -22,6 +22,28 @@ from core.api.utils.permisions import IsAgent
 from core.api.utils import converCurrency
     
 
+class GetAccountViewSet(GenericViewSet,ListModelMixin):
+
+    serializer_class = AccountListSerializer
+
+    def get_queryset(self):
+        account_number = self.request.query_params.get('account_number')
+        if account_number:
+
+            return Account.objects.filter(account_number=account_number)
+
+        phone_number = self.request.query_params.get('phone_number')
+
+        if phone_number:
+            return Account.objects.filter(user__profile__phone_number=phone_number)
+
+        else:
+
+            return Account.objects.filter(user=self.request.user)
+
+
+
+
 class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateModelMixin):
 
     def get_serializer_class(self):
