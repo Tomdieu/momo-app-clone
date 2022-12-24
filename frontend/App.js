@@ -8,11 +8,15 @@ import {
 
 import Navigation from "./src/navigations";
 
+import { AuthProvider } from "./src/provider/AuthProvider";
+
 
 const App = () => {
   return (
     <PaperProvider theme={MD3LightTheme}>
-      <Navigation />
+      <AuthProvider>
+        <Navigation />
+      </AuthProvider>
     </PaperProvider>
   );
 };

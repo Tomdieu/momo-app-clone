@@ -1,5 +1,4 @@
 import {
-  Button,
   Platform,
   SafeAreaView,
   StyleSheet,
@@ -13,8 +12,8 @@ import {
 import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
-
-import Input from "../../components/Input";
+import { Button } from "react-native-paper";
+import { COLORS } from "../../utils/constants";
 
 const { StatusBarManager } = NativeModules;
 
@@ -42,11 +41,12 @@ const LoginScreen = ({ navigation }) => {
         <StatusBar style={"auto"} />
         <View style={styles.wrapper}>
           <View>
+
+            <Text style={styles.title}>Login</Text>
             <Image
               source={require("../../images/logo.png")}
               style={styles.logo}
             />
-            <Text style={styles.title}>Login</Text>
           </View>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>username</Text>
@@ -65,12 +65,14 @@ const LoginScreen = ({ navigation }) => {
               onChangeText={(text) => setPassword(text)}
             />
           </View>
+          <TouchableOpacity style={{ width: '100%' }} activeOpacity={(!username && !password) ? 1 : .7} disabled={Boolean(!username && !password)}>
+            <Button mode="contained" compact style={{ backgroundColor: (username && password) ? COLORS.green : 'grey', width: '100%', borderRadius: 3, marginVertical: 8 }} labelStyle={{ color: COLORS.white }}>Login</Button>
+          </TouchableOpacity>
           <View style={styles.inputContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity style={{ ...styles.btn, color: (!username) ? 'grey' : 'default' }}>
               <Button
                 style={styles.btn}
                 title="Login"
-                disabled={!(username && password)}
                 onPress={() => navigation.navigate("Register")}
               />
             </TouchableOpacity>
@@ -100,8 +102,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ECFDFF'
   },
   logo: {
-    width: 128,
-    height: 128
+    width: 158,
+    height: 158,
   },
   title: {
     fontSize: 25,
@@ -128,17 +130,17 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10,
     paddingLeft: 10,
-    color: "#000",
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.6)",
     height: 40,
-    borderRadius: 5,
+    borderRadius: 3,
     fontSize: 18,
-    backgroundColor: "rgba(171,171,171,.4)",
+    backgroundColor: '#ccc'
   },
   btn: {
     padding: 20,
     height: 40,
+    width: '100%'
   },
   text: {
     textAlign: "center",

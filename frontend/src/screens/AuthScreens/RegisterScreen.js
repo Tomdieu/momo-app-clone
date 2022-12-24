@@ -16,6 +16,8 @@ import { Formik } from "formik";
 import { COLORS } from "../../utils/constants";
 import { Button } from "react-native-paper";
 
+import { basicSchema } from '../../schema/UserSchema'
+
 const { StatusBarManager } = NativeModules;
 
 const RegisterScreen = ({ navigation }) => {
@@ -37,6 +39,7 @@ const RegisterScreen = ({ navigation }) => {
             password: "",
             confirm_password: "",
           }}
+          validationSchema={basicSchema}
           onSubmit={(values) => console.log(values)}
         >
           {({
@@ -45,10 +48,13 @@ const RegisterScreen = ({ navigation }) => {
             handleSubmit,
             values,
             errors,
+            touched,
             isValid,
+            dirty
           }) => (
             <View>
               <Text style={styles.title}>Register</Text>
+              <Text style={{ color: '#bbb', fontWeight: '900', fontSize: 14, paddingHorizontal: 5, marginVertical: 5 }}>Be a trix wallet client</Text>
               <View>
                 <Text style={styles.label}>Username</Text>
                 <TextInput
@@ -57,9 +63,12 @@ const RegisterScreen = ({ navigation }) => {
                   style={styles.textInput}
                   onChangeText={handleChange("username")}
                   onBlur={handleBlur("username")}
-                  value={values.first_name}
+                  value={values.username}
                   keyboardType="default"
                 />
+                {(errors.username && touched.username) &&
+                  <Text style={{ fontSize: 10, color: 'red', paddingLeft: 8 }}>{errors.username}</Text>
+                }
               </View>
               <View>
                 <Text style={styles.label}>First name</Text>
@@ -72,6 +81,9 @@ const RegisterScreen = ({ navigation }) => {
                   value={values.first_name}
                   secureTextEntry
                 />
+                {(errors.first_name && touched.first_name) &&
+                  <Text style={{ fontSize: 10, color: 'red', paddingLeft: 8 }}>{errors.first_name}</Text>
+                }
               </View>
               <View>
                 <Text style={styles.label}>Last name</Text>
@@ -83,6 +95,9 @@ const RegisterScreen = ({ navigation }) => {
                   onBlur={handleBlur("last_name")}
                   value={values.last_name}
                 />
+                {(errors.last_name && touched.last_name) &&
+                  <Text style={{ fontSize: 10, color: 'red', paddingLeft: 8 }}>{errors.last_name}</Text>
+                }
               </View>
               <View>
                 <Text style={styles.label}>Email</Text>
@@ -94,6 +109,9 @@ const RegisterScreen = ({ navigation }) => {
                   onBlur={handleBlur("email")}
                   value={values.email}
                 />
+                {(errors.email && touched.email) &&
+                  <Text style={{ fontSize: 10, color: 'red', paddingLeft: 8 }}>{errors.email}</Text>
+                }
               </View>
               <View>
                 <Text style={styles.label}>Phone number</Text>
@@ -106,6 +124,9 @@ const RegisterScreen = ({ navigation }) => {
                   value={values.phone_number}
                   keyboardType={"phone-pad"}
                 />
+                {(errors.phone_number && touched.phone_number) &&
+                  <Text style={{ fontSize: 10, color: 'red', paddingLeft: 8 }}>{errors.phone_number}</Text>
+                }
               </View>
               <View>
                 <Text style={styles.label}>Password</Text>
@@ -118,6 +139,9 @@ const RegisterScreen = ({ navigation }) => {
                   value={values.password}
                   secureTextEntry
                 />
+                {(errors.password && touched.password) &&
+                  <Text style={{ fontSize: 10, color: 'red', paddingLeft: 8 }}>{errors.password}</Text>
+                }
               </View>
               <View>
                 <Text style={styles.label}>Confirm Password</Text>
@@ -130,15 +154,22 @@ const RegisterScreen = ({ navigation }) => {
                   value={values.confirm_password}
                   secureTextEntry
                 />
+                {(errors.confirm_password && touched.confirm_password) &&
+                  <Text style={{ fontSize: 10, color: 'red', paddingLeft: 8 }}>{errors.confirm_password}</Text>
+                }
               </View>
+
               <View style={styles.btnContainer}>
-                <TouchableOpacity style={styles.btn}>
-                  <Button>
-                    <Text style={{ color: "#fff" }}>Sign Up</Text>
+
+                <TouchableOpacity disabled={Boolean(!isValid || !dirty)}>
+                  <Button  mode="contained" labelStyle={{ color: "white", fontSize: 18 }} style={{ backgroundColor: (!isValid || !dirty)?'grey':COLORS.green, borderRadius: 5 }}>
+                    Sign Up
                   </Button>
                 </TouchableOpacity>
+
+
               </View>
-              <Text style={{ textAlign: "center", marginBottom: 10 }}>
+              <Text style={{ textAlign: "center", marginBottom: 20 }}>
                 Already a user ?{" "}
                 <Text
                   style={{ color: "blue" }}
@@ -147,7 +178,7 @@ const RegisterScreen = ({ navigation }) => {
                   Login
                 </Text>
               </Text>
-            </View>
+              </View>
           )}
         </Formik>
       </ScrollView>
@@ -165,6 +196,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
     // textAlign: "center",
     fontWeight: "800",
+    marginVertical: 8,
+    marginLeft: 5
   },
   label: {
     fontSize: 15,
@@ -173,7 +206,8 @@ const styles = StyleSheet.create({
   },
   textInput: {
     padding: 8,
-    fontSize: 20,
+    lineHeight:18,
+    fontSize: 18,
     borderColor: "#ddd",
     borderRadius: 5,
     borderWidth: 1,

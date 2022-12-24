@@ -1,11 +1,11 @@
-import { StyleSheet, Text, View ,ActivityIndicator} from 'react-native'
-import React,{useState,useEffect} from 'react'
+import { StyleSheet, Text, View, ActivityIndicator,Image } from 'react-native'
+import React, { useState, useEffect } from 'react'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const SplashScreem = () => {
-    const [animating, setAnimating] = useState(true);
-    useEffect(() => {
+const SplashScreen = ({ navigation }) => {
+  const [animating, setAnimating] = useState(true);
+  useEffect(() => {
     setTimeout(() => {
       setAnimating(false);
       //Check if user_id is set or not
@@ -13,16 +13,16 @@ const SplashScreem = () => {
       //else send to Home Screen
       AsyncStorage.getItem('token').then((value) =>
         navigation.replace(
-          value === null ? 'Auth' : 'DrawerNavigationRoutes'
+          value === null ? 'AppScreen' : 'AuthScreen'
         ),
       );
     }, 5000);
   }, []);
-    return (
+  return (
     <View style={styles.container}>
       <Image
-        source={require('../images/logo.png')}
-        style={{width: '90%', resizeMode: 'contain', margin: 30}}
+        source={require('../../images/logo.png')}
+        style={{ width: '90%', resizeMode: 'contain', margin: 30 }}
       />
       <ActivityIndicator
         animating={animating}
@@ -34,14 +34,14 @@ const SplashScreem = () => {
   )
 }
 
-export default SplashScreem
+export default SplashScreen
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#307ecc',
+    backgroundColor: '#ECFDFF',
   },
   activityIndicator: {
     alignItems: 'center',

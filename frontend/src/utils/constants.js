@@ -18,6 +18,7 @@ export const COLORS = {
 	green:"#3CAE5C",
 	darkBlue:'#003D5B',
 	lightPink:'#D1495B',
-	bg:'#ECFDFF'
+	bg:'#ECFDFF',
+	black:'#000'
 	
 }
