@@ -45,12 +45,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: '600'
+    fontWeight: '600',
+    paddingLeft:5,
+    paddingVertical:10
   },
   option: {
     flexDirection: 'row',
     paddingVertical: 15,
-    marginVertical: 10,
+    marginVertical: 7,
     borderRadius: 4,
     justifyContent: 'space-between',
     alignItems: 'center',
