@@ -1,11 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View,SafeAreaView } from 'react-native'
 import React from 'react'
 
 const SettingsScreen = () => {
   return (
-    <View>
-      <Text>SettingsScreen</Text>
-    </View>
+    <SafeAreaView style={{
+      ...styles.container,
+      paddingTop: Platform.OS == "android" ? StatusBarManager.HEIGHT : 0,
+    }}
+    >
+
+    </SafeAreaView>
   )
 }
 
