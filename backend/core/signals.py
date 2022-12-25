@@ -319,15 +319,12 @@ def accept_or_deny(sender, instance, **kwargs):
                     withdraw_from.save()
 
                     agent.balance = float(agent.balance) + amount_to_withdraw
-                    # agent.save()
 
                     instance.charge = charge
 
-                    # instance.save()
 
             else:
                 instance.status = state.WITHDRAW_REJECTED
-                # instance.save()
 
                 Notification.objects.create(user=withdraw_from.user, message="Your account balance is insufficent to perform the transaction. Please fill you account and retry later!\nCurrent account balance {}".format(
                     withdraw_from.get_balance()), type=notification_status.NOTIFCATION_WITHDRAW_REJECTED)
