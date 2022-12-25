@@ -21,7 +21,7 @@ class AccountAdmin(admin.ModelAdmin):
 	search_fields = ('user__username','currency','account_status',)
 	list_per_page = 25
 
-	actions = ['to_agent','to_normal','make_inactive','make_active','reset_pin']
+	actions = ['to_agent','to_normal','make_inactive','make_active','reset_pin','reset_balance']
 
 	@admin.display(description="Account Balance",ordering='-created_at')
 	def amount(self,obj):
@@ -53,6 +53,10 @@ class AccountAdmin(admin.ModelAdmin):
 	@admin.action(description='Reset Account pin code')
 	def reset_pin(self,request,queryset):
 		queryset.update(pin_code=settings.WALLET_DEFAULT_PIN_CODE)
+
+	@admin.action(description='Reset account balance')
+	def reset_balance(self,request,queryset):
+		queryset.update(balance=0)
 
 
 admin.site.register(Account,AccountAdmin)

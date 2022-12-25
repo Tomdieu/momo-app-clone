@@ -13,9 +13,6 @@ from django.db.models import Q,Sum
 
 class AccountSerializer(serializers.ModelSerializer):
 
-	
-
-
 	class Meta:
 
 		model = Account
@@ -54,7 +51,7 @@ class AccountSerializer(serializers.ModelSerializer):
 		return total
 
 	def get_total_amount_withdraw(self,obj:Account):
-		W = Withdraw.objects.filter(withdraw_from=obj,state='SUCCESSFULL').aggregate(Sum('amount'))
+		W = Withdraw.objects.filter(withdraw_from=obj,state='ACCEPTED').aggregate(Sum('amount'))
 
 		w = 0
 
@@ -66,7 +63,7 @@ class AccountSerializer(serializers.ModelSerializer):
 	def get_total_amount_recieve(self,obj:Account):
 		T = Transfer.objects.filter(reciever=obj,status='SUCCESSFULL').aggregate(Sum('amount')) 
 		D = Deposit.objects.filter(reciever=obj,status='SUCCESSFULL').aggregate(Sum('amount'))
-		W = Withdraw.objects.filter(agent=obj,state='SUCCESSFULL').aggregate(Sum('amount'))
+		W = Withdraw.objects.filter(agent=obj,state='ACCEPTED').aggregate(Sum('amount'))
 
 		t,d,w = 0,0,0
 
@@ -202,8 +199,22 @@ class WithdrawCreateSerializer(serializers.ModelSerializer):
 			},
 			'charge':{
 				'read_only':True
+			},
+			'agent':{
+				'read_only':True
 			}
 		}
+
+	def create(self, validated_data):
+
+		validated_data.pop('pin_code')
+
+		validated_data['agent'] = self.context['request'].user.account
+		withdraw = Withdraw.objects.create(**validated_data)
+
+		return withdraw
+
+
 class WithdrawSerializer(serializers.ModelSerializer):
 
 	class Meta:

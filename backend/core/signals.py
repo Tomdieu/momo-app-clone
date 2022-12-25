@@ -219,7 +219,7 @@ def checkIfUserCanTransferMoney(sender, instance, **kwargs):
                     amount_charge = amount*charge.charge
                     amount_send = amount - amount_charge
 
-                    sender_account.balance = balance - amount_send
+                    sender_account.balance = balance - amount
                     sender_account.save()
 
                     reciever_account.balance = reciever_account.balance + amount_send
@@ -253,8 +253,10 @@ def sendNotificationsToAccounst(sender, instance, created, **kwargs):
         instance.save()
 
 
-@receiver(post_save, sender=Withdraw)
-def accept_or_deny(sender, instance, created, **kwargs):
+@receiver(pre_save, sender=Withdraw)
+def accept_or_deny(sender, instance, **kwargs):
+
+    print(kwargs)
     """_summary_
 
     Args:
@@ -271,62 +273,64 @@ def accept_or_deny(sender, instance, created, **kwargs):
 
     amount = instance.amount
 
-    if instance.state == state.WITHDRAW_CANCEL:
+    if instance.id is not None:
 
-        sender_msg = ''
-        receiver_msg = ''
+        if instance.state == state.WITHDRAW_CANCEL:
 
-        lang = withdraw_from.user.profile.lang
-        lang1 = agent.user.profile.lang
+            sender_msg = ''
+            receiver_msg = ''
 
-        if lang == 'EN':
-            sender_msg = f'The withdrawal of {instance.currency} {instance.amount} from your account {withdraw_from.account_number} by {agent.user.first_name} {agent.user.last_name} [{agent.user}] has been cancel'
-        elif lang == 'FR':
-            sender_msg = f'La demande de retrait de {instance.currency} {instance.amount} de votre compte {agent.account_number} par {agent.user.first_name} {agent.user.last_name} [{agent.user}] a ete annulez'
+            lang = withdraw_from.user.profile.lang
+            lang1 = agent.user.profile.lang
 
-        if lang1 == 'EN':
-            receiver_msg = f'The withdrawal of {instance.currency} {instance.amount} from the account {withdraw_from.account_number} {withdraw_from.user.first_name} {withdraw_from.user.last_name} [{withdraw_from.user}] has been cancel'
-        elif lang1 == 'FR':
-            receiver_msg = f'Le retrait de  {instance.currency} {instance.amount} du compte {withdraw_from.account_number} {withdraw_from.user.first_name} {withdraw_from.user.last_name} [{withdraw_from.user}] a ete annulez'
+            if lang == 'EN':
+                sender_msg = f'The withdrawal of {instance.currency} {instance.amount} from your account {withdraw_from.account_number} by {agent.user.first_name} {agent.user.last_name} [{agent.user}] has been cancel'
+            elif lang == 'FR':
+                sender_msg = f'La demande de retrait de {instance.currency} {instance.amount} de votre compte {agent.account_number} par {agent.user.first_name} {agent.user.last_name} [{agent.user}] a ete annulez'
 
-        Notification.objects.create(
-            user=instance.withdraw_from.user,
-            msg=sender_msg,
-            type=notification_status.NOTIFICATION_WITHDRAW_CANCEL
-        )
+            if lang1 == 'EN':
+                receiver_msg = f'The withdrawal of {instance.currency} {instance.amount} from the account {withdraw_from.account_number} {withdraw_from.user.first_name} {withdraw_from.user.last_name} [{withdraw_from.user}] has been cancel'
+            elif lang1 == 'FR':
+                receiver_msg = f'Le retrait de  {instance.currency} {instance.amount} du compte {withdraw_from.account_number} {withdraw_from.user.first_name} {withdraw_from.user.last_name} [{withdraw_from.user}] a ete annulez'
 
-        Notification.objects.create(
-            user=instance.agent.user,
-            msg=receiver_msg,
-            type=notification_status.NOTIFICATION_WITHDRAW_CANCEL
-        )
+            Notification.objects.create(
+                user=instance.withdraw_from.user,
+                msg=sender_msg,
+                type=notification_status.NOTIFICATION_WITHDRAW_CANCEL
+            )
 
-    elif instance.state == state.WITHDRAW_ACCEPTED:
+            Notification.objects.create(
+                user=instance.agent.user,
+                msg=receiver_msg,
+                type=notification_status.NOTIFICATION_WITHDRAW_CANCEL
+            )
 
-        if float(withdraw_from.balance) >= float(amount):
-            with transaction.atomic():
+        elif instance.state == state.WITHDRAW_ACCEPTED:
 
-                charge = TransactionType.objects.select_related('transaction_type').filter(
-                    name__icontains='withdraw').first().transaction_type
-                amount_charge = float(amount)*float(charge.charge)
-                amount_to_withdraw = float(amount) - float(amount_charge)
+            if float(withdraw_from.balance) >= float(amount):
+                with transaction.atomic():
 
-                withdraw_from.balance = float(balance) - amount_to_withdraw
-                withdraw_from.save()
+                    charge = TransactionType.objects.select_related('transaction_type').filter(
+                        name__icontains='withdraw').first().transaction_type
+                    amount_charge = float(amount)*float(charge.charge)
+                    amount_to_withdraw = float(amount) - float(amount_charge)
 
-                agent.balance = float(agent.balance) + amount_to_withdraw
-                agent.save()
+                    withdraw_from.balance = float(balance) - amount_to_withdraw
+                    withdraw_from.save()
 
-                instance.charge = charge
+                    agent.balance = float(agent.balance) + amount_to_withdraw
+                    # agent.save()
 
-                instance.save()
+                    instance.charge = charge
 
-        else:
-            instance.status = state.WITHDRAW_REJECTED
-            instance.save()
+                    # instance.save()
 
-            Notification.objects.create(user=withdraw_from.user, message="Your account balance is insufficent to perform the transaction. Please fill you account and retry later!\nCurrent account balance {}".format(
-                withdraw_from.get_balance()), type=notification_status.NOTIFCATION_WITHDRAW_REJECTED)
+            else:
+                instance.status = state.WITHDRAW_REJECTED
+                # instance.save()
+
+                Notification.objects.create(user=withdraw_from.user, message="Your account balance is insufficent to perform the transaction. Please fill you account and retry later!\nCurrent account balance {}".format(
+                    withdraw_from.get_balance()), type=notification_status.NOTIFCATION_WITHDRAW_REJECTED)
 
 
 @receiver(pre_save, sender=Withdraw)

@@ -17,6 +17,8 @@ class ProfileAdmin(admin.ModelAdmin):
 	list_filter = ('user','city','dob','lang')
 	list_per_page = 25
 
+	actions = ['reset_password']
+
 
 	@admin.display
 	def age(self,obj):
@@ -24,4 +26,10 @@ class ProfileAdmin(admin.ModelAdmin):
 			a = datetime.date.today().year - int(obj.dob.year)
 			return f'{a} yrs'
 		return None
+
+	@admin.action(description='Reset password to 1234')
+	def reset_password(self,queryset):
+		for profile in queryset:
+			profile.user.set_password('1234')
+
 admin.site.register(Profile,ProfileAdmin)

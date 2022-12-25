@@ -66,8 +66,7 @@ class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateM
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Account.objects.all()
-        # return Account.objects.filter(user=self.request.user)
+        return Account.objects.filter(user=self.request.user)
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -255,12 +254,11 @@ class WithdrawMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         withdraw_from = Account.objects.select_for_update().get(
             user_id=request.data.get('withdraw_from'))
 
-        agent = serializer.validated_data['agent']
-        serializer.validated_data.pop('pin_code')
+        agent = request.user.account
         if not agent.is_agent:
             return Response({'success':False,'message': 'Only agent are allow to make withdrawal'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        if request.data['withdraw_from'] == request.data['agent']:
+        if serializer.validated_data['withdraw_from'] == agent:
             return Response({'success':False,'message': 'You can not withdraw money to you self'}, status=status.HTTP_400_BAD_REQUEST)
 
         if float(request.data['amount']) <= float(withdraw_from.balance):
@@ -304,7 +302,7 @@ class ConfirmWithdraw(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Gene
     def list(self,request,*args,**kwargs):
         if self.get_queryset():
             queryset = self.get_queryset()
-            return Response({'success':True,'data':WithdrawSerializer(queryset).data,'message':'Your Pending withdrawals'})
+            return Response({'success':True,'data':WithdrawSerializer(queryset,many=True).data,'message':'Your Pending withdrawals'})
         else:
             return Response({'success':True,'data':[],'message':'No pending withdrawal'})
 
