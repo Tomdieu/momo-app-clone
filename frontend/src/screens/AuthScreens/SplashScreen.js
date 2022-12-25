@@ -1,22 +1,16 @@
-import { StyleSheet, Text, View, ActivityIndicator,Image } from 'react-native'
+import { StyleSheet, Text, View, ActivityIndicator, Image } from 'react-native'
 import React, { useState, useEffect } from 'react'
 
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useAuthContext } from '../../context/AuthContext';
 
-const SplashScreen = ({ navigation }) => {
+const SplashScreen = () => {
   const [animating, setAnimating] = useState(true);
+  const { setIsLoading } = useAuthContext()
   useEffect(() => {
     setTimeout(() => {
       setAnimating(false);
-      //Check if user_id is set or not
-      //If not then send for Authentication
-      //else send to Home Screen
-      AsyncStorage.getItem('token').then((value) =>
-        navigation.replace(
-          value === null ? 'AppScreen' : 'AuthScreen'
-        ),
-      );
-    }, 5000);
+      setIsLoading(false)
+    }, 1000);
   }, []);
   return (
     <View style={styles.container}>

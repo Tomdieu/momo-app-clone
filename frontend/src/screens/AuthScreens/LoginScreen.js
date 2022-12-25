@@ -17,9 +17,13 @@ import { COLORS } from "../../utils/constants";
 
 const { StatusBarManager } = NativeModules;
 
+import {useAuthContext} from '../../context/AuthContext'
+
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const {testLogin} = useAuthContext()
 
   const handleSubmit = (e) => { };
 
@@ -68,6 +72,7 @@ const LoginScreen = ({ navigation }) => {
           <TouchableOpacity style={{ width: '100%' }} activeOpacity={(!username && !password) ? 1 : .7} disabled={Boolean(!username && !password)}>
             <Button mode="contained" compact style={{ backgroundColor: (username && password) ? COLORS.green : 'grey', width: '100%', borderRadius: 3, marginVertical: 8 }} labelStyle={{ color: COLORS.white }}>Login</Button>
           </TouchableOpacity>
+          <Button onPress={()=>testLogin()}>Test Me</Button>
           <View style={styles.inputContainer}>
             <TouchableOpacity style={{ ...styles.btn, color: (!username) ? 'grey' : 'default' }}>
               <Button
