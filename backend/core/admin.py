@@ -4,7 +4,7 @@ from django.http.response import HttpResponse
 from django.core import serializers
 
 from django.conf import settings
-
+from django.contrib import messages
 # Register your models here.
 
 from .models import Account,TransactionType,TransactionCharge,Transfer,Withdraw,Deposit
@@ -14,14 +14,14 @@ from .models import Account,TransactionType,TransactionCharge,Transfer,Withdraw,
 
 class AccountAdmin(admin.ModelAdmin):
 
-	list_display = ('id','user','account_number','is_agent','amount','convertedAmount','account_status','display_currency')
+	list_display = ('id','user','account_number','is_agent','amount','convertedAmount','account_status')
 	list_filter=('balance','account_status')
 	readonly_fields = ('currency','user','pin_code','account_number') 
 
 	search_fields = ('user__username','currency','account_status',)
 	list_per_page = 25
 
-	actions = ['to_agent','to_normal','make_inactive','make_active','reset_pin','reset_balance']
+	actions = ['to_agent','to_normal','make_inactive','make_active','reset_pin','reset_balance','formalise_account_number']
 
 	@admin.display(description="Account Balance",ordering='-created_at')
 	def amount(self,obj):
@@ -37,9 +37,15 @@ class AccountAdmin(admin.ModelAdmin):
 	def to_agent(self,request,queryset):
 		queryset.update(is_agent=True)
 
+		for acc in queryset:
+			messages.add_message(request,messages.SUCCESS,'%s is now an agent'% acc )
+
 	@admin.action(description="Switch to normal account")
 	def to_normal(self,request,queryset):
 		queryset.update(is_agent=False)
+
+		for acc in queryset:
+			messages.add_message(request,messages.SUCCESS,'%s is now normal'% acc )
 	
 
 	@admin.action(description='Make account inactive')
@@ -52,11 +58,24 @@ class AccountAdmin(admin.ModelAdmin):
 
 	@admin.action(description='Reset Account pin code')
 	def reset_pin(self,request,queryset):
+		from notifications.models import Notification
+
+		for acc in queryset:
+			if acc.pin_code != settings.WALLET_DEFAULT_PIN_CODE:
+				Notification.objects.create(user=acc.user,message=f"Account pin code reset successfully to {settings.WALLET_DEFAULT_PIN_CODE} please change your pin code")
+
 		queryset.update(pin_code=settings.WALLET_DEFAULT_PIN_CODE)
 
 	@admin.action(description='Reset account balance')
 	def reset_balance(self,request,queryset):
 		queryset.update(balance=0)
+
+	@admin.action(description='Formalise account number')
+	def formalise_account_number(self,request,queryset):
+
+		for acc in queryset:
+			acc.account_number = str(1000000 + acc.id)
+			acc.save()
 
 
 admin.site.register(Account,AccountAdmin)
