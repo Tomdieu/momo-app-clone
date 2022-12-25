@@ -28,7 +28,7 @@ class LogoutView(APIView):
 
         logout(request)
 
-        return Response({'message': 'You successfully logout'}, status=status.HTTP_200_OK)
+        return Response({'message': 'You successfully logout','success':True}, status=status.HTTP_200_OK)
 
 
 class LoginViewSet(GenericViewSet, CreateAPIView):
@@ -45,14 +45,26 @@ class LoginViewSet(GenericViewSet, CreateAPIView):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return Response({'success': True, 'token': user.auth_token.key})
+            profile = ProfileListSerializer(Profile.objects.get(user=request.user)).data
+            profile['token'] = user.auth_token.key
+            return Response({'success': True, 'token': user.auth_token.key,'data':profile,'message':'Valid Credentials'})
         else:
-            return Response({'success': False, 'error_message': 'username or password incorrect'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success': False, 'message': 'username or password incorrect','data':[]}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CreateProfileViewSet(CreateModelMixin, GenericViewSet):
 
     serializer_class = ProfileListSerializer
+
+    def create(self,request,*args,**kwargs):
+
+        serializer = self.serializer_class(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+
+        return Response({'success':True,'data':serializer.data,'message':'Welcome to trix wallet'})
 
 
 class ProfileViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):
@@ -67,6 +79,22 @@ class ProfileViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Destr
 
     def get_queryset(self):
         return Profile.objects.filter(user=self.request.user)
+
+    def retrieve(self,request,*args,**kwargs):
+        serializer = self.get_serializer_class()
+        pk = kwargs.get('pk')
+        queryset = self.get_queryset().filter(pk=pk)
+        print(queryset)
+        if queryset:
+            return Response({'success':True,'data':serializer(queryset.first()).data,'message':'Your profile'})
+        return Response({'success':False,'data':[],'message':'Not Found'},status=status.HTTP_400_BAD_REQUEST)
+
+
+    def list(self,request,*args,**kwargs):
+
+        serializer = self.get_serializer_class()
+        queryset = self.get_queryset()
+        return Response({'success':True,'data':serializer(queryset.first()).data,'message':'Your profile'})
 
 
 
@@ -85,22 +113,22 @@ class UpdatePasswordViewSet(GenericViewSet, CreateAPIView):
         confirm_password = request.data.get('confirm_password')
 
         if not request.user.check_password(old_password):
-            return Response({'message': 'old password don\'t match'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':False,'message': 'old password don\'t match'}, status=status.HTTP_400_BAD_REQUEST)
 
         if len(new_password) < 8:
-            return Response({'message': 'password is too short require atleast 8 characters'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':False,'message': 'password is too short require atleast 8 characters'}, status=status.HTTP_400_BAD_REQUEST)
 
         if new_password != confirm_password:
-            return Response({'message': 'password don\'t match'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':False,'message': 'password don\'t match'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = request.user
         user.set_password(new_password)
         user.save()
 
         if user.check_password(new_password):
-            return Response({'message': 'password updated successfully'}, status=status.HTTP_200_OK)
+            return Response({'message': 'password updated successfully','success':True}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'Something went wrong'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Something went wrong','success':False}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateLanguage(GenericViewSet, CreateModelMixin):
@@ -120,7 +148,7 @@ class UpdateLanguage(GenericViewSet, CreateModelMixin):
         profile.lang = request.data.get('lang')
         profile.save()
 
-        return Response({'message': 'Language Updated', 'profile': ProfileListSerializer(profile).data})
+        return Response({'message': 'Language Updated', 'data': ProfileListSerializer(profile).data,'success':True})
 
 
 @api_view(['GET'])
@@ -133,6 +161,6 @@ def userExists(request, *args, **kwargs):
             f = User.objects.filter(email=kwargs['value'])
 
         if f.exists():
-            return Response({'message': f'a user with this {field} already exists found', 'found': True})
+            return Response({'message': f'a user with this {field} already exists found', 'success': True})
         else:
-            return Response({'message': f'{field} not found', 'found': False})
+            return Response({'message': f'{field} not found','success':False})

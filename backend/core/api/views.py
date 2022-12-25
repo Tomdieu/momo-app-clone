@@ -42,6 +42,16 @@ class GetAccountViewSet(GenericViewSet,ListModelMixin):
             return Account.objects.filter(user=self.request.user)
 
 
+    def list(self,request,*args,**kwargs):
+        if self.get_queryset():
+            serializer = AccountListSerializer(self.get_queryset())
+            queryset = self.get_queryset()
+            return Response({'success':True,'data':AccountListSerializer(queryset,many=True).data[0],'message':'Account Find'})
+        else:
+            return Response({'success':False,'data':[],'message':'Not found'})
+
+
+
 
 
 class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateModelMixin):
@@ -56,12 +66,37 @@ class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateM
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Account.objects.filter(user=self.request.user)
+        return Account.objects.all()
+        # return Account.objects.filter(user=self.request.user)
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.user == request.user:
             return super().partial_update(request, *args, **kwargs)
+
+    def retrieve(self,request, *args, **kwargs):
+
+        pk = kwargs.get('pk')
+
+        queryset = self.get_queryset().get(user_id=pk)
+
+        if queryset:
+            serializer = self.get_serializer_class()
+            return Response({'success':True,'data':AccountListSerializer(queryset).data,'message':'Your account informations'})
+        return Response({'success':False,'data':[],'message':'Not Found'})
+
+    def list(self,request, *args, **kwargs):
+
+        queryset = self.get_queryset()
+
+        print(queryset)
+
+        if queryset:
+
+            return Response({'success':True,'data':AccountListSerializer(queryset,many=True).data[0],'message':'Your account informations'})
+        return Response({'success':True,'data':{},'message':'No Account Found'})
+
+
 
 
 class TransactionChargeViewSet(RetrieveModelMixin, CreateModelMixin, ListModelMixin, GenericViewSet, UpdateModelMixin, DestroyModelMixin):
@@ -124,11 +159,11 @@ class TransferMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
 
         # This line checks if the user account pin code matches the pin code send in the request
         if not request.user.account.check_pincode(serializer.validated_data['pin_code']):
-            return Response({'detail': 'Incorrect pin code'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'message': 'Incorrect pin code','success':false}, status=status.HTTP_401_UNAUTHORIZED)
 
         # this line simply checks if the sender id matches the reciever id
         if request.user.account.id == serializer.validated_data['reciever'].id:
-            return Response({'detail': 'You can not send money to your self!'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'You can not send money to your self!','success':false}, status=status.HTTP_400_BAD_REQUEST)
 
         sender = request.user.account
 
@@ -141,9 +176,9 @@ class TransferMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
                 instance = serializer.save()
                 return Response(TransferListSerializer(instance).data, status=status.HTTP_201_CREATED)
             else:
-                return Response({'detail': 'You are not authorized to make this transfer'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'message': 'You are not authorized to make this transfer','success':false}, status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return Response({'detail': 'Your account balance is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Your account balance is insufficent to perform the transaction!','success':false}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DepositViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
@@ -157,7 +192,7 @@ class DepositViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         elif self.request.method.upper() in ['POST']:
             return CreateDepositSerializer
         else:
-            return DepositSerializer0000000
+            return DepositSerializer
 
     def get_queryset(self):
         return Deposit.objects.filter(Q(sender__user=self.request.user) | Q(reciever__user=self.request.user)).order_by('-created_at')
@@ -168,11 +203,11 @@ class DepositViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
 
         # This line checks if the user account pin code matches the pin code send in the request
         if not request.user.account.check_pincode(serializer.validated_data['pin_code']):
-            return Response({'detail': 'Incorrect pin code'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'success':False,'message': 'Incorrect pin code'}, status=status.HTTP_401_UNAUTHORIZED)
 
         # this line simply checks if the sender id matches the reciever id
         if request.user.account.id == serializer.validated_data['reciever'].id:
-            return Response({'detail': 'You can not send money to your self!'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':False,'message': 'You can not send money to your self!'}, status=status.HTTP_400_BAD_REQUEST)
 
         sender = request.user.account
 
@@ -183,11 +218,11 @@ class DepositViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
             if serializer.validated_data['reciever'] != request.user.account:
                 # request.data.pop('pin_code')
                 instance = serializer.save()
-                return Response(TransferListSerializer(instance).data, status=status.HTTP_201_CREATED)
+                return Response({'success':True,'message':'Deposit Successfully','data':DepositListSerializer(instance).data}, status=status.HTTP_201_CREATED)
             else:
-                return Response({'detail': 'You are not authorized to make this deposit'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'success':False,'message': 'You are not authorized to make this deposit'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return Response({'detail': 'Your account balance is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':False,'message': 'Your account balance is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class WithdrawMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
@@ -213,9 +248,9 @@ class WithdrawMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
 
         # this line verify if the user accoun id matches the id to the account send in the request
         if not request.user.account.check_pincode(serializer.validated_data['pin_code']):
-            return Response({'detail': 'Incorrect pin code'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'success':False,'message': 'Incorrect pin code'}, status=status.HTTP_401_UNAUTHORIZED)
 
-            # return Response({'detail':"Your account balance is insufficent to perform the transaction!"},status=status.HTTP_401_UNAUTHORIZED)
+            # return Response({'success':False,'message':"Your account balance is insufficent to perform the transaction!"},status=status.HTTP_401_UNAUTHORIZED)
 
         withdraw_from = Account.objects.select_for_update().get(
             user_id=request.data.get('withdraw_from'))
@@ -223,16 +258,16 @@ class WithdrawMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         agent = serializer.validated_data['agent']
         serializer.validated_data.pop('pin_code')
         if not agent.is_agent:
-            return Response({'detail': 'Only agent are allow to make withdrawal'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'success':False,'message': 'Only agent are allow to make withdrawal'}, status=status.HTTP_401_UNAUTHORIZED)
 
         if request.data['withdraw_from'] == request.data['agent']:
-            return Response({'detail': 'You can not withdraw money to you self'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':False,'message': 'You can not withdraw money to you self'}, status=status.HTTP_400_BAD_REQUEST)
 
         if float(request.data['amount']) <= float(withdraw_from.balance):
             instance = serializer.save()
-            return Response(WithdrawListSerializer(instance).data, status=status.HTTP_201_CREATED)
+            return Response({'success':True,'data':WithdrawListSerializer(instance).data,'message':'withdraw created please wait for approval'}, status=status.HTTP_201_CREATED)
         else:
-            return Response({'detail': f'The account balance of {withdraw_from.user} is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':False,'message': f'The account balance of {withdraw_from.user} is insufficent to perform the transaction!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ConfirmWithdraw(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
@@ -266,6 +301,14 @@ class ConfirmWithdraw(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Gene
         ).order_by('-created_at')
 
 
+    def list(self,request,*args,**kwargs):
+        if self.get_queryset():
+            queryset = self.get_queryset()
+            return Response({'success':True,'data':WithdrawSerializer(queryset).data,'message':'Your Pending withdrawals'})
+        else:
+            return Response({'success':True,'data':[],'message':'No pending withdrawal'})
+
+
 class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
     """
         \n
@@ -287,18 +330,18 @@ class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
         confirm_pin = serializer.validated_data.get('confirm_pin')
 
         if not request.user.account.check_pincode(old_pin):
-            return Response({'detail': 'pin code incorrect!'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':False,'message': 'pin code incorrect!'}, status=status.HTTP_400_BAD_REQUEST)
 
         if len(new_pin) < 5:
-            return Response({'detail': 'new pin code must be atleast 5 digits'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':False,'message': 'new pin code must be atleast 5 digits'}, status=status.HTTP_400_BAD_REQUEST)
         if new_pin != confirm_pin:
-            return Response({'detail': 'pin code don\'t match'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success':False,'message': 'pin code don\'t match'}, status=status.HTTP_400_BAD_REQUEST)
 
         else:
             account = request.user.account
             account.set_pincode(new_pin)
 
-            return Response({'detail': 'pin code updated successfully'})
+            return Response({'success':True,'message': 'pin code updated successfully'})
 
 
 class ConvertCurrencyViewSet(GenericViewSet, CreateAPIView):

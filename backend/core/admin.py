@@ -7,7 +7,7 @@ from django.conf import settings
 
 # Register your models here.
 
-from .models import Account,TransactionType,TransactionCharge,Transfer,Withdraw
+from .models import Account,TransactionType,TransactionCharge,Transfer,Withdraw,Deposit
 
 
 
@@ -89,6 +89,20 @@ class TransferAdmin(admin.ModelAdmin):
 		return f"{obj.currency} {obj.amount}"
 
 admin.site.register(Transfer,TransferAdmin)
+
+class DepositAdmin(admin.ModelAdmin):
+	
+	list_display = ('id','code','sender','reciever','status','transaction_amount','created_at')
+	search_fields = ('code','sender__user__username','reciever__user__username')
+	readonly_fields = ('code','currency','status')
+	list_per_page = 25
+
+
+	@admin.display
+	def transaction_amount(self,obj):
+		return f"{obj.currency} {obj.amount}"
+
+admin.site.register(Deposit,DepositAdmin)
 
 class WithdrawAdmin(admin.ModelAdmin):
 	

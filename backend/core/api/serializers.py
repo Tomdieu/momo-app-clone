@@ -8,9 +8,13 @@ from core.api.utils import converCurrency
 
 from  core.models import Account,TransactionCharge,TransactionType,Transfer,Withdraw,Deposit
 
+from django.db.models import Q,Sum
+
+
 class AccountSerializer(serializers.ModelSerializer):
 
-	converted_currency = serializers.SerializerMethodField()
+	
+
 
 	class Meta:
 
@@ -23,13 +27,66 @@ class AccountSerializer(serializers.ModelSerializer):
 			}
 		}
 
+	converted_currency = serializers.SerializerMethodField()
+	total_amount_transfer = serializers.SerializerMethodField()
+	total_amount_recieve = serializers.SerializerMethodField()
+	total_amount_withdraw = serializers.SerializerMethodField()
+
 	def get_converted_currency(self,obj:Account):
-		r = converCurrency(obj.currency,obj.display_currency,obj.balance)
-		return f'{obj.currency} {r}'
+		
+		if obj:
+			r = converCurrency(obj.currency,obj.display_currency,obj.balance)
+			return f'{obj.currency} {r}'
+		return ''
+
+	def get_total_amount_transfer(self,obj:Account):
+		T = Transfer.objects.filter(sender=obj,status='SUCCESSFULL').aggregate(Sum('amount')) 
+		D = Deposit.objects.filter(sender=obj,status='SUCCESSFULL').aggregate(Sum('amount'))
+
+		t = 0
+		d = 0
+		if T.get('amount__sum') is not None:
+			t = T.get('amount__sum')
+		if D.get('amount__sum') is not None:
+			d = D.get('amount__sum')
+		total = int(t) + int(d)
+
+		return total
+
+	def get_total_amount_withdraw(self,obj:Account):
+		W = Withdraw.objects.filter(withdraw_from=obj,state='SUCCESSFULL').aggregate(Sum('amount'))
+
+		w = 0
+
+		if W.get('amount__sum') is not None:
+			w = W.get('amount__sum')
+
+		return w
+
+	def get_total_amount_recieve(self,obj:Account):
+		T = Transfer.objects.filter(reciever=obj,status='SUCCESSFULL').aggregate(Sum('amount')) 
+		D = Deposit.objects.filter(reciever=obj,status='SUCCESSFULL').aggregate(Sum('amount'))
+		W = Withdraw.objects.filter(agent=obj,state='SUCCESSFULL').aggregate(Sum('amount'))
+
+		t,d,w = 0,0,0
+
+		if T.get('amount__sum') is not None:
+			t = T.get('amount__sum')
+
+		if D.get('amount__sum') is not None:
+			d = D.get('amount__sum')
+
+		if W.get('amount__sum') is not None:
+			w = W.get('amount__sum')
+
+		return t + d + w
+
+
+
+
 class AccountListSerializer(AccountSerializer):
 
 	user = UserSerializer()
-	convertedCurrency = serializers.SerializerMethodField()
 
 	class Meta:
 
@@ -42,8 +99,7 @@ class AccountListSerializer(AccountSerializer):
 			}
 		}
 
-	def convertedCurrency(self,obj:Account):
-		return converCurrency(obj.currency,obj.display_currency,obj.balance)
+
 class ChangePinSerializer(serializers.Serializer):
 
 	old_pin = serializers.CharField(max_length=50,help_text='The old pin account')
@@ -179,6 +235,14 @@ class CreateDepositSerializer(serializers.ModelSerializer):
 				'read_only':True
 			}
 		}
+
+	def create(self, validated_data):
+
+		validated_data.pop('pin_code')
+		validated_data['sender'] = self.context['request'].user.account
+		deposit = Deposit.objects.create(**validated_data)
+
+		return deposit
 
 class DepositSerializer(serializers.ModelSerializer):
 
