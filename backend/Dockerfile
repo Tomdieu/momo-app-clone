@@ -24,7 +24,7 @@ RUN python -m pip install --upgrade pip
 
 # Install pip requirements
 # COPY requirements.txt requirements.txt
-RUN pypthon install "setuptools<58"
+RUN python -m pip install "setuptools<58"
 RUN python -m pip install -r requirements.txt   
 
 # Creates a non-root user with an explicit UID and adds permission to access the /django_backend folder
