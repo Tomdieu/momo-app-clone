@@ -3,9 +3,17 @@ import React from 'react'
 // import { SafeAreaView } from 'react-native-safe-area-context'
 import Feather from 'react-native-vector-icons/Feather'
 
+import Fab from '../../components/Fab'
+
 const { StatusBarManager } = NativeModules
 
-const SelectTransactionTypeScreen = ({ navigation }) => {
+const SelectTransactionTypeScreen = ({ navigation,route }) => {
+  const { type } = route.params
+
+  const gotoNext = () =>{
+    navigation.navigate('ConfirmTransaction')
+  }
+
   return (
     <SafeAreaView style={{
       ...styles.container,
@@ -13,8 +21,8 @@ const SelectTransactionTypeScreen = ({ navigation }) => {
     }}
     >
       <View style={{ flex: 1,padding:8 }}>
-        <Text style={styles.title}>Select options</Text>
-        <TouchableOpacity>
+        <Text style={styles.title}>Select options for {type}</Text>
+        <TouchableOpacity onPress={gotoNext}>
           <View style={styles.option}>
             <View style={{ flexDirection: 'row', alignItems: 'center'}}>
               <Feather name={'phone'} size={16} />
@@ -33,6 +41,7 @@ const SelectTransactionTypeScreen = ({ navigation }) => {
           </View>
         </TouchableOpacity>
       </View>
+        <Fab onPress={()=>navigation.replace('Transaction')} iconName="left" style={{backgroundColor:'orange'}}/>
     </SafeAreaView>
   )
 }
@@ -44,7 +53,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   title: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '600',
     paddingLeft:5,
     paddingVertical:10
