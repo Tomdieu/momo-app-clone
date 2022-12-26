@@ -8,6 +8,8 @@ import {
   Image,
   NativeModules,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard
 } from "react-native";
 import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
@@ -17,13 +19,13 @@ import { COLORS } from "../../utils/constants";
 
 const { StatusBarManager } = NativeModules;
 
-import {useAuthContext} from '../../context/AuthContext'
+import { useAuthContext } from '../../context/AuthContext'
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const {testLogin} = useAuthContext()
+  const { testLogin } = useAuthContext()
 
   const handleSubmit = (e) => { };
 
@@ -43,55 +45,57 @@ const LoginScreen = ({ navigation }) => {
         }}
       >
         <StatusBar style={"auto"} />
-        <View style={styles.wrapper}>
-          <View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.wrapper}>
+            <View>
 
-            <Text style={styles.title}>Login</Text>
-            <Image
-              source={require("../../images/logo.png")}
-              style={styles.logo}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>username</Text>
-            <TextInput
-              style={styles.input}
-              value={username}
-              onChange={(text) => setUsername(text)}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>password</Text>
-            <TextInput
-              style={styles.input}
-              value={password}
-              secureTextEntry={true}
-              onChangeText={(text) => setPassword(text)}
-            />
-          </View>
-          <TouchableOpacity style={{ width: '100%' }} activeOpacity={(!username && !password) ? 1 : .7} disabled={Boolean(!username && !password)}>
-            <Button mode="contained" compact style={{ backgroundColor: (username && password) ? COLORS.green : 'grey', width: '100%', borderRadius: 3, marginVertical: 8 }} labelStyle={{ color: COLORS.white }}>Login</Button>
-          </TouchableOpacity>
-          <Button onPress={()=>testLogin()}>Test Me</Button>
-          <View style={styles.inputContainer}>
-            <TouchableOpacity style={{ ...styles.btn, color: (!username) ? 'grey' : 'default' }}>
-              <Button
-                style={styles.btn}
-                title="Login"
-                onPress={() => navigation.navigate("Register")}
+              <Text style={styles.title}>Login</Text>
+              <Image
+                source={require("../../images/logo.png")}
+                style={styles.logo}
               />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>username</Text>
+              <TextInput
+                style={styles.input}
+                value={username}
+                onChange={(text) => setUsername(text)}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>password</Text>
+              <TextInput
+                style={styles.input}
+                value={password}
+                secureTextEntry={true}
+                onChangeText={(text) => setPassword(text)}
+              />
+            </View>
+            <TouchableOpacity style={{ width: '100%' }} activeOpacity={(!username && !password) ? 1 : .7} disabled={Boolean(!username && !password)}>
+              <Button mode="contained" compact style={{ backgroundColor: (username && password) ? COLORS.green : 'grey', width: '100%', borderRadius: 3, marginVertical: 8 }} labelStyle={{ color: COLORS.white }}>Login</Button>
             </TouchableOpacity>
-          </View>
-          <Text style={styles.text}>
-            Already have an account ?{" "}
-            <Text
-              style={{ color: "blue" }}
-              onPress={() => navigation.navigate("Register")}
-            >
-              Register
+            <Button onPress={() => testLogin()}>Test Me</Button>
+            <View style={styles.inputContainer}>
+              <TouchableOpacity style={{ ...styles.btn, color: (!username) ? 'grey' : 'default' }}>
+                <Button
+                  style={styles.btn}
+                  title="Login"
+                  onPress={() => navigation.navigate("Register")}
+                />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.text}>
+              Already have an account ?{" "}
+              <Text
+                style={{ color: "blue" }}
+                onPress={() => navigation.navigate("Register")}
+              >
+                Register
+              </Text>
             </Text>
-          </Text>
-        </View>
+          </View>
+        </TouchableWithoutFeedback>
       </ScrollView>
     </SafeAreaView>
   );

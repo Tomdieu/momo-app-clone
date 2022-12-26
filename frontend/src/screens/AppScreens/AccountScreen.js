@@ -13,6 +13,12 @@ import { COLORS } from '../../utils/constants'
 const AccountScreen = ({ navigation }) => {
 
   const [transactionFilter, setTransactiontransaction] = useState('all')
+
+  const goToScreen = (transactionType) => {
+    if(!transactionType) return;
+    navigation.navigate('Transactions',{screen:'TransactionType',params:{type:transactionType}})
+  }
+
   return (
     <SafeAreaView style={{
       ...styles.container,
@@ -27,7 +33,7 @@ const AccountScreen = ({ navigation }) => {
             <MaterialIcons name="account-balance" color={COLORS.white} size={32} />
             <Text style={{ color: COLORS.white, fontSize: 20 }}>1,000 XAF</Text>
           </View>
-          <View style={{ ...styles.infoContainer, backgroundColor: COLORS.grey, flexDirection: 'column' }}>
+          <View style={{ ...styles.infoContainer, backgroundColor: COLORS.black,borderRadius:5, flexDirection: 'column' }}>
             <View style={styles.historyInfo}><FontAwesome name={'caret-up'} size={24} color={COLORS.white} />
               <Text style={{ ...styles.transactionsAmount, color: COLORS.green }}> {'+'} 100 XAF</Text>
             </View>
@@ -36,24 +42,24 @@ const AccountScreen = ({ navigation }) => {
             </View>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 10 }}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>goToScreen('Transfer')}>
               <View style={styles.btn}>
                 {/*<FontAwesome name={'send'} size={24} color={COLORS.black} />*/}
                 
-                <MaterialCommunityIcons name={'bank-transfer'} size={32} color={COLORS.black} />
+                <MaterialCommunityIcons name={'bank-transfer'} size={32} color={COLORS.white} />
 
               </View>
               <Text>Transfer</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>goToScreen('Withdraw')}>
               <View style={styles.btn}>
-                <MaterialCommunityIcons name={'cash-minus'} size={32} color={COLORS.black} />
+                <MaterialCommunityIcons name={'cash-minus'} size={32} color={COLORS.white} />
               </View>
-              <Text>Withdraw</Text>
+              <Text style={{fontWeight:'bolder'}}>Withdraw</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>goToScreen('Deposit')}>
               <View style={styles.btn}>
-                <MaterialCommunityIcons name={'cash-plus'} size={32} color={COLORS.black} />
+                <MaterialCommunityIcons name={'cash-plus'} size={32} color={COLORS.white} />
               </View>
               <Text>Top Up</Text>
             </TouchableOpacity>
@@ -86,10 +92,10 @@ const AccountScreen = ({ navigation }) => {
                 <View style={styles.transaction}>
                   <View style={{ flexDirection: 'row' }}>
                     <View style={styles.transaction_icon}>
-                      <MaterialCommunityIcons name={'settings'} size={24} color={COLORS.black} />
+                      <MaterialCommunityIcons name={'home'} size={24} color={COLORS.black} />
                     </View>
                     <View style={styles.transaction_info}>
-                      <Text style={{ fontSize: 14, fontWeight: '700' }}>Transfer to  {"ivantom"}</Text>
+                      <Text style={{ fontSize: 14, fontWeight: '700',justifyContent:'flex-end' }}>Transfer to  {"ivantom"}</Text>
                       <Text style={{ fontSize: 10 }}>Ivantom tester</Text>
                       <Text style={{ fontSize: 10 }}>1 Dec 20222</Text>
                     </View>
@@ -141,7 +147,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignSelf: 'center',
     padding: 10,
-    backgroundColor: COLORS.lightGrey,
+    backgroundColor: COLORS.green,
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 10
