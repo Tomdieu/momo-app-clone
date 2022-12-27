@@ -7,8 +7,8 @@ const Fab = (props) => {
   console.log(style)
   return (
     <TouchableOpacity onPress={onPress} onLongPress={onLongPress}>
-      <View style={{ ...styles.fab, style }}>
-        <AntDesign name={iconName} style={{ ...styles.icon, iconStyle }} size={iconSize} />
+      <View style={{ ...styles.fab, ...style }}>
+        <AntDesign name={iconName} style={{ ...styles.icon, ...iconStyle }} size={iconSize} />
       </View>
     </TouchableOpacity>
   )
