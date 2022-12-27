@@ -3,10 +3,14 @@ import React from 'react'
 import Feather from 'react-native-vector-icons/Feather'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
+import {useAuthContext} from '../../context/AuthContext'
 
 const { StatusBarManager } = NativeModules
 
 const SettingsScreen = () => {
+
+  const {lestLogout} = useAuthContext()
+
   return (
     <SafeAreaView style={{
       ...styles.container,
@@ -41,7 +45,7 @@ const SettingsScreen = () => {
             </View>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={lestLogout}>
           <View style={styles.option}>
             <Text style={styles.label}>SignOut</Text>
             <MaterialIcons name={'logout'} size={16} style={styles.action} />
