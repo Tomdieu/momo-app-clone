@@ -35,10 +35,7 @@ class GetAccountViewSet(GenericViewSet,ListModelMixin):
             return Account.objects.filter(account_number=account_number)
 
         phone_number = self.request.query_params.get('phone_number').replace(' ','')
-        print(phone_number)
         if phone_number:
-            p = Profile.objects.filter(phone_number=phone_number).first()
-            print('Profile ',p)
             return Account.objects.filter(user__profile__phone_number__icontains=phone_number)
 
         else:
