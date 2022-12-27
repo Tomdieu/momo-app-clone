@@ -21,21 +21,25 @@ from django.conf import settings
 from core.api.utils.permisions import IsAgent
 from core.api.utils import converCurrency
     
+from accounts.models import Profile
 
 class GetAccountViewSet(GenericViewSet,ListModelMixin):
 
     serializer_class = AccountListSerializer
 
     def get_queryset(self):
+        print(self.request.query_params)
         account_number = self.request.query_params.get('account_number')
         if account_number:
 
             return Account.objects.filter(account_number=account_number)
 
-        phone_number = self.request.query_params.get('phone_number')
-
+        phone_number = self.request.query_params.get('phone_number').replace(' ','')
+        print(phone_number)
         if phone_number:
-            return Account.objects.filter(user__profile__phone_number=phone_number)
+            p = Profile.objects.filter(phone_number=phone_number).first()
+            print('Profile ',p)
+            return Account.objects.filter(user__profile__phone_number__icontains=phone_number)
 
         else:
 
@@ -43,6 +47,7 @@ class GetAccountViewSet(GenericViewSet,ListModelMixin):
 
 
     def list(self,request,*args,**kwargs):
+        print(self.get_queryset())
         if self.get_queryset():
             serializer = AccountListSerializer(self.get_queryset())
             queryset = self.get_queryset()
