@@ -18,7 +18,7 @@ const TransactionScreen = ({navigation}) => {
           <View style={styles.transaction_type}>
             <View style={{flexDirection:'row'}}>
               <FontAwesome name="send" color={'white'} size={24} />
-              <Text style={{marginLeft:5}}>Transfer</Text>
+              <Text style={{marginLeft:5,color:'#fff'}}>Transfer</Text>
             </View>
             <FontAwesome name='caret-right' color={'white'} size={24} />
           </View>
@@ -27,7 +27,7 @@ const TransactionScreen = ({navigation}) => {
           <View style={styles.transaction_type}>
             <View style={{flexDirection:'row'}}>
               <MaterialCommunityIcons name="cash-plus" color={'white'} size={24} />
-              <Text style={{marginLeft:5}}>Deposit</Text>
+              <Text style={{marginLeft:5,color:'#fff'}}>Deposit</Text>
             </View>
             <FontAwesome name='caret-right' color={'white'} size={24} />
           </View>
@@ -36,7 +36,7 @@ const TransactionScreen = ({navigation}) => {
           <View style={styles.transaction_type}>
             <View style={{flexDirection:'row'}}>
               <MaterialCommunityIcons name="cash-minus"  color={'white'} size={24}/>
-              <Text style={{marginLeft:5}}>Withdraw</Text>
+              <Text style={{marginLeft:5,color:'#fff'}}>Withdraw</Text>
             </View>
             <FontAwesome name='caret-right' color={'white'} size={24} />
           </View>

@@ -10,8 +10,8 @@ const { StatusBarManager } = NativeModules
 const SelectTransactionTypeScreen = ({ navigation,route }) => {
   const { type } = route.params
 
-  const gotoNext = () =>{
-    navigation.navigate('ConfirmTransaction')
+  const gotoNext = (route) =>{
+    navigation.navigate(route)
   }
 
   return (
@@ -22,7 +22,7 @@ const SelectTransactionTypeScreen = ({ navigation,route }) => {
     >
       <View style={{ flex: 1,padding:8 }}>
         <Text style={styles.title}>Select options for {type}</Text>
-        <TouchableOpacity onPress={gotoNext}>
+        <TouchableOpacity onPress={()=>gotoNext('InputPhone')}>
           <View style={styles.option}>
             <View style={{ flexDirection: 'row', alignItems: 'center'}}>
               <Feather name={'phone'} size={16} />
@@ -41,7 +41,7 @@ const SelectTransactionTypeScreen = ({ navigation,route }) => {
           </View>
         </TouchableOpacity>
       </View>
-        <Fab onPress={()=>navigation.replace('Transaction')} iconName="left" style={{backgroundColor:'orange'}}/>
+        <Fab onPress={()=>navigation.replace('Transaction')} iconName="left" style={{backgroundColor:'green'}}/>
     </SafeAreaView>
   )
 }
