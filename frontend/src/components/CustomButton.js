@@ -3,16 +3,17 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const CustomButton = (props) => {
-    const { disabled = false, style = {}, onPress, onLongPress, ...others } = props;
+    const { title='Ok',disabled = false, style = {}, onPress, onLongPress, ...others } = props;
     const { color } = style;
     return (
         <TouchableOpacity disabled={disabled} onPress={onPress} onLongPress={onLongPress} {...others} style={[{ ...styles.container, ...style },disabled && styles.touchableDisabled]}>
-            <Text style={{ ...styles.text,color }}>Ok</Text>
+            <Text style={{ ...styles.text,color }}>{title}</Text>
         </TouchableOpacity>
     )
 }
 
 CustomButton.propTypes = {
+    title:PropTypes.string.isRequired,
     disabled: PropTypes.bool,
     style: PropTypes.object,
     onPress: PropTypes.func,
