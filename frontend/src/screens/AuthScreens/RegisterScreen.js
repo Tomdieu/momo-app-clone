@@ -9,12 +9,15 @@ import {
   TouchableOpacity,
   TouchableHighlight,
 } from "react-native";
+
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Formik } from "formik";
 import { COLORS } from "../../utils/constants";
 import { Button } from "react-native-paper";
+
+import CustomButton from "../../components/CustomButton";
 
 import { basicSchema } from '../../schema/UserSchema'
 
@@ -161,11 +164,13 @@ const RegisterScreen = ({ navigation }) => {
 
               <View style={styles.btnContainer}>
 
-                <TouchableOpacity disabled={Boolean(!isValid || !dirty)}>
+                {/* <TouchableOpacity disabled={Boolean(!isValid || !dirty)}>
                   <Button  mode="contained" labelStyle={{ color: "white", fontSize: 18 }} style={{ backgroundColor: (!isValid || !dirty)?'grey':COLORS.green, borderRadius: 5 }}>
                     Sign Up
                   </Button>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+
+                <CustomButton disabled={Boolean(!isValid || !dirty)} title={'Sign Up'} style={{ color: 'white', backgroundColor: COLORS.green }} />
 
 
               </View>
@@ -178,7 +183,7 @@ const RegisterScreen = ({ navigation }) => {
                   Login
                 </Text>
               </Text>
-              </View>
+            </View>
           )}
         </Formik>
       </ScrollView>
@@ -206,7 +211,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     padding: 8,
-    lineHeight:18,
+    lineHeight: 18,
     fontSize: 18,
     borderColor: "#ddd",
     borderRadius: 5,

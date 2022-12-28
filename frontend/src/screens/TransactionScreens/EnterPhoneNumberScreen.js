@@ -43,12 +43,12 @@ const EnterPhoneNumberScreen = ({ navigation }) => {
     }
 
     return (
-        <Formik 
-            initialValues={{ phoneNumber: '' }} 
-            validationSchema={PhoneSchema} 
-            onSubmit={(values) => { 
-                setPhoneNumber(values.phoneNumber); 
-                goNext() 
+        <Formik
+            initialValues={{ phoneNumber: '' }}
+            validationSchema={PhoneSchema}
+            onSubmit={(values) => {
+                setPhoneNumber(values.phoneNumber);
+                goNext()
             }}>
             {({
                 handleChange,
@@ -67,15 +67,23 @@ const EnterPhoneNumberScreen = ({ navigation }) => {
                             <View style={{ marginVertical: 20 }}>
                                 <Text style={{ fontSize: 23, marginBottom: 8 }}>Reciever Phone</Text>
                                 <View style={{ borderRadius: 5, flexDirection: 'row', width: '100%', justifyContent: 'flex-start', alignItems: 'center', borderWidth: 1, paddingHorizontal: 5 }}>
-                                    <Feather name="hash" size={16} style={{ color: '#fff', width: '5%' }} />
-                                    <TextInput name="phoneNumber" maxLength={13} style={styles.input} keyboardType={'phone-pad'} value={values.phoneNumber} onChangeText={handleChange("phoneNumber")} onBlur={handleBlur("phoneNumber")} />
+                                    <Feather name="hash" size={16} style={{ color: '#000', width: '5%' }} />
+                                    <TextInput 
+                                        name="phoneNumber" 
+                                        maxLength={13} 
+                                        style={styles.input} 
+                                        keyboardType={'phone-pad'} 
+                                        value={values.phoneNumber} 
+                                        onChangeText={handleChange('phoneNumber')} 
+                                        onBlur={handleBlur("phoneNumber")}     
+                                    />
                                 </View>
                                 {(errors.phoneNumber && touched.phoneNumber) &&
                                     <Text style={{ fontSize: 10, color: 'red', paddingLeft: 8 }}>{errors.phoneNumber}</Text>
                                 }
                             </View>
                             <View>
-                                <CustomButton onPress={handleSubmit} disabled={Boolean(!isValid || !dirty)} style={{ color: 'white', backgroundColor: 'black' }} />
+                                <CustomButton title='Continue' onPress={handleSubmit} disabled={Boolean(!isValid || !dirty)} style={{ color: 'white', backgroundColor: 'black' }} />
                             </View>
                         </View>
                     </View>

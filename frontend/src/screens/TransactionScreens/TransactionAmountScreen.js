@@ -1,17 +1,24 @@
 import { StyleSheet, Text, View, TouchableWithoutFeedback, Keyboard, TextInput } from 'react-native'
-import React from 'react'
+import React,{useState} from 'react'
 
 import { Formik } from "formik";
 
 import CustomButton from '../../components/CustomButton'
 import { Feather } from '@expo/vector-icons'
 
+import AmountSchema from '../../schema/AmountSchema';
+
 const TransactionAmountScreen = ({ navigation, route }) => {
 
     const { account,phoneNumber } = route.params;
 
+    const [amount,setAmount] = useState(0)
+
     return (
-        <Formik initialValues={{ amount: 0 }} onSubmit={(values) => console.log(values)}>
+        <Formik 
+            initialValues={{ amount: 0 }} 
+            validationSchema={AmountSchema}
+            onSubmit={(values) => {navigation.navigate('ConfirmTransaction')}}>
             {({
                 handleChange,
                 handleBlur,
@@ -33,10 +40,20 @@ const TransactionAmountScreen = ({ navigation, route }) => {
                         <View style={{marginVertical:10}}>
                             <View style={{marginVertical:10}}>
                                 <Text style={{fontSize:18,marginVertical:8}}>Amount</Text>
-                                <TextInput style={styles.input} name="amount" keyboardType='numeric'/>
+                                <TextInput 
+                                    style={styles.input} 
+                                    name="amount" 
+                                    keyboardType='numeric'
+                                    value={values.amount}
+                                    onChangeText={handleChange('amount')} 
+                                    onBlur={handleBlur("amount")} 
 
+                                />
+                                {(errors.amount && touched.amount) &&
+                                    <Text style={{ fontSize: 12,fontWeight:'900', color: 'red', paddingLeft: 8 }}>{errors.amount}</Text>
+                                }
                             </View>
-                            <CustomButton onPress={handleSubmit}/>
+                            <CustomButton style={{color:'white'}} title={'Send'} onPress={handleSubmit} disabled={Boolean(!isValid || !dirty)}/>
                         </View>
                     </View>
                 </TouchableWithoutFeedback>
