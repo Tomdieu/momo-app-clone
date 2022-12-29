@@ -10,6 +10,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import { COLORS } from '../../utils/constants'
 
+
 const AccountScreen = ({ navigation }) => {
 
   const [transactionFilter, setTransactiontransaction] = useState('all')

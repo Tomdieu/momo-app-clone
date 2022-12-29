@@ -13,6 +13,10 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
     setPinCode(value.replace(/[^0-9]/g, ''))
   }
 
+  const goNext = () =>{
+    navigation.navigate('SuccessTransactionScreen')
+  }
+
   return (
     <SafeAreaView style={{
       ...styles.container,
@@ -43,7 +47,7 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
               secureTextEntry
 
             />
-            <CustomButton title='Confirm' style={{ color: '#fff' }} />
+            <CustomButton onPress={goNext} title='Confirm' style={{ color: '#fff' }} />
           </View>
         </View>
       </TouchableWithoutFeedback>
