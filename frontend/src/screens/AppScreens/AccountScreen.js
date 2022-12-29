@@ -86,7 +86,7 @@ const AccountScreen = ({ navigation }) => {
 
             <View>
               <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', padding: 8 }}>
-                <Text style={{ fontSize: 14, fontWeight: '700' }}>Current Transaction</Text>
+                <Text style={{ fontSize: 14, fontWeight: '700' }}>Latest Transactions</Text>
                 <Text style={{ textDecorationStyle: 'underline', color: COLORS.green }}>See all</Text>
               </View>
               <View style={styles.transactions}>

@@ -18,11 +18,11 @@ const SettingsScreen = () => {
     }}
     >
       <View style={{ flex: 1 }}>
-        <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: '600',marginVertical:10 }}>Profile</Text>
+        <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: '600',marginVertical:10 }}>Settings</Text>
         <View style={{ flex: 1 }}>
           <TouchableOpacity>
             <View style={styles.option}>
-              <Text style={styles.label}>My Info</Text>
+              <Text style={styles.label}>My Informations</Text>
               <Feather name={'chevron-right'} size={16} style={styles.action} />
             </View>
           </TouchableOpacity>

@@ -4,14 +4,14 @@ import PropTypes from 'prop-types'
 
 // import * as Localization from 'expo-localization'
 
-import {I18n} from "i18n-js";
+import { I18n } from "i18n-js";
 
 import LANGUAGES from '../I18n/'
 import { useState } from "react";
 
-export const LangProvider = ({children}) =>{
+export const LangProvider = ({ children }) => {
 
-    const [locale,setLocale]= useState('en')
+    const [locale, setLocale] = useState('en')
 
     const i18n = new I18n(LANGUAGES)
 
@@ -22,12 +22,12 @@ export const LangProvider = ({children}) =>{
 
 
     return (
-        <LangContext.Provider value={{i18n,locale,setLocale}}>
+        <LangContext.Provider value={{ i18n, setLocale }}>
             {children}
         </LangContext.Provider>
     )
 }
 
 LangProvider.propTypes = {
-    children:PropTypes.node.isRequired
+    children: PropTypes.node.isRequired
 }

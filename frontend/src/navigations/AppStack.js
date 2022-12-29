@@ -27,8 +27,8 @@ const AppNavigator = () => {
         ),
       }}/>
       <Tab.Screen name="Notification" component={NotificationStack} options={{
-        title: "Settings",
-        tabBarLabel: "Profile",
+        title: "Notifications",
+        tabBarLabel: "Notifications",
         tabBarBadge:3,
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="notifications" color={color} size={size} />

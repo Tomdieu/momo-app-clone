@@ -1,6 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack'
 
-import SelectTransactionTypeScreen from '../screens/TransactionScreens/SelectTransactionTypeScreen'
 import NotificationDetail from '../screens/NotificationScreens/NotificationDetailScreen'
 import Notifications from '../screens/NotificationScreens/NotificationScreen'
 
