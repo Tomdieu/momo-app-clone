@@ -79,8 +79,6 @@ class AccountSerializer(serializers.ModelSerializer):
 		return t + d + w
 
 
-
-
 class AccountListSerializer(AccountSerializer):
 
 	user = UserSerializer()
@@ -180,8 +178,8 @@ class TransferSerializer(serializers.ModelSerializer):
 
 class TransferListSerializer(TransferSerializer):
 
-	sender = AccountSerializer()
-	reciever = AccountSerializer()
+	sender = AccountListSerializer()
+	reciever = AccountListSerializer()
 	charge = TransactionListChargeSerializer()
 
 
@@ -225,8 +223,8 @@ class WithdrawSerializer(serializers.ModelSerializer):
 
 class WithdrawListSerializer(WithdrawSerializer):
 
-	withdraw_from = AccountSerializer()
-	agent= AccountSerializer()
+	withdraw_from = AccountListSerializer()
+	agent= AccountListSerializer()
 	charge = TransactionListChargeSerializer()
 
 
@@ -264,8 +262,8 @@ class DepositSerializer(serializers.ModelSerializer):
 
 class DepositListSerializer(DepositSerializer):
 	
-	sender = AccountSerializer()
-	reciever = AccountSerializer()
+	sender = AccountListSerializer()
+	reciever = AccountListSerializer()
 	charge = TransactionListChargeSerializer()
 
 class ConvertCurrencySerializer(serializers.Serializer):
