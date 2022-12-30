@@ -13,9 +13,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import (
     CreateModelMixin, UpdateModelMixin, DestroyModelMixin, ListModelMixin, RetrieveModelMixin)
 from rest_framework.viewsets import (GenericViewSet)
-from rest_framework.generics import (CreateAPIView)
+from rest_framework.generics import (CreateAPIView, ListAPIView)
 
-from django.db.models import Q
+from django.db.models import Q, F
 
 from django.conf import settings
 from core.api.utils.permisions import IsAgent
@@ -77,18 +77,17 @@ class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateM
 
         pk = kwargs.get('pk')
 
-        queryset = self.get_queryset().get(user_id=pk)
+        queryset = self.get_queryset().filter(user_id=pk)
 
-        if queryset:
+        if queryset.exists():
+            instance = queryset.first()
             serializer = self.get_serializer_class()
-            return Response({'success': True, 'data': AccountListSerializer(queryset).data, 'message': 'Your account informations'})
+            return Response({'success': True, 'data': serializer(instance).data, 'message': 'Your account informations'})
         return Response({'success': False, 'data': [], 'message': 'Not Found'})
 
     def list(self, request, *args, **kwargs):
 
         queryset = self.get_queryset()
-
-        print(queryset)
 
         if queryset:
 
@@ -366,6 +365,31 @@ class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
             account.set_pincode(new_pin)
 
             return Response({'success': True, 'message': 'pin code updated successfully'})
+
+
+# Getting the latest transactions
+
+class LatestTransactionViewSet(GenericViewSet, ListAPIView):
+
+    # serializer_class = None
+    permission_classes = (IsAuthenticated,)
+
+    def list(self, request, *args, **kwargs):
+
+        t = Transfer.objects.filter(sender=self.request.user.account)[:5]
+
+        d = Deposit.objects.filter(sender=self.request.user.account)[:5]
+
+        w = Withdraw.objects.filter(agent=self.request.user.account)[:5]
+
+        return Response({
+            "success": True,
+            "data": {
+                "transfer": TransferListSerializer(t, many=True).data,
+                "withdraw": WithdrawListSerializer(w, many=True).data,
+                "deposit": DepositListSerializer(d, many=True).data
+            }
+        })
 
 
 class ConvertCurrencyViewSet(GenericViewSet, CreateAPIView):
