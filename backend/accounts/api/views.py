@@ -150,7 +150,7 @@ class UpdateLanguage(GenericViewSet, CreateModelMixin):
 
         return Response({'message': 'Language Updated', 'data': ProfileListSerializer(profile).data,'success':True})
 
-
+    
 @api_view(['GET'])
 def userExists(request, *args, **kwargs):
     if getMethod(request):
@@ -159,6 +159,8 @@ def userExists(request, *args, **kwargs):
             f = User.objects.filter(username=kwargs['value'])
         elif field=='email':
             f = User.objects.filter(email=kwargs['value'])
+        elif field == 'phone_number':
+            f = Profile.objects.filter(phone_number=kwargs['value'])
 
         if f.exists():
             return Response({'message': f'a user with this {field} already exists found', 'success': True})

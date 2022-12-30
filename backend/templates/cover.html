@@ -5,18 +5,16 @@
 
 {% block styles %}
 <style>
-  html,body{
-    margin:0;
-    padding:0;
-  }
   body{
     width:'100vw';
     max-width:'100vw';
-    background-color:'dark'
   }
 
   .cover-container{
     height:'100vh';
+    width:'100vw';
+    display:'flex';
+    flex:1;
   }
 </style>
 {% endblock styles %}
@@ -24,7 +22,10 @@
 
 {% block content %}
 
-<main class="bd-dark cover-container">ssds</main>
+<main class="cover-container">
+  {% include 'navbar.html' %}
+  
+</main>
 
 {% endblock content %}
 

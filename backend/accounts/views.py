@@ -96,3 +96,8 @@ def createProfile(request):
     template_name = 'accounts/create_account.html'
 
     
+def logoutUser(request):
+
+    logout(request)
+
+    return redirect('login')
