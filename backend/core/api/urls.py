@@ -26,6 +26,8 @@ router.register('convert-currency', views.ConvertCurrencyViewSet,
 
 router.register('get-account',views.GetAccountViewSet,basename='search-account')
 
+router.register('lastest-transaction',views.LatestTransactionViewSet,basename="lastest-transactions")
+
 urlpatterns = [
     path('', include(router.urls))
 ]
