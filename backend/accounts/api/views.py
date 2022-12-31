@@ -1,7 +1,7 @@
 
 from django.contrib.auth import get_user_model, authenticate, logout, login
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
@@ -33,6 +33,8 @@ class LogoutView(APIView):
 
 class LoginViewSet(GenericViewSet, CreateAPIView):
 
+    permission_classes = [AllowAny,]
+
     serializer_class = LoginSerializer
 
     def create(self, request, *args, **kwargs):
@@ -46,7 +48,6 @@ class LoginViewSet(GenericViewSet, CreateAPIView):
         if user is not None:
             login(request, user)
             profile = ProfileListSerializer(Profile.objects.get(user=request.user)).data
-            profile['token'] = user.auth_token.key
             return Response({'success': True, 'token': user.auth_token.key,'data':profile,'message':'Valid Credentials'})
         else:
             return Response({'success': False, 'message': 'username or password incorrect','data':[]}, status=status.HTTP_400_BAD_REQUEST)
