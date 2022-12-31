@@ -2,21 +2,41 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import PropTypes from 'prop-types';
 
-import {MotiView} from 'moti'
+import { View as MotiView } from 'moti'
 
-const LoadingIndicator = ({size}) => {
+const LoadingIndicator = ({ size }) => {
     return (
-        <MotiView style={{
-            width:size,
-            height:size,
-            borderRadius:size/2,
-            borderWidth:size/2,
-            borderColor:'#fff',
-            shadowColor:'#fff',
-            shadowOffSet:{width:0,height:0},
-            shadowOpacity:1,
-            shadowRadius:10
-        }}/>
+        <MotiView
+
+            from={{
+                rotate: '0deg'
+            }}
+
+            animate={{
+                rotate: '360deg',
+            }}
+
+            transition={{
+                loop:true,
+                repeatReverse:false,
+                type:'timing',
+                duration:1000,
+                delay:0
+            }}
+
+            style={{
+                width: size,
+                height: size,
+                borderRadius: size / 2,
+                // borderWidth: size / 2,
+                borderWidth:2,
+                // borderColor: '#fff',sss
+                // shadowColor: '#fff',
+                borderTopColor: 'rgb(0,119,255)',
+                shadowOffSet: { width: 0, height: 0 },
+                shadowOpacity: 1,
+                shadowRadius: 10
+            }} />
     )
 }
 
@@ -26,12 +46,12 @@ LoadingIndicator.propTypes = {
 
 
 const Loading = (props) => {
-  const {size} = props;
-  return (
-    <View style={styles.container}>
-      <LoadingIndicator size={size}/>
-    </View>
-  )
+    const { size } = props;
+    return (
+        <View style={styles.container}>
+            <LoadingIndicator size={size} />
+        </View>
+    )
 }
 
 Loading.propTypes = {
@@ -42,7 +62,7 @@ Loading.propTypes = {
 export default Loading
 
 const styles = StyleSheet.create({
-    container:{
-        flex:1
+    container: {
+        flex: 1
     }
 })
