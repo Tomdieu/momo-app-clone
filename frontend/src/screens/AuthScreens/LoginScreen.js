@@ -20,16 +20,38 @@ import { COLORS } from "../../utils/constants";
 const { StatusBarManager } = NativeModules;
 
 import { useAuthContext } from '../../context/AuthContext'
+import CustomButton from "../../components/CustomButton";
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("")
+  const { testLogin ,login,setToken,setUserInfo} = useAuthContext()
 
-  const { testLogin } = useAuthContext()
+  const handleSubmit = () => {
+    if (!username && !password){
+      return setError('username and password required')
+    }
+    else if(!username){
+     return  setError('username  required')
+    }
+    else if(!password){
+      return setError('password required');
+    }
+    console.log('username ',username)
+    console.log('password',password)
+    login(username,password)
+    .then(res=>res.json())
+    .then((data)=>{
+      console.log('Response ',data);
+      setToken(data.token);
+      setUserInfo(data.data)
 
-  const handleSubmit = (e) => { };
+    })
+    .catch(err=>console.log('Error ',err))
+   };
 
-  return (
+  return (  
     <SafeAreaView
       style={{
         ...styles.container,
@@ -55,12 +77,13 @@ const LoginScreen = ({ navigation }) => {
                 style={styles.logo}
               />
             </View>
+            {error && <Text style={{ color: 'red' }}>{error}</Text>}
             <View style={styles.inputContainer}>
               <Text style={styles.label}>username</Text>
               <TextInput
                 style={styles.input}
                 value={username}
-                onChange={(text) => setUsername(text)}
+                onChangeText={(text) => setUsername(text)}
               />
             </View>
             <View style={styles.inputContainer}>
@@ -72,9 +95,9 @@ const LoginScreen = ({ navigation }) => {
                 onChangeText={(text) => setPassword(text)}
               />
             </View>
-            <TouchableOpacity style={{ width: '100%' }} activeOpacity={(!username && !password) ? 1 : .7} disabled={Boolean(!username && !password)}>
-              <Button mode="contained" compact style={{ backgroundColor: (username && password) ? COLORS.green : 'grey', width: '100%', borderRadius: 3, marginVertical: 8 }} labelStyle={{ color: COLORS.white }}>Login</Button>
-            </TouchableOpacity>
+
+            <CustomButton title="Login" onPress={handleSubmit} disabled={Boolean(!username || !password)} style={{color:'#fff'}}/>
+
             <Button onPress={() => testLogin()}>Test Me</Button>
             <View style={styles.inputContainer}>
               <TouchableOpacity style={{ ...styles.btn, color: (!username) ? 'grey' : 'default' }}>
@@ -141,10 +164,10 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.6)",
-    height: 40,
     borderRadius: 3,
     fontSize: 18,
-    backgroundColor: '#ccc'
+    fontWeight:'800',
+    backgroundColor: '#e3dede96'
   },
   btn: {
     padding: 20,
