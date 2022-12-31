@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-7vzi6_39u1hu4dh6m!!9z*@lw^%%pu#p(+d^$f%4s@euzc+tn@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','0.0.0.0']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -179,6 +179,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Cors configurations
 
 CORS_ALLOW_ALL_ORIGINS = True
+# CORS_URLS_REGEX = r"^/api/.*$"
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -187,14 +188,25 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
+# CORS_ALLOW_HEADERS = [  
+#     "accept",
+#     "accept-encoding",
+#     "authorization",
+#     "content-type",
+#     "dnt",
+#     "origin",
+#     "user-agent",
+#     "x-csrftoken",
+#     "x-requested-with",
+# ]   
 
 # REST FRAMEWORK CONFIGURATIONS
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication'
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication'
     ),
     'DEFAULT_PERMISSIONS_CLASSES': (
         'rest_framework.permissions.IsAuthenticated'
