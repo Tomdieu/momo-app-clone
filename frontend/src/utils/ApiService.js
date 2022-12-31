@@ -1,5 +1,7 @@
+// import axios from 'axios'
+
 export default class Trixwallet {
-  static endPoint = 'http://127.0.0.1:8000'
+  static endPoint = 'http://192.168.8.103:8000'
   static webSocketUrl = 'ws://127.0.0.1:8000'
 
   /**
@@ -25,6 +27,7 @@ export default class Trixwallet {
    *  ```
    *    {
    *       "success": true,
+   *       "data":{...}
    *       "token": "your-token"
    *    }
    * ```
@@ -36,7 +39,7 @@ export default class Trixwallet {
     const url = this.endPoint + '/api/auth/login/'
     const res = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ username, password }),
+      body:JSON.stringify({ username, password }),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -44,13 +47,23 @@ export default class Trixwallet {
     return res
   }
 
+  // static async authenticate(username, password) {
+  //   const url = this.endPoint + '/api/auth/login/'
+  //   const res = await axios.post(url,{username,password},{
+  //     headers:{
+  //       'Content-Type':'application/json'
+  //     }
+  //   })
+  //   return res
+  // }
+
   /**
    * This functions gets the data of a user an create an account
    * with the corresponding information provided.
    * @param {object} data
    */
   static async register(data) {
-    const url = this.endPoint + '/api/register/'
+    const url = this.endPoint + '/api/auth/register/'
     const res = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(data),

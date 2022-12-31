@@ -19,5 +19,6 @@ export const COLORS = {
 	darkBlue:'#003D5B',
 	lightPink:'#D1495B',
 	bg:'#ECFDFF',
-	black:'#000'
+	black:'#000',
+	blue:'#0000ff'
 }

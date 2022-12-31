@@ -6,7 +6,9 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "tunnel":"expo start --tunnel",
+    "offline":"expo start --offline"
   },
   "dependencies": {
     "@expo/status-bar-height": "^0.0.1",
@@ -19,6 +21,7 @@
     "@react-navigation/native": "^6.0.13",
     "@react-navigation/native-stack": "^6.9.1",
     "@react-navigation/stack": "^6.3.8",
+    "axios": "^1.2.2",
     "expo": "~46.0.16",
     "expo-constants": "~13.2.4",
     "expo-linear-gradient": "~11.4.0",
@@ -26,6 +29,7 @@
     "expo-secure-store": "~11.3.0",
     "expo-splash-screen": "^0.16.2",
     "expo-status-bar": "~1.4.0",
+    "expo-updates": "~0.14.7",
     "formik": "^2.2.9",
     "i18n-js": "^4.2.2",
     "moment": "^2.29.4",
@@ -50,8 +54,7 @@
     "react-native-web": "~0.18.7",
     "react-native-webview": "11.23.0",
     "socket.io-client": "^4.5.4",
-    "yup": "^0.32.11",
-    "expo-updates": "~0.14.7"
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
