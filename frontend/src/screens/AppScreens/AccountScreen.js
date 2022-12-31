@@ -10,15 +10,32 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import { COLORS } from '../../utils/constants'
 
+import APIService from '../../utils/ApiService'
+
+import { useAuthContext } from '../../context/AuthContext';
+
 
 const AccountScreen = ({ navigation }) => {
 
   const [transactionFilter, setTransactiontransaction] = useState('all')
+  const [accountDetail,setAccountDetail] = useState({});
+
+  const {token} = useAuthContext()
 
   const goToScreen = (transactionType) => {
     if(!transactionType) return;
     navigation.navigate('Transactions',{screen:'TransactionType',params:{type:transactionType}})
   }
+
+  useEffect(()=>{
+    APIService
+    .account(token)
+    .then(res=>res.json())
+    .then(account => {
+      console.log(account)
+    })
+    .catch(err=>console.error(err))
+  },[])
 
   return (
     <SafeAreaView style={{
