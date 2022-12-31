@@ -6,31 +6,48 @@ import APIService from '../utils/ApiService'
 
 export const AuthProvider = (props) => {
     const { children } = props;
-    const [useInfo,setUserInfo] = useState(null)
+    const [userInfo,setUserInfo] = useState(null)
     const [token, setToken] = useState(null)
     const [isLoading, setIsLoading] = useState(true);
 
-    // useEffect(() => {
-    //     async function getToken() {
-    //         const token = await AsyncStorage.getItem('token');
+    useEffect(() => {
+        async function getToken() {
+            const token = await AsyncStorage.getItem('token');
 
-    //         if (token) {
-    //             setToken(token)
-    //         }
-    //     }
-    //     getToken();
-    // }, [])
+            if (token) {
+                setToken(token)
+            }
+        }
 
-    // useEffect(() => {
-    //     async function setToken(token) {
-    //         if (token) {
-    //             await AsyncStorage.setItem('token', token)
-    //         }
-    //     }
-    //     if (token) {
-    //         setToken(token)
-    //     }
-    // }, [token])
+        async function getUserData(){
+            const userData = await AsyncStorage.getItem('userInfo');
+
+            if (userData){
+                setUserInfo(JSON.parse(userData))
+            }
+        }
+        getToken().then(()=>getUserData())
+    }, [])
+
+    useEffect(() => {
+        async function setUserToken(token) {
+            if (token) {
+                await AsyncStorage.setItem('token', token)
+            }
+        }
+        if (token) {
+            setUserToken(token)
+        }
+    }, [token])
+
+    useEffect(()=>{
+        async function setUserData(){
+            if(userInfo){
+                await AsyncStorage.setItem('userInfo',JSON.stringify(userInfo))
+            }
+        }
+        setUserData(userInfo)
+    },[userInfo])
 
 
     const login = async (username, password) => {
@@ -80,7 +97,7 @@ export const AuthProvider = (props) => {
     }
 
     return (
-        <AuthContext.Provider value={{ testLogin, lestLogout, token, setToken, login, logout, isLoading, setIsLoading }}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={{ userInfo: userInfo,setUserInfo,testLogin, lestLogout, token, setToken, login, logout, isLoading, setIsLoading }}>{children}</AuthContext.Provider>
     )
 
 

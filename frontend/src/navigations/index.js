@@ -14,6 +14,8 @@ const index = () => {
   const { token,isLoading } = useAuthContext()
   console.log('Token ', token)
 
+  
+
   if (isLoading) {
     return <SplashScreen />
   }
