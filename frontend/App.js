@@ -1,20 +1,24 @@
-import { StatusBar } from "expo-status-bar";
+import {
+  Provider as PaperProvider,
+  MD3LightTheme
+} from "react-native-paper";
 
-import AuthProvider from "./provider/AuthProvider";
-import WalletProvider from "./provider/WalletProvider";
+import Navigation from "./src/navigations";
 
-import Navigation from "./Navigation";
+import { LangProvider } from './src/provider/LangContext'
+import { AuthProvider } from "./src/provider/AuthProvider";
+
 
 const App = () => {
   return (
-    <AuthProvider>
-      <WalletProvider>
-        <Navigation />
-      </WalletProvider>
-    </AuthProvider>
-  )
-}
+    <PaperProvider theme={MD3LightTheme}>
+      <LangProvider>
+        <AuthProvider>
+          <Navigation />
+        </AuthProvider>
+      </LangProvider>
+    </PaperProvider>
+  );
+};
 
 export default App;
-
-

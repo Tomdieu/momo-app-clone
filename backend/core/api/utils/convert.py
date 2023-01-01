@@ -9,8 +9,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Convert:
 
-    def convert(self,from_currency,to_currency,amount):
-        
+    def convert(self,from_currency:str,to_currency:str,amount:float | int):
+        """
+        ## Paramerters:
+
+            `from_currency: str`:
+                summary : 'The currency you want to convert'
+                example : 'USD'
+            `to_currency: str`:
+                summary : 'The currency to which you want to convert'
+                example : 'XAF'
+            `amount: float`:
+                summary: 'The ammount you are converting'
+                example : 2000 
+        """    
         initial_amount = float(amount)
         amount = float(amount)
 
@@ -42,13 +54,18 @@ class OffLineCurrencyConverter(Convert):
         self.currencies = self.data['rates']
 
 def converCurrency(from_currency:str,to_currency:str,amount:float|int) -> float:
-    """Convert a currency to another
-    Arguments:
-        from_currency (str): currency you want to convert from
-        to_currency (str): currency you want to convert from
-        amount (float | int): the amount you want to convert
+    """
+    # Convert a currency to another
+        
+    ## Arguments:
+        `from_currency: str`: 
+            currency you want to convert from
+        `to_currency: str`: 
+            currency you want to convert from
+        `amount : float | int`: 
+            the amount you want to convert
 
-    Returns:
+    ## Returns:
         float: the amount converted
     """
     

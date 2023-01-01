@@ -25,8 +25,8 @@ class Account(models.Model):
                 ('LAK', 'LAK'), ('LBP', 'LBP'), ('LKR', 'LKR'), ('LRD', 'LRD'), ('LSL', 'LSL'), ('LYD', 'LYD'), ('MAD', 'MAD'), ('MDL', 'MDL'), ('MGA', 'MGA'), ('MKD', 'MKD'), ('MMK', 'MMK'), ('MNT', 'MNT'), ('MOP', 'MOP'), ('MRU', 'MRU'), ('MUR', 'MUR'), ('MVR', 'MVR'), ('MWK', 'MWK'), ('MXN', 'MXN'), ('MYR', 'MYR'), ('MZN', 'MZN'), ('NAD', 'NAD'), ('NGN', 'NGN'), ('NIO', 'NIO'), ('NOK', 'NOK'), ('NPR', 'NPR'), ('NZD', 'NZD'), ('OMR', 'OMR'), ('PAB', 'PAB'), ('PEN', 'PEN'), ('PGK', 'PGK'), ('PHP', 'PHP'), ('PKR', 'PKR'), ('PLN', 'PLN'), ('PYG', 'PYG'), ('QAR', 'QAR'), ('RON', 'RON'), ('RSD', 'RSD'), ('RUB', 'RUB'), ('RWF', 'RWF'), ('SAR', 'SAR'), ('SBD', 'SBD'), ('SCR', 'SCR'), ('SDG', 'SDG'), ('SEK', 'SEK'), ('SGD', 'SGD'), ('SHP', 'SHP'), ('SLE', 'SLE'), ('SLL', 'SLL'), ('SOS', 'SOS'), ('SRD', 'SRD'), ('SSP', 'SSP'), ('STN', 'STN'), ('SYP', 'SYP'), ('SZL', 'SZL'), ('THB', 'THB'), ('TJS', 'TJS'), ('TMT', 'TMT'), ('TND', 'TND'), ('TOP', 'TOP'), ('TRY', 'TRY'), ('TTD', 'TTD'), ('TVD', 'TVD'), ('TWD', 'TWD'), ('TZS', 'TZS'), ('UAH', 'UAH'), ('UGX', 'UGX'), ('UYU', 'UYU'), ('UZS', 'UZS'), ('VES', 'VES'), ('VND', 'VND'), ('VUV', 'VUV'), ('WST', 'WST'), ('XAF', 'XAF'), ('XCD', 'XCD'), ('XDR', 'XDR'), ('XOF', 'XOF'), ('XPF', 'XPF'), ('YER', 'YER'), ('ZAR', 'ZAR'), ('ZMW', 'ZMW'), ('ZWL', 'ZWL')]
 
     STATUS = (('active', 'active'), ('inactive', 'inactive'))
-    account_number = models.UUIDField(
-        default=uuid.uuid4, unique=True, editable=False)
+    account_number = models.CharField(
+        default='1000001',max_length=40, unique=True)
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, help_text='user id', related_name='account')
     balance = models.FloatField(
@@ -107,7 +107,7 @@ class Transaction(models.Model):
     amount = models.DecimalField(
         decimal_places=2, max_digits=20, help_text='the transaction amount')
     currency = models.CharField(
-        choices=Account().CURRENCY, max_length=3, blank=True, null=True, editable=False)
+        choices=Account().CURRENCY,default='XAF', max_length=3, blank=True, null=True, editable=False)
     charge = models.ForeignKey(TransactionCharge, on_delete=models.CASCADE,
                                blank=True, editable=False, null=True, help_text='the transaction type id')
     created_at = models.DateTimeField(
@@ -206,3 +206,43 @@ class Withdraw(Transaction):
             if self.amount > self.withdraw_from.balance:
                 raise ValidationError({'withdraw_from': _(
                     "You can't withdraw money from the account the account balance is insufficent")})
+
+
+class Deposit(Transaction):
+
+    DEPOSIT_STATE = (
+        ('REJECTED', 'REJECTED'),
+        ('SUCCESSFULL', 'SUCCESSFULL')
+    )
+
+    sender = models.ForeignKey(Account, on_delete=models.CASCADE,
+                               related_name='sender_account', help_text='the account sender id')
+    reciever = models.ForeignKey(Account, on_delete=models.CASCADE,
+                                 related_name='reciever_account', help_text='the reciever account id')
+    status = models.CharField(
+        max_length=20, choices=DEPOSIT_STATE, default='SUCCESSFULL')
+
+    def __str__(self):
+        return f"Deposit {self.code} {self.status}"
+
+    def clean_fields(self, exclude=None):
+        super().clean_fields(exclude)
+        if self.sender == self.reciever:
+            raise ValidationError(_("You Can't Deposit Money To Your Self"))
+        else:
+            if self.amount > self.sender.balance:
+                raise ValidationError({
+                    "sender": _("This account is not able to deposit money because the account balance is insufficient! {} > {}".format(self.amount, self.sender.balance))
+                })
+
+    def generateMessage(self, lang: str):
+        sender_message = ''
+        reciever_message = ''
+        if lang == 'FR':
+            sender_message = f'Vous avez fait un depot de {self.currency} {self.amount} aux compte {self.reciever.account_number} de {self.reciever.user.first_name} {self.reciever.user.last_name} [{self.reciever.user}] a {self.created_at} avec success id de transaction {self.code}.\nVotre nouveaux solde est de {self.currency} {self.sender.balance}'
+            reciever_message = f'Vous avez recus un depot de {self.currency} {self.amount} dans votre compte {self.reciever.account_number} de la part de {self.sender.user.first_name} {self.sender.user.last_name} [{self.sender.user}] a {self.created_at}.\nVotre nouveaux solde est de {self.currency} {self.reciever.balance}'
+        elif lang == 'EN':
+            sender_message = f'You have successfully make a deposit  of {self.currency} {self.amount} to the account number {self.reciever.account_number} of {self.reciever.user.first_name} {self.reciever.user.last_name} [{self.reciever.user}] at {self.created_at} transaction id {self.code}.\nYour new account balance is {self.currency} {self.sender.balance}'
+            reciever_message = f'You have recieve a deposit of {self.currency} {self.amount} in your account {self.reciever.account_number} from {self.sender.user.first_name} {self.sender.user.last_name} [{self.sender.user}] at {self.created_at}.\nYour new account balance is {self.currency} {self.reciever.balance}'
+
+        return {'sender_message': sender_message, 'reciever_message': reciever_message}

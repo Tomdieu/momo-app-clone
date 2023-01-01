@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "project1",
+    "name": "Trix Wallet",
     "slug": "project1",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./src/images/logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ECFDFF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -22,12 +22,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      }
+        "foregroundImage": "./src/images/logo.png",
+        "backgroundColor": "#ECFDFF"
+      },
+      "package": "com.ivantom.momo"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6487b40b-e0d5-438b-a292-d4ded153c391"
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-from django.urls import path,include
+from django.urls import path, include
 from . import views
 from rest_framework.routers import DefaultRouter
 
@@ -12,13 +12,22 @@ router.register('transfer-money', views.TransferMoneyViewSet,
                 basename='send-money')
 router.register('withdraw-money', views.WithdrawMoneyViewSet,
                 basename="withdraw-money")
+
+router.register('deposit-money', views.DepositViewSet,
+                basename='deposit-money')
+
 router.register('change-pin-code', views.ChangePinCodeViewSet,
                 basename='change-pin-code')
-router.register('confirm-withdrawal',views.ConfirmWithdraw,basename='confirm withdrawal')
+router.register('confirm-withdrawal', views.ConfirmWithdraw,
+                basename='confirm withdrawal')
 
-router.register('convert-currency',views.ConvertCurrencyViewSet,basename='convert-currency')
+router.register('convert-currency', views.ConvertCurrencyViewSet,
+                basename='convert-currency')
+
+router.register('get-account',views.GetAccountViewSet,basename='search-account')
+
+router.register('lastest-transaction',views.LatestTransactionViewSet,basename="lastest-transactions")
 
 urlpatterns = [
-    path('',include(router.urls))
+    path('', include(router.urls))
 ]
-

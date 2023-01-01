@@ -179,6 +179,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Cors configurations
 
 CORS_ALLOW_ALL_ORIGINS = True
+# CORS_URLS_REGEX = r"^/api/.*$"
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -187,14 +188,25 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
+# CORS_ALLOW_HEADERS = [  
+#     "accept",
+#     "accept-encoding",
+#     "authorization",
+#     "content-type",
+#     "dnt",
+#     "origin",
+#     "user-agent",
+#     "x-csrftoken",
+#     "x-requested-with",
+# ]   
 
 # REST FRAMEWORK CONFIGURATIONS
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication'
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication'
     ),
     'DEFAULT_PERMISSIONS_CLASSES': (
         'rest_framework.permissions.IsAuthenticated'
@@ -269,3 +281,7 @@ APP_NAME = 'TrixWallet'  # this is the name i gaved to my backend system app
 WITHDRAW_MONEY_MINUTES = 2
 
 WALLET_DEFAULT_PIN_CODE = '00000'
+
+
+
+LOGIN_URL = 'login'

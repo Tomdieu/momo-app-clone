@@ -23,6 +23,7 @@ class Notification(models.Model):
         ('TRANSFER_SUCCESSFULL', 'TRANSFER_SUCCESSFULL'),
         ('TRANSFER_REJECTED', 'TRANSFER_REJECTED'),
         ('WITHDRAW', 'WITHDRAW'),
+        ('WITHDRAW_PENDING','WITHDRAW_PENDING'),
         ('WITHDRAW_REJECTED', 'WITHDRAW_REJECTED'),
         ('WITHDRAW_CANCEL', 'WITHDRAW_CANCEL'),
         ('WITHDRAW_SUCCESSFULL', 'WITHDRAW_SUCCESSFULL'),
@@ -56,7 +57,8 @@ def sendSocketNotifications(sender, instance, created, **kwargs):
     channel_layer = get_channel_layer()
 
     if created:
+
         n = NotificationSerializer(instance)
 
-        async_to_sync(channel_layer.group_send)(f'notifications_{instance.user.id}', {
+        async_to_sync(channel_layer.group_send)(f'notification_{instance.user.id}', {
             'type': 'send_notification', 'message': json.dumps(n.data)})
