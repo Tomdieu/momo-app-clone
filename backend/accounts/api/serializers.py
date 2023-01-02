@@ -2,8 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from drf_writable_nested.serializers import WritableNestedModelSerializer
-
 from accounts.models import Profile
 from core.models import Account
 
@@ -88,7 +86,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         }
 
 
-class ProfileListSerializer(WritableNestedModelSerializer):
+class ProfileListSerializer(serializers.ModelSerializer)):
     user = UserSerializer()
 
     class Meta:
