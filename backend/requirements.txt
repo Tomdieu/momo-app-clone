@@ -33,7 +33,6 @@ django-environ==0.9.0
 django-rest-swagger==2.2.0
 django-timezone-field==5.0
 djangorestframework==3.14.0
-drf-writable-nested==0.7.0
 drf-yasg==1.21.4
 gunicorn==20.1.0
 hyperlink==21.0.0
