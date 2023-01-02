@@ -1,9 +1,8 @@
 # momo-app-clone
 
 
-<h1 align="center"> 🌱 Welcome to My Money Transfer app Named TrixWallet</h1>
 
-## This is a project on a `money transaction app` made in python using `Django` and `Django Rest Framework` to build `api`
+## This is a small project on a money transaction app made in python using Django and Django Rest Framework to build api
 
 ## Technology used
 - **Django**
