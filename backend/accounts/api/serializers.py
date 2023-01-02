@@ -36,10 +36,11 @@ class UpdatePasswordSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
 
     # profile = ProfileSerializer(required=False)
+    full_name = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password']
+        fields = ['id', 'username','full_name' ,'first_name', 'last_name', 'email', 'password']
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -63,6 +64,10 @@ class UserSerializer(serializers.ModelSerializer):
         return serializer.save()
         # return super(UserSerializer,self).update(instance,validated_data)
 
+    def get_full_name(self,obj:User):
+        if obj:
+            return obj.first_name + " " +obj.last_name
+        return ''
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:

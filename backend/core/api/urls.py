@@ -28,6 +28,10 @@ router.register('get-account',views.GetAccountViewSet,basename='search-account')
 
 router.register('lastest-transaction',views.LatestTransactionViewSet,basename="lastest-transactions")
 
+router.register('get-transaction-charges',views.GetChargesViewSet,basename='get-a-transaction-charge')
+
+router.register('verify-pin-code',views.ValidatePinCodeViewSet,basename="verify-pin-code")
+
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
 ]

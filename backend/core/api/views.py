@@ -14,6 +14,8 @@ from rest_framework.mixins import (
     CreateModelMixin, UpdateModelMixin, DestroyModelMixin, ListModelMixin, RetrieveModelMixin)
 from rest_framework.viewsets import (GenericViewSet)
 from rest_framework.generics import (CreateAPIView, ListAPIView)
+from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
 
 from django.db.models import Q, F
 
@@ -27,6 +29,8 @@ from accounts.models import Profile
 class GetAccountViewSet(GenericViewSet, ListModelMixin):
 
     serializer_class = AccountListSerializer
+
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         print(self.request.query_params)
@@ -54,8 +58,39 @@ class GetAccountViewSet(GenericViewSet, ListModelMixin):
             return Response({'success': False, 'data': [], 'message': 'Not found'})
 
 
+class GetChargesViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def list(self,request,*args,**kwargs):
+        type = request.query_params.get('type',None)
+
+        if not type:
+            return Response({'success':False,'message':'The type of transaction must be passed in the url parameter'},status=404)
+
+        queryset = TransactionCharge.objects.get(type__name__iexact=type)
+        return Response({'success':True,'message':'Transaction Charges of {}'.format(type),'data':TransactionListChargeSerializer(queryset).data})
+
+
+class ValidatePinCodeViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def list(self,request,*args,**kwargs):
+
+        pin_code = request.request.get('pin_code',None)
+
+        if not pin_code:
+            return Response({'success':False,'message':'The pin code must be passed in the post data'},status=404)
+        account = Account.objects.get(user=request.user)
+
+        if account.check_pincode(pin_code):
+
+            return Response({'success':True,'message':'Pin code verify'})
+        return Response({'success':False,'message':'pin code don\'t match'},status=404)
+
 class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateModelMixin):
 
+    permission_classes = [IsAuthenticated]
+    
     def get_serializer_class(self):
 
         if self.request.method.upper() in ['GET']:
@@ -63,7 +98,6 @@ class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateM
             return AccountListSerializer
         return AccountSerializer
 
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Account.objects.filter(user=self.request.user)
@@ -188,7 +222,7 @@ class TransferMoneyViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
             if serializer.validated_data['reciever'] != request.user.account:
                 # request.data.pop('pin_code')
                 instance = serializer.save()
-                return Response(TransferListSerializer(instance).data, status=status.HTTP_201_CREATED)
+                return Response({'message':'Transfer successull','success':True,'data':TransferListSerializer(instance).data}, status=status.HTTP_201_CREATED)
             else:
                 return Response({'message': 'You are not authorized to make this transfer', 'success': False}, status=status.HTTP_401_UNAUTHORIZED)
         else:
@@ -303,7 +337,7 @@ class ConfirmWithdraw(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Gene
 
     """
 
-    permission_classes = (IsAuthenticated,)
+    permision_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
 
@@ -311,7 +345,7 @@ class ConfirmWithdraw(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Gene
 
     def get_queryset(self):
         # n represents the amount of minutes for a withdrawal to be accepted or cancel after that it will be rejected
-        n = settings.WITHDRAW_MONEY_MINUTES
+        n = settings.WITHDRAW_MONEY_MrespresentsINUTES
         dt = datetime.datetime  # dt respresents the datetime.datetime function
         td = datetime.timedelta  # td represents the datetime.timedelta function
         now = dt.now()
@@ -340,7 +374,7 @@ class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
         if the old one corresponds to the actual account pin code
         and the new account pin is valid we update the user account pin code
     """
-    permission_classes = (IsAuthenticated,)
+    permision_classes = [IsAuthenticated]
     serializer_class = ChangePinSerializer
 
     def create(self, request, *args, **kwargs):
@@ -369,10 +403,10 @@ class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
 
 # Getting the latest transactions
 
-class LatestTransactionViewSet(GenericViewSet, ListAPIView):
+class LatestTransactionViewSet(ViewSet):
 
     # serializer_class = None
-    permission_classes = (IsAuthenticated,)
+    permision_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
 

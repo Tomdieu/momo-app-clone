@@ -218,7 +218,6 @@ class WithdrawSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Withdraw
 		fields = '__all__'
-
 		
 
 class WithdrawListSerializer(WithdrawSerializer):
