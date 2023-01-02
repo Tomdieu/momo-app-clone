@@ -76,7 +76,6 @@ export const AuthProvider = (props) => {
             let userToken = await AsyncStorage.getItem('token')
             setToken(userToken)
             setIsLoading(false)
-
         }
         catch(e){
             console.log(`isLogged in error ${e}`)

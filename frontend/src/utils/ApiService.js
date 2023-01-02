@@ -12,7 +12,6 @@ export default class Trixwallet {
   static async getIfUserExist(field, value) {
     const url = this.endPoint + `/api/auth/user/${field}:${value}/available/`
     const res = await fetch(url, {
-      url,
       headers: {
         'Content-Type': 'application/json'
       }
@@ -20,6 +19,43 @@ export default class Trixwallet {
 
     return res
   }
+
+  static async getAccountInfo(field,value,token){
+    const url = this.endPoint + `/api/momo/get-account/?${field}=${value}`;
+    const res = await fetch(url,{
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`token ${token}`
+      }
+    })
+
+    return res
+  }
+
+  static async getTransactionChargeInfo(type,token){
+    const url = this.endPoint + `/api/momo/get-transaction-charges/?type=${type}`;
+    const res = await fetch(url,{
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`token ${token}`
+      }
+    })
+
+    return res
+  }
+
+  static async verifyPinCode(pin_code,token){
+    const url = this.endPoint + `/api/momo/verify-pin-code/?pin_code=${pin_code}`;
+    const res = await fetch(url,{
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`token ${token}`
+      }
+    })
+
+    return res
+  }
+
 
   /**
    *
@@ -249,6 +285,40 @@ export default class Trixwallet {
     return res
   }
 
+  /**
+   *
+   * ## Deposit Transaction List
+   *
+   * @param {string} token
+   * @returns
+   */
+  static async depositList(token) {
+    const url = this.endPoint + '/api/momo/deposit-money/'
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' }
+    })
+    return res
+  }
+
+  /**
+   *
+   * ## Deposit Money
+   *
+   * @param {object} data
+   * @param {string} token
+   * @returns
+   */
+  static async depositMoney(data, token) {
+    const url = this.endPoint + '/api/momo/deposit-money/'
+    const res = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' }
+    })
+    return res
+  }
+
   static async withdrawList(token) {
     const url = this.endPoint + '/api/momo/withdraw-money/'
     const res = await fetch(url, {
@@ -267,6 +337,8 @@ export default class Trixwallet {
     })
     return res
   }
+
+
   /**
    * 
    * ## Change Pin Code

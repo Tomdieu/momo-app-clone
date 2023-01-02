@@ -7,8 +7,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "tunnel":"expo start --tunnel",
-    "offline":"expo start --offline"
+    "tunnel": "expo start --tunnel",
+    "offline": "expo start --offline"
   },
   "dependencies": {
     "@expo/status-bar-height": "^0.0.1",

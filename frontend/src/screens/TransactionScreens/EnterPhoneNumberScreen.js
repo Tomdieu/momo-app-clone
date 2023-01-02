@@ -5,50 +5,46 @@ import { Formik } from "formik";
 import CustomButton from '../../components/CustomButton'
 import { Feather } from '@expo/vector-icons'
 
-import PhoneSchema from '../../schema/PhoneSchema'
+import APIService from '../../utils/ApiService'
 
-const EnterPhoneNumberScreen = ({ navigation }) => {
+import PhoneSchema from '../../schema/PhoneSchema'
+import { useAuthContext } from '../../context/AuthContext';
+import { useLanguageContext } from '../../context/LangContext';
+
+
+const EnterPhoneNumberScreen = ({ navigation,route }) => {
 
     const [phoneNumber, setPhoneNumber] = useState('')
+    const {token} = useAuthContext();
 
-    const handleInput = (text) => {
-        setPhoneNumber(text.replace(/[^0-9\+]/g, ''))
-    }
+    const {i18n} = useLanguageContext()
+    console.log(route)
+    const {type} = route.params
 
-    const goNext = () => {
-        const data = {
-            "id": 1,
-            "converted_currency": "XAF 17040.0",
-            "total_amount_transfer": 2000,
-            "total_amount_recieve": 0,
-            "total_amount_withdraw": 1000.0,
-            "user": {
-                "id": 1,
-                "username": "ivantom",
-                "first_name": "ivantom",
-                "last_name": "admin",
-                "email": "ivantomdio@gmail.com"
-            },
-            "account_number": "1000001",
-            "balance": 17040.0,
-            "account_status": "active",
-            "currency": "XAF",
-            "display_currency": "XAF",
-            "created_at": "2022-11-29T14:19:50.371366Z",
-            "updated_at": "2022-12-25T21:01:30.164242Z",
-            "is_agent": true
+    const getText = ()=>{
+        if(type==='Transfer' || type==='Deposit'){
+            return 'recieverPhone'
         }
-
-        navigation.navigate('TransactionAmount', { account: data, phoneNumber: phoneNumber })
+        else{
+            return 'phoneNumber'
+        }
     }
+
+    // const getText = () => "recieverPhone"
 
     return (
         <Formik
             initialValues={{ phoneNumber: '' }}
             validationSchema={PhoneSchema}
             onSubmit={(values) => {
-                setPhoneNumber(values.phoneNumber);
-                goNext()
+
+                APIService
+                .getAccountInfo('phone_number',values.phoneNumber,token)
+                .then(res=>res.json())
+                .then(data=>{
+                    navigation.navigate('TransactionAmount', { type:type,account: data.data, phoneNumber: values.phoneNumber })
+                })
+
             }}>
             {({
                 handleChange,
@@ -62,10 +58,10 @@ const EnterPhoneNumberScreen = ({ navigation }) => {
             }) => (
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.container}>
-                        <Text style={{ fontSize: 18, color: 'ligthgrey' }}>Please enter the phone number</Text>
+                        <Text style={{ fontSize: 18, color: 'ligthgrey' }}>{i18n.t('pleaseEnterPhoneNumber')}</Text>
                         <View style={{ flex: 1 }}>
                             <View style={{ marginVertical: 20 }}>
-                                <Text style={{ fontSize: 23, marginBottom: 8 }}>Reciever Phone</Text>
+                                <Text style={{ fontSize: 23, marginBottom: 8 }}>{i18n.t(getText())}</Text>
                                 <View style={{ borderRadius: 5, flexDirection: 'row', width: '100%', justifyContent: 'flex-start', alignItems: 'center', borderWidth: 1, paddingHorizontal: 5 }}>
                                     <Feather name="hash" size={16} style={{ color: '#000', width: '5%' }} />
                                     <TextInput 
@@ -79,11 +75,11 @@ const EnterPhoneNumberScreen = ({ navigation }) => {
                                     />
                                 </View>
                                 {(errors.phoneNumber && touched.phoneNumber) &&
-                                    <Text style={{ fontSize: 10, color: 'red', paddingLeft: 8 }}>{errors.phoneNumber}</Text>
+                                    <Text style={{ fontSize: 10, color: 'red', paddingLeft: 8 }}>{i18n.t(errors.phoneNumber)}</Text>
                                 }
                             </View>
                             <View>
-                                <CustomButton title='Continue' onPress={handleSubmit} disabled={Boolean(!isValid || !dirty)} style={{ color: 'white', backgroundColor: 'black' }} />
+                                <CustomButton title={i18n.t('continue')} onPress={handleSubmit} disabled={Boolean(!isValid || !dirty)} style={{ color: 'white', backgroundColor: 'black' }} />
                             </View>
                         </View>
                     </View>
@@ -102,15 +98,10 @@ const styles = StyleSheet.create({
         padding: 10
     },
     input: {
-        // borderWidth: 1,
-        // borderColor: '#020202',
-        // backgroundColor: '#ddd',
         paddingVertical: 10,
         paddingHorizontal: 8,
         fontSize: 18,
-        // borderRadius: 5,
         marginLeft: 5,
-        // textAlign: 'center',
         width: '95%'
     }
 })

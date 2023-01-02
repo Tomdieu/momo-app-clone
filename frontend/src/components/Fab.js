@@ -3,11 +3,11 @@ import React from 'react'
 import { AntDesign } from '@expo/vector-icons';
 
 const Fab = (props) => {
-  const { iconName, style = {}, iconStyle = {}, iconSize = 24, onPress, onLongPress} = props;
+  const { iconName, style = {}, iconStyle = {}, iconSize = 24, onPress, onLongPress,size=50} = props;
   console.log(style)
   return (
     <TouchableOpacity onPress={onPress} onLongPress={onLongPress}>
-      <View style={{ ...styles.fab, ...style }}>
+      <View style={{ ...styles.fab, ...style,width:size,height:size }}>
         <AntDesign name={iconName} style={{ ...styles.icon, ...iconStyle }} size={iconSize} />
       </View>
     </TouchableOpacity>
@@ -26,9 +26,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    height: 70,
-    width: 70,
     borderRadius: 35.5
   },
   icon: {

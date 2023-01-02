@@ -6,11 +6,15 @@ import { Formik } from "formik";
 import CustomButton from '../../components/CustomButton'
 import { Feather } from '@expo/vector-icons'
 
+import {useLanguageContext} from '../../context/LangContext';
+
 import AmountSchema from '../../schema/AmountSchema';
 
 const TransactionAmountScreen = ({ navigation, route }) => {
 
     const { account,phoneNumber } = route.params;
+
+    const {i18n} = useLanguageContext()
 
     const [amount,setAmount] = useState(0)
 
@@ -18,7 +22,7 @@ const TransactionAmountScreen = ({ navigation, route }) => {
         <Formik 
             initialValues={{ amount: 0 }} 
             validationSchema={AmountSchema}
-            onSubmit={(values) => {navigation.navigate('ConfirmTransaction')}}>
+            onSubmit={(values) => {navigation.navigate('ConfirmTransaction',{account,phoneNumber,amount:values.amount})}}>
             {({
                 handleChange,
                 handleBlur,
@@ -31,15 +35,15 @@ const TransactionAmountScreen = ({ navigation, route }) => {
             }) => (
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.container}>
-                        <Text style={{ fontSize: 18, color: 'ligthgrey' }}>Please enter the amount to transfer</Text>
+                        <Text style={{ fontSize: 18, color: 'ligthgrey' }}>{i18n.t('amtMsgTrsfer')}</Text>
                         <View>
-                            <Text style={{textAlign:'center',marginVertical:9,fontWeight:'700'}}>Reciever Informations</Text>
-                            <Text style={{fontSize:18,marginVertical:10,fontWeight:'500'}}>Name : {account.user.first_name + " " + account.user.last_name}</Text>
-                            <Text style={{fontSize:18}}>Numero : {phoneNumber}</Text>
+                            <Text style={{textAlign:'center',marginVertical:9,fontWeight:'700'}}>{i18n.t('recieverInfo')}</Text>
+                            <Text style={{fontSize:18,marginVertical:10,fontWeight:'500'}}>{i18n.t('name')} : {account.user.first_name + " " + account.user.last_name}</Text>
+                            <Text style={{fontSize:18}}>{i18n.t('phoneNumber')} : {phoneNumber}</Text>
                         </View>
                         <View style={{marginVertical:10}}>
                             <View style={{marginVertical:10}}>
-                                <Text style={{fontSize:18,marginVertical:8}}>Amount</Text>
+                                <Text style={{fontSize:18,marginVertical:8}}>{i18n.t('amount')}</Text>
                                 <TextInput 
                                     style={styles.input} 
                                     name="amount" 
