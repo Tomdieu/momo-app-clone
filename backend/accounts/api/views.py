@@ -162,7 +162,6 @@ def userExists(request, *args, **kwargs):
             f = User.objects.filter(email=kwargs['value'])
         elif field == 'phone_number':
             f = Profile.objects.filter(phone_number__icontains=kwargs['value'])
-
         if f.exists():
             return Response({'message': f'a user with this {field} already exists found', 'success': True})
         else:
