@@ -26,13 +26,3 @@ RUN python -m pip install --upgrade pip
 # COPY requirements.txt requirements.txt
 RUN python -m pip install "setuptools<58"
 RUN python -m pip install -r requirements.txt   
-
-# Creates a non-root user with an explicit UID and adds permission to access the /django_backend folder
-# For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
-# RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /django_backend
-# USER appuser
-
-
-# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-
-# CMD ["python","manage.py","runserver","0.0.0.0:8000"]

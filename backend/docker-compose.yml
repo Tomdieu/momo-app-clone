@@ -7,18 +7,6 @@ services:
     image: redis:7.0.6-alpine
     container_name: redis
   
-  # Database Postgres
-
-  # db:
-  #   image: postgres
-  #   volumes:
-  #     - ./data/db:/var/lib/postgresql/data
-
-  #   environment:
-  #     - POSTGRES_DB=postgres
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #   container_name: postgres_db
   
   #Django application
 
@@ -31,8 +19,7 @@ services:
       - 8000:8000
     container_name: django_container
     command: python manage.py runserver 0.0.0.0:8000
-    # depends_on:
-    #   - db
+
 
   # Celery
   celery:
@@ -44,6 +31,5 @@ services:
       - .:/django_backend
     container_name: celery
     depends_on:
-      # - db
       - redis
       - backend

@@ -23,9 +23,6 @@ from django.conf import settings
 from core.api.utils.permisions import IsAgent
 from core.api.utils import converCurrency
 
-from accounts.models import Profile
-
-
 class GetAccountViewSet(GenericViewSet, ListModelMixin):
 
     serializer_class = AccountListSerializer
