@@ -12,7 +12,7 @@ import AmountSchema from '../../schema/AmountSchema';
 
 const TransactionAmountScreen = ({ navigation, route }) => {
 
-    const { account,phoneNumber } = route.params;
+    const { account,phoneNumber,type } = route.params;
 
     const {i18n} = useLanguageContext()
 
@@ -22,7 +22,7 @@ const TransactionAmountScreen = ({ navigation, route }) => {
         <Formik 
             initialValues={{ amount: 0 }} 
             validationSchema={AmountSchema}
-            onSubmit={(values) => {navigation.navigate('ConfirmTransaction',{account,phoneNumber,amount:values.amount})}}>
+            onSubmit={(values) => {navigation.navigate('ConfirmTransaction',{account,phoneNumber,amount:values.amount,type})}}>
             {({
                 handleChange,
                 handleBlur,

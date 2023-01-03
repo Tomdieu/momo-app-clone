@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack'
 
 import TransactionScreen from '../screens/TransactionScreens/TransactionScreen'
-import SelectTransactionTypeScreen from '../screens/TransactionScreens/SelectTransactionTypeScreen'
+// import SelectTransactionTypeScreen from '../screens/TransactionScreens/SelectTransactionTypeScreen'
 import ConfirmTransactionScreen from '../screens/TransactionScreens/ConfirmTransactionScreen'
 
 import EnterPhoneNumberScreen from '../screens/TransactionScreens/EnterPhoneNumberScreen'
@@ -16,7 +16,7 @@ const TransactionNavigator = ({ navigation,route }) => {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Transaction" component={TransactionScreen} />
-            <Stack.Screen name='TransactionType' component={SelectTransactionTypeScreen} options={{ headerTitle: 'Transaction options',headerTitleAlign:'center', headerTitleStyle: {textAlign:'center'}}} />
+            {/* <Stack.Screen name='TransactionType' component={SelectTransactionTypeScreen} options={{ headerTitle: 'Transaction options',headerTitleAlign:'center', headerTitleStyle: {textAlign:'center'}}} /> */}
             <Stack.Screen name="InputPhone" component={EnterPhoneNumberScreen} options={{headerTitle:'Phone Number',headerTitleAlign:'center'}}/>
             <Stack.Screen name="TransactionAmount" component={TransactionAmountScreen} options={{headerTitle:'Transaction Amount',headerTitleAlign:'center'}}/>
             <Stack.Screen name="ConfirmTransaction" component={ConfirmTransactionScreen} options={{headerTitle:'Confirm Transaction',headerTitleAlign:'center'}}/>

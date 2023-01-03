@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext'
 import React from 'react';
 import APIService from '../utils/ApiService'
@@ -9,6 +9,7 @@ export const AuthProvider = (props) => {
     const [userInfo,setUserInfo] = useState(null)
     const [token, setToken] = useState(null)
     const [isLoading, setIsLoading] = useState(true);
+    const [isAgent,setIsAgent] = useState(false);
 
     useEffect(() => {
         async function getToken() {
@@ -56,19 +57,19 @@ export const AuthProvider = (props) => {
         return res;
     }
 
-    const testLogin = () => {
-        setIsLoading(true)
-        setToken('ivantom')
-        AsyncStorage.setItem('token','ivantom');
-        setIsLoading(false)
-    }
+    // const testLogin = () => {
+    //     setIsLoading(true)
+    //     setToken('ivantom')
+    //     AsyncStorage.setItem('token','ivantom');
+    //     setIsLoading(false)
+    // }
 
-    const lestLogout = () => {
-        setIsLoading(true)
-        setToken(null)
-        AsyncStorage.removeItem('token')
-        setIsLoading(false)
-    }
+    // const lestLogout = () => {
+    //     setIsLoading(true)
+    //     setToken(null)
+    //     AsyncStorage.removeItem('token')
+    //     setIsLoading(false)
+    // }
 
     const isLoggedIn = async () => {
         try{
@@ -96,7 +97,7 @@ export const AuthProvider = (props) => {
     }
 
     return (
-        <AuthContext.Provider value={{ userInfo: userInfo,setUserInfo,testLogin, lestLogout, token, setToken, login, logout, isLoading, setIsLoading }}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={{ isAgent,setIsAgent,userInfo: userInfo,setUserInfo, token, setToken, login, logout, isLoading, setIsLoading }}>{children}</AuthContext.Provider>
     )
 
 

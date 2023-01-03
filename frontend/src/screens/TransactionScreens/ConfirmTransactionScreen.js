@@ -162,7 +162,7 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
               secureTextEntry
 
             />
-            <CustomButton onPress={goNext} title='Confirm' style={{ color: '#fff' }} />
+            <CustomButton disabled={Boolean(pinCode.length <= 5)} onPress={validatePinCode} title='Confirm' style={{ color: '#fff' }} />
           </View>
         </View>
       </TouchableWithoutFeedback>
