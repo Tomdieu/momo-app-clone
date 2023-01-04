@@ -4,12 +4,32 @@ import { AuthContext } from '../context/AuthContext'
 import React from 'react';
 import APIService from '../utils/ApiService'
 
+import WebSocket from 'ws';
+
 export const AuthProvider = (props) => {
     const { children } = props;
-    const [userInfo,setUserInfo] = useState(null)
+    const [userInfo, setUserInfo] = useState(null)
     const [token, setToken] = useState(null)
     const [isLoading, setIsLoading] = useState(true);
-    const [isAgent,setIsAgent] = useState(false);
+    const [isAgent, setIsAgent] = useState(false);
+
+    useEffect(() => {
+        if (userInfo) {
+
+            const ws = new WebSocket(`${APIService.webSocketUrl}/ws/notifications/${userInfo.user.id}`);
+
+            ws.on('open', function open() {
+                console.log("connection established")
+            });
+
+            ws.on('message', function message(data) {
+                console.log('received: %s', data);
+            });
+
+        }
+
+
+    }, [userInfo])
 
     useEffect(() => {
         async function getToken() {
@@ -20,14 +40,14 @@ export const AuthProvider = (props) => {
             }
         }
 
-        async function getUserData(){
+        async function getUserData() {
             const userData = await AsyncStorage.getItem('userInfo');
 
-            if (userData){
+            if (userData) {
                 setUserInfo(JSON.parse(userData))
             }
         }
-        getToken().then(()=>getUserData())
+        getToken().then(() => getUserData())
     }, [])
 
     useEffect(() => {
@@ -41,14 +61,14 @@ export const AuthProvider = (props) => {
         }
     }, [token])
 
-    useEffect(()=>{
-        async function setUserData(){
-            if(userInfo){
-                await AsyncStorage.setItem('userInfo',JSON.stringify(userInfo))
+    useEffect(() => {
+        async function setUserData() {
+            if (userInfo) {
+                await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo))
             }
         }
         setUserData(userInfo)
-    },[userInfo])
+    }, [userInfo])
 
 
     const login = async (username, password) => {
@@ -57,35 +77,21 @@ export const AuthProvider = (props) => {
         return res;
     }
 
-    // const testLogin = () => {
-    //     setIsLoading(true)
-    //     setToken('ivantom')
-    //     AsyncStorage.setItem('token','ivantom');
-    //     setIsLoading(false)
-    // }
-
-    // const lestLogout = () => {
-    //     setIsLoading(true)
-    //     setToken(null)
-    //     AsyncStorage.removeItem('token')
-    //     setIsLoading(false)
-    // }
-
     const isLoggedIn = async () => {
-        try{
+        try {
             setIsLoading(true)
             let userToken = await AsyncStorage.getItem('token')
             setToken(userToken)
             setIsLoading(false)
         }
-        catch(e){
+        catch (e) {
             console.log(`isLogged in error ${e}`)
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         isLoggedIn()
-    },[])
+    }, [])
 
     const logout = async () => {
         if (token) {
@@ -97,7 +103,7 @@ export const AuthProvider = (props) => {
     }
 
     return (
-        <AuthContext.Provider value={{ isAgent,setIsAgent,userInfo: userInfo,setUserInfo, token, setToken, login, logout, isLoading, setIsLoading }}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={{ isAgent, setIsAgent, userInfo: userInfo, setUserInfo, token, setToken, login, logout, isLoading, setIsLoading }}>{children}</AuthContext.Provider>
     )
 
 
