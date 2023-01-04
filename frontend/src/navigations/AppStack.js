@@ -10,10 +10,14 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import TransactionNavigator from './TransactionStack'
+import { useAuthContext } from '../context/AuthContext'
+
+
 
 const Tab = createBottomTabNavigator()
 
 const AppNavigator = () => {
+  const {notificationCount} = useAuthContext()
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Account" component={AccountScreen} options={{
@@ -29,7 +33,7 @@ const AppNavigator = () => {
       <Tab.Screen name="Notification" component={NotificationStack} options={{
         title: "Notifications",
         tabBarLabel: "Notifications",
-        tabBarBadge:3,
+        tabBarBadge:{notificationCount},
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="notifications" color={color} size={size} />
         ),

@@ -13,6 +13,8 @@ export const AuthProvider = (props) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isAgent, setIsAgent] = useState(false);
 
+    const [notificationCount,setNotificationCount] = useState(0)
+
     useEffect(() => {
         if (userInfo) {
 
@@ -24,6 +26,7 @@ export const AuthProvider = (props) => {
 
             ws.on('message', function message(data) {
                 console.log('received: %s', data);
+                setNotificationCount(notificationCount + 1)
             });
 
         }
@@ -103,7 +106,7 @@ export const AuthProvider = (props) => {
     }
 
     return (
-        <AuthContext.Provider value={{ isAgent, setIsAgent, userInfo: userInfo, setUserInfo, token, setToken, login, logout, isLoading, setIsLoading }}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={{ notificationCount,isAgent, setIsAgent, userInfo: userInfo, setUserInfo, token, setToken, login, logout, isLoading, setIsLoading }}>{children}</AuthContext.Provider>
     )
 
 
