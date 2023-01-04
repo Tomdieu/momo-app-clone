@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect,useState } from 'react'
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons'
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useLanguageContext } from '../../context/LangContext';
 
@@ -16,9 +18,10 @@ const TransactionScreen = ({ navigation }) => {
   useEffect(() => {
     const _isAgent = AsyncStorage.getItem('isAgent');
     if (_isAgent) {
+      console.log(_isAgent)
       setIsAgent(_isAgent)
     }
-  })
+  },[])
 
   return (
     <View style={styles.container}>

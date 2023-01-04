@@ -86,7 +86,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         }
 
 
-class ProfileListSerializer(serializers.ModelSerializer)):
+class ProfileListSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
     class Meta:

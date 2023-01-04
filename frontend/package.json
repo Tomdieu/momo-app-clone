@@ -21,7 +21,6 @@
     "@react-navigation/native": "^6.0.13",
     "@react-navigation/native-stack": "^6.9.1",
     "@react-navigation/stack": "^6.3.8",
-    "axios": "^1.2.2",
     "expo": "~46.0.16",
     "expo-constants": "~13.2.4",
     "expo-linear-gradient": "~11.4.0",
@@ -53,7 +52,7 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-web": "~0.18.7",
     "react-native-webview": "11.23.0",
-    "socket.io-client": "^4.5.4",
+    "ws": "^8.11.0",
     "yup": "^0.32.11"
   },
   "devDependencies": {

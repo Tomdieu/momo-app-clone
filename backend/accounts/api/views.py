@@ -65,7 +65,7 @@ class CreateProfileViewSet(CreateModelMixin, GenericViewSet):
 
         serializer.save()
 
-        return Response({'success':True,'data':serializer.data,'message':'Welcome to trix wallet'})
+        return Response({'success':True,'data':serializer.data,'message':'Welcome to trix wallet'},status=status.HTTP_201_CREATED)
 
 
 class ProfileViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):

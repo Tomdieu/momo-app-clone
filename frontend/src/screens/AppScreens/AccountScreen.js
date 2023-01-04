@@ -42,7 +42,7 @@ const AccountScreen = ({ navigation }) => {
       .then(account => {
         // console.log(account)
         setAccountDetail(account.data);
-        AsyncStorage.setItem('isAgent',account.data.is_agent);
+        AsyncStorage.setItem('isAgent',JSON.stringify({"agent":account.data.is_agent}));
         setIsLoading(false)
       })
       .catch(err => console.error(err))

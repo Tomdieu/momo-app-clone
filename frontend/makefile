@@ -6,7 +6,7 @@ install:
 	$(NPM) install -g eas-cli
 
 login:
-	$(EAS)
+	$(EAS) login
 
 configure:
 	$(EAS) build:configure

@@ -1,13 +1,14 @@
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity,ActivityIndicator } from 'react-native'
 import React from 'react'
 import PropTypes from 'prop-types'
 
 const CustomButton = (props) => {
-    const { title='Ok',disabled = false, style = {}, onPress, onLongPress, ...others } = props;
+    const { title='Ok',loading=false,disabled = false, style = {}, onPress, onLongPress, ...others } = props;
     const { color } = style;
     return (
         <TouchableOpacity disabled={disabled} onPress={onPress} onLongPress={onLongPress} {...others} style={[{ ...styles.container, ...style },disabled && styles.touchableDisabled]}>
-            <Text style={{ ...styles.text,color }}>{title}</Text>
+        
+        {!loading?(<Text style={{ ...styles.text,color }}>{title}</Text>):(<ActivityIndicator color={"#fff"}/>)}
         </TouchableOpacity>
     )
 }

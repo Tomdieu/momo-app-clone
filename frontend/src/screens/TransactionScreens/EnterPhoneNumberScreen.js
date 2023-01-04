@@ -11,6 +11,8 @@ import PhoneSchema from '../../schema/PhoneSchema'
 import { useAuthContext } from '../../context/AuthContext';
 import { useLanguageContext } from '../../context/LangContext';
 
+import Fab from '../../components/Fab'
+
 
 const EnterPhoneNumberScreen = ({ navigation,route }) => {
 
@@ -82,6 +84,7 @@ const EnterPhoneNumberScreen = ({ navigation,route }) => {
                                 <CustomButton title={i18n.t('continue')} onPress={handleSubmit} disabled={Boolean(!isValid || !dirty)} style={{ color: 'white', backgroundColor: 'black' }} />
                             </View>
                         </View>
+                        <Fab onPress={()=>navigation.replace('Transaction')} iconSize={15} iconName="left" style={{backgroundColor:'#4361ee',color:'#fff',borderRadius:10}}/>
                     </View>
                 </TouchableWithoutFeedback>
             )}

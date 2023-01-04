@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, SafeAreaView, NativeModules, ScrollView, FlatList, TouchableOpacity,Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { COLORS } from '../../utils/constants'
@@ -61,7 +61,21 @@ const NotificationScreen = ({ navigation }) => {
 
   const [selectedNotification, setSelectedNotification] = useState([])
 
+  const [messages,setMessages] = useState([])
+
   const {token} = useAuthContext();
+
+  useEffect(()=>{
+    ApiService
+    .getNotifications(token)
+    .then(res=>res.json())
+    .then(data=>{
+      // console.log(data)
+      setMessages(data.data)
+
+    })
+    .catch(err=>console.log(err))
+  },[]);
 
   const selectNotification = (notification) => {
     console.log(notification)

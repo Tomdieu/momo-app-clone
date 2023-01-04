@@ -37,7 +37,7 @@ class GetAccountViewSet(GenericViewSet, ListModelMixin):
             return Account.objects.filter(account_number=account_number)
 
         phone_number = self.request.query_params.get(
-            'phone_number', '').replace(' ', '')
+            'phone_number', '').replace(' ', '')                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
         if phone_number:
             return Account.objects.filter(user__profile__phone_number__icontains=phone_number)
 
@@ -73,7 +73,7 @@ class ValidatePinCodeViewSet(ViewSet):
 
     def list(self,request,*args,**kwargs):
 
-        pin_code = request.request.get('pin_code',None)
+        pin_code = request.query_params.get('pin_code',None)
 
         if not pin_code:
             return Response({'success':False,'message':'The pin code must be passed in the post data'},status=404)
