@@ -222,10 +222,41 @@ class WithdrawSerializer(serializers.ModelSerializer):
 
 class WithdrawListSerializer(WithdrawSerializer):
 
-	withdraw_from = AccountListSerializer()
-	agent= AccountListSerializer()
+	sender = serializers.SerializerMethodField()
+	reciever = serializers.SerializerMethodField()
+
+	# withdraw_from = AccountListSerializer()
+	# agent= AccountListSerializer()
 	charge = TransactionListChargeSerializer()
 
+	def get_sender(self,obj:Withdraw):
+		return AccountListSerializer(obj.withdraw_from).data
+
+	def get_reciever(self,obj:Withdraw):
+		return AccountListSerializer(obj.agent).data
+
+	def get_fields(self):
+		fields =  super().get_fields()
+
+		# here what is i am doing is that is am removinf the field ['withdraw_from','agent']
+		for field in ['withdraw_from','agent']:
+			fields.pop(field,None)
+
+		return fields
+
+	class Meta:
+		model = Withdraw
+		# exclude = ['withdraw_from','agent']
+		fields = '__all__'
+		
+		extra_kwargs = {
+			'withdraw_from':{
+				'read_only':True
+			},
+			'agent':{
+				'read_only':True
+			}
+		}
 
 class CreateDepositSerializer(serializers.ModelSerializer):
 
