@@ -26,7 +26,7 @@ class Account(models.Model):
 
     STATUS = (('active', 'active'), ('inactive', 'inactive'))
     account_number = models.CharField(
-        default='1000001',max_length=40, unique=True)
+        default='1000000',max_length=40, unique=True)
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, help_text='user id', related_name='account')
     balance = models.FloatField(

@@ -14,7 +14,7 @@ const Notification = ({ item, selected, onLongPress, onPress }) => {
                     <Text style={{ paddingLeft: 5 }} numberOfLines={2} lineBreakMode='tail'>{item.message}</Text>
                 </View>
                 <View>
-                    <Text style={{ textAlign: 'right' }}>  {moment(item.created_at).format('DD MMM')}</Text>
+                    <Text style={{ textAlign: 'right' }}> {'\t'}  {moment(item.created_at).format('DD MMM')}</Text>
                 </View>
             </View>
             {selected && <View style={styles.overlay}></View>}

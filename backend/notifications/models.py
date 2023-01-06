@@ -1,9 +1,5 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-import asyncio
 import json
 
 from django.dispatch import receiver
@@ -23,7 +19,7 @@ class Notification(models.Model):
         ('TRANSFER_SUCCESSFULL', 'TRANSFER_SUCCESSFULL'),
         ('TRANSFER_REJECTED', 'TRANSFER_REJECTED'),
         ('WITHDRAW', 'WITHDRAW'),
-        ('WITHDRAW_PENDING','WITHDRAW_PENDING'),
+        ('WITHDRAW_PENDING', 'WITHDRAW_PENDING'),
         ('WITHDRAW_REJECTED', 'WITHDRAW_REJECTED'),
         ('WITHDRAW_CANCEL', 'WITHDRAW_CANCEL'),
         ('WITHDRAW_SUCCESSFULL', 'WITHDRAW_SUCCESSFULL'),
@@ -46,7 +42,7 @@ class Notification(models.Model):
     def __str__(self):
         return f'{self.user} notification'
 
-    
+
 # signals for notification
 
 
@@ -54,11 +50,25 @@ class Notification(models.Model):
 def sendSocketNotifications(sender, instance, created, **kwargs):
     from notifications.api.serializers import NotificationSerializer
 
-    channel_layer = get_channel_layer()
-
     if created:
 
         n = NotificationSerializer(instance)
+        try:
+            from channels.layers import get_channel_layer
+            from asgiref.sync import async_to_sync
+            import asyncio
 
-        async_to_sync(channel_layer.group_send)(f'notification_{instance.user.id}', {
-            'type': 'send_notification', 'message': json.dumps(n.data)})
+            # with get_channel_layer() as channel_layer:
+            channel_layer = get_channel_layer()
+
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(channel_layer.group_send(f'notification_{instance.user.id}', {
+                'type': 'send_notification', 
+                'message': json.dumps(n.data)
+                })
+            )
+            # async_to_sync(channel_layer.group_send)(f'notification_{instance.user.id}', {
+            #     'type': 'send_notification', 'message': json.dumps(n.data)})
+        except:
+            pass

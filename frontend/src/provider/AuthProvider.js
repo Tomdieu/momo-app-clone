@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useRef } from 'react';
 import { AuthContext } from '../context/AuthContext'
 import React from 'react';
 import APIService from '../utils/ApiService'
@@ -13,26 +13,26 @@ export const AuthProvider = (props) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isAgent, setIsAgent] = useState(false);
 
-    const [notificationCount,setNotificationCount] = useState(0)
+    // const ws = useRef(null);
 
-    useEffect(() => {
-        if (userInfo) {
+    // useEffect(() => {
+    //     if (userInfo) {
 
-            const ws = new WebSocket(`${APIService.webSocketUrl}/ws/notifications/${userInfo.user.id}`);
+    //         const ws = new WebSocket(`${APIService.webSocketUrl}/ws/notifications/${userInfo.user.id}`);
 
-            ws.on('open', function open() {
-                console.log("connection established")
-            });
+    //         ws.on('open', function open() {
+    //             console.log("connection established")
+    //         });
 
-            ws.on('message', function message(data) {
-                console.log('received: %s', data);
-                setNotificationCount(notificationCount + 1)
-            });
+    //         ws.on('message', function message(data) {
+    //             console.log('received: %s', data);
+    //             setNotificationCount(notificationCount + 1)
+    //         });
 
-        }
+    //     }
+        
 
-
-    }, [userInfo])
+    // }, [userInfo])
 
     useEffect(() => {
         async function getToken() {
@@ -106,7 +106,7 @@ export const AuthProvider = (props) => {
     }
 
     return (
-        <AuthContext.Provider value={{ notificationCount,isAgent, setIsAgent, userInfo: userInfo, setUserInfo, token, setToken, login, logout, isLoading, setIsLoading }}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={{isAgent, setIsAgent, userInfo: userInfo, setUserInfo, token, setToken, login, logout, isLoading, setIsLoading }}>{children}</AuthContext.Provider>
     )
 
 

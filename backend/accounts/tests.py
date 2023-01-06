@@ -55,7 +55,7 @@ class AccountTestCase(APITestCase):
 
 
     def test_1(self):
-        # print(self.user)
+        print(self.user)
         self.assertEquals(self.user['data']['user']['username'],"ivantom1")
         # acc = self.create_account()
         # user = json.loads(acc.content)

@@ -15,7 +15,8 @@ class AccountAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'account_number', 'is_agent',
                     'amount', 'convertedAmount', 'account_status')
     list_filter = ('balance', 'account_status')
-    readonly_fields = ('currency', 'user', 'pin_code', 'account_number')
+    # readonly_fields = ('currency', 'user', 'pin_code', 'account_number')
+    readonly_fields = ('account_number',)
 
     search_fields = ('user__username', 'currency', 'account_status',)
     list_per_page = 25
