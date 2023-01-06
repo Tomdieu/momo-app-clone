@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-7vzi6_39u1hu4dh6m!!9z*@lw^%%pu#p(+d^$f%4s@euzc+tn@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','0.0.0.0']
+ALLOWED_HOSTS = ['*', '0.0.0.0']
 
 
 # Application definition
@@ -107,7 +107,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
         "TEST": {
-            "NAME": BASE_DIR /"db_test.sqlite3",
+            "NAME": BASE_DIR / "db_test.sqlite3",
         },
     }
 }
@@ -193,6 +193,7 @@ CORS_ALLOW_METHODS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PERMISSIONS_CLASSES': (
@@ -272,5 +273,4 @@ WITHDRAW_MONEY_MINUTES = 2
 WALLET_DEFAULT_PIN_CODE = '00000'
 
 
-
-LOGIN_URL = 'login'
+# LOGIN_URL = 'login'
