@@ -34,6 +34,8 @@ class Notification(models.Model):
     type = models.CharField(
         max_length=20, choices=NOTIFICATION_TYPE, default='NORMAL')
 
+    deleted = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
