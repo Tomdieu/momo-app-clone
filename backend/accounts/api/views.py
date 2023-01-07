@@ -63,9 +63,11 @@ class CreateProfileViewSet(CreateModelMixin, GenericViewSet):
 
         serializer.is_valid(raise_exception=True)
 
-        serializer.save()
+        instance = serializer.save()
 
-        return Response({'success':True,'data':serializer.data,'message':'Welcome to trix wallet'},status=status.HTTP_201_CREATED)
+        token = instance.user.auth_token.key
+
+        return Response({'success':True,'token':token,'data':serializer.data,'message':'Welcome to trix wallet'},status=status.HTTP_201_CREATED)
 
 
 class ProfileViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, GenericViewSet):

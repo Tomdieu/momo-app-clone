@@ -20,43 +20,6 @@ const { StatusBarManager } = NativeModules
 
 moment.locale('en')
 
-const messages = [
-  {
-    id: 1,
-    message: 'Helsadfasd asdkjaskdjasdhkajsd nlorem ipsum dole asdasdasdasd asdasdasd',
-  },
-  {
-    id: 2,
-    message: 'Helsadfasd asdkjaskdjasdhkajsd nlorem ipsum dole asdasdasdasd asdasdasd',
-  }
-  ,
-  {
-    id: 3,
-    message: 'Helsadfasd asdkjaskdjasdhkajsd nlorem ipsum dole asdasdasdasd asdasdasd',
-  },
-  {
-    id: 4,
-    message: 'Helsadfasd asdkjaskdjasdhkajsd nlorem ipsum dole asdasdasdasd asdasdasd',
-  },
-  {
-    id: 5,
-    message: 'Helsadfasd asdkjaskdjasdhkajsd nlorem ipsum dole asdasdasdasd asdasdasd',
-  },
-  {
-    id: 6,
-    message: 'Helsadfasd asdkjaskdjasdhkajsd nlorem ipsum dole asdasdasdasd asdasdasd',
-  },
-  {
-    id: 7,
-    message: 'Helsadfasd asdkjaskdjasdhkajsd nlorem ipsum dole asdasdasdasd asdasdasd',
-  },
-  {
-    id: 8,
-    message: 'Helsadfasd asdkjaskdjasdhkajsd nlorem ipsum dole asdasdasdasd asdasdasd',
-  }
-]
-
-
 const NotificationScreen = ({ navigation }) => {
 
   const [selectedNotification, setSelectedNotification] = useState([])
@@ -70,7 +33,6 @@ const NotificationScreen = ({ navigation }) => {
     .getNotifications(token)
     .then(res=>res.json())
     .then(data=>{
-      // console.log(data)
       setMessages(data.data)
 
     })

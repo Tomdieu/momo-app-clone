@@ -13,11 +13,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import (
     CreateModelMixin, UpdateModelMixin, DestroyModelMixin, ListModelMixin, RetrieveModelMixin)
 from rest_framework.viewsets import (GenericViewSet)
-from rest_framework.generics import (CreateAPIView, ListAPIView)
-from rest_framework.views import APIView
+from rest_framework.generics import (CreateAPIView)
 from rest_framework.viewsets import ViewSet
 
-from django.db.models import Q, F
+from django.db.models import Q
 
 from django.conf import settings
 from core.api.utils.permisions import IsAgent
@@ -106,6 +105,7 @@ class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateM
 
     def retrieve(self, request, *args, **kwargs):
 
+        
         pk = kwargs.get('pk')
 
         queryset = self.get_queryset().filter(user_id=pk)

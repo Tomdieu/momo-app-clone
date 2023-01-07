@@ -26,32 +26,31 @@ const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("")
-  const { testLogin ,login,setToken,setUserInfo} = useAuthContext()
+  const { login, setToken, setUserInfo } = useAuthContext()
 
   const handleSubmit = () => {
-    if (!username && !password){
+    if (!username && !password) {
       return setError('username and password required')
     }
-    else if(!username){
-     return  setError('username  required')
+    else if (!username) {
+      return setError('username  required')
     }
-    else if(!password){
+    else if (!password) {
       return setError('password required');
     }
-    console.log('username ',username)
-    console.log('password',password)
-    login(username,password)
-    .then(res=>res.json())
-    .then((data)=>{
-      console.log('Response ',data);
-      setToken(data.token);
-      setUserInfo(data.data)
 
-    })
-    .catch(err=>console.log('Error ',err))
-   };
+    login(username, password)
+      .then(res => res.json())
+      .then((data) => {
+        console.log('Response ', data);
+        setToken(data.token);
+        setUserInfo(data.data)
 
-  return (  
+      })
+      .catch(err => console.log('Error ', err))
+  };
+
+  return (
     <SafeAreaView
       style={{
         ...styles.container,
@@ -96,9 +95,8 @@ const LoginScreen = ({ navigation }) => {
               />
             </View>
 
-            <CustomButton title="Login" onPress={handleSubmit} disabled={Boolean(!username || !password)} style={{color:'#fff'}}/>
+            <CustomButton title="Login" onPress={handleSubmit} disabled={Boolean(!username || !password)} style={{ color: '#fff' }} />
 
-            <Button onPress={() => testLogin()}>Test Me</Button>
             <View style={styles.inputContainer}>
               <TouchableOpacity style={{ ...styles.btn, color: (!username) ? 'grey' : 'default' }}>
                 <Button
@@ -166,7 +164,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(0,0,0,0.6)",
     borderRadius: 3,
     fontSize: 18,
-    fontWeight:'800',
+    fontWeight: '800',
     backgroundColor: '#e3dede96'
   },
   btn: {

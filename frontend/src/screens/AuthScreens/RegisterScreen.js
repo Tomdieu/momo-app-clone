@@ -15,15 +15,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Formik } from "formik";
 import { COLORS } from "../../utils/constants";
-import { Button } from "react-native-paper";
 
 import CustomButton from "../../components/CustomButton";
 
 import { basicSchema } from '../../schema/UserSchema'
 
+import ApiService from '../../utils/ApiService'
+
+import { useAuthContext } from '../../context/AuthContext'
+
 const { StatusBarManager } = NativeModules;
 
+
 const RegisterScreen = ({ navigation }) => {
+
+  const { setToken, setUserInfo } = useAuthContext()
+
   return (
     <SafeAreaView
       style={{
@@ -43,7 +50,22 @@ const RegisterScreen = ({ navigation }) => {
             confirm_password: "",
           }}
           validationSchema={basicSchema}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={(values) => {
+            const { username, first_name, last_name, email, phone_number, password } = values;
+            const profile = { phone_number }
+            const user = {
+              username, first_name, last_name, email, password, profile
+            }
+            const data = JSON.stringify(user)
+            ApiService.register(data)
+              .then(res => res.json())
+              .then(data => {
+                setToken(data.token)
+                setUserInfo(data.data)
+              })
+
+            console.log(values)
+          }}
         >
           {({
             handleChange,
