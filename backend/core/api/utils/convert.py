@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Convert:
 
-    def convert(self,from_currency:str,to_currency:str,amount:float | int):
+    def convert(self,from_currency:str,to_currency:str,amount):
         """
         ## Paramerters:
 
@@ -53,7 +53,7 @@ class OffLineCurrencyConverter(Convert):
         self.data = json.load(f)
         self.currencies = self.data['rates']
 
-def converCurrency(from_currency:str,to_currency:str,amount:float|int) -> float:
+def converCurrency(from_currency:str,to_currency:str,amount) -> float:
     """
     # Convert a currency to another
         
