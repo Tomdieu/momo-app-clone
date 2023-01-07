@@ -25,4 +25,5 @@ RUN python -m pip install --upgrade pip
 # Install pip requirements
 # COPY requirements.txt requirements.txt
 RUN python -m pip install "setuptools<58"
+RUN python -m pip install ez_setup 
 RUN python -m pip install -r requirements.txt   
