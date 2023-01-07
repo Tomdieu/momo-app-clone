@@ -21,7 +21,7 @@ const TransactionComplete = ({ data,type }) => {
                 <Text style={styles.text}>Transaction code </Text><Text> {data.data.code}</Text>
             </View>
             <View style={styles.row}>
-                <Text style={styles.text}>Transaction state </Text><Text style={{ color: getColor(data.data.state) }}> {data.data.state}</Text>
+                <Text style={styles.text}>Transaction state </Text><Text style={{ color: getColor(data.data.status) }}> {data.data.state}</Text>
             </View>
             <View style={styles.row}>
                 <Text style={styles.text}>Transaction amount </Text><Text> {i18n.numberToCurrency(data.data.amount, { unit: `${data.data.currency} ` })}</Text>
