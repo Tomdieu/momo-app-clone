@@ -20,7 +20,6 @@ const EnterPhoneNumberScreen = ({ navigation,route }) => {
     const {token} = useAuthContext();
 
     const {i18n} = useLanguageContext()
-    console.log(route)
     const {type} = route.params
 
     const getText = ()=>{
@@ -31,9 +30,7 @@ const EnterPhoneNumberScreen = ({ navigation,route }) => {
             return 'phoneNumber'
         }
     }
-
-    // const getText = () => "recieverPhone"
-
+    
     return (
         <Formik
             initialValues={{ phoneNumber: '' }}

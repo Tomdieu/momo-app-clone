@@ -32,6 +32,8 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
 
   const [loading,setLoading] = useState(false)
 
+  console.log('Type is : ',type)
+
 
   useEffect(()=>{
     APIService
@@ -51,10 +53,6 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
   const handleChangePinCode = (value) => {
     setPinCode(value.replace(/[^0-9]/g, ''))
   }
-
-  // const goNext = () =>{
-  //   navigation.navigate('SuccessTransactionScreen')
-  // }
 
   const validatePinCode = () =>{
     setLoading(true);
@@ -76,7 +74,7 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
           .then(data=>{
             console.log(data)
             if(data.success){
-              navigation.navigate('SuccessTransactionScreen',{data,type})
+              navigation.navigate('SuccessTransactionScreen',{data:data,type:type})
             }
             else{
               setError(data.message)
@@ -102,7 +100,7 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
           .then(data=>{
             console.log(data)
             if(data.success){
-              navigation.navigate('SuccessTransactionScreen',{data,type})
+              navigation.navigate('SuccessTransactionScreen',{data:data,type:type})
             }
             else{
               setError(data.message)
@@ -128,7 +126,7 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
           .then(data=>{
             console.log(data)
             if(data.success){
-              navigation.navigate('SuccessTransactionScreen',{data,type})
+              navigation.navigate('SuccessTransactionScreen',{data:data,type:type})
             }
             else{
               setError(data.message)

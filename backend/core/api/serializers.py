@@ -224,6 +224,7 @@ class WithdrawListSerializer(WithdrawSerializer):
 
 	sender = serializers.SerializerMethodField()
 	reciever = serializers.SerializerMethodField()
+	status = serializers.SerializerMethodField()
 
 	# withdraw_from = AccountListSerializer()
 	# agent= AccountListSerializer()
@@ -243,6 +244,9 @@ class WithdrawListSerializer(WithdrawSerializer):
 			fields.pop(field,None)
 
 		return fields
+
+	def get_status(self,obj:Withdraw):
+		return obj.state
 
 	class Meta:
 		model = Withdraw

@@ -24,7 +24,7 @@ const AccountScreen = ({ navigation }) => {
   const [accountDetail, setAccountDetail] = useState({});
   const [isLoading, setIsLoading] = useState(true)
 
-  const { token } = useAuthContext();
+  const { token,userInfo } = useAuthContext();
   const { i18n } = useLanguageContext();
 
   const goToScreen = (transactionType) => {
@@ -63,7 +63,7 @@ const AccountScreen = ({ navigation }) => {
       <StatusBar style="dark" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ flex: 1, marginTop: 20 }}>
-          <Text style={{ fontSize: 20, fontWeight: '800' }}>{i18n.t('welcome')}, ivantom</Text>
+          <Text style={{ fontSize: 20, fontWeight: '800' }}>{i18n.t('welcome')}, {userInfo.user.username}</Text>
 
           <View style={styles.infoContainer}>
             <MaterialIcons name="account-balance" color={COLORS.white} size={32} />

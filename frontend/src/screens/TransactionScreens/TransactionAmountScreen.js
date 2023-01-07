@@ -57,7 +57,7 @@ const TransactionAmountScreen = ({ navigation, route }) => {
                                     <Text style={{ fontSize: 12,fontWeight:'900', color: 'red', paddingLeft: 8 }}>{errors.amount}</Text>
                                 }
                             </View>
-                            <CustomButton style={{color:'white'}} title={'Send'} onPress={handleSubmit} disabled={Boolean(!isValid || !dirty)}/>
+                            <CustomButton style={{color:'white'}} title={'Continue'} onPress={handleSubmit} disabled={Boolean(!isValid || !dirty)}/>
                         </View>
                     </View>
                 </TouchableWithoutFeedback>

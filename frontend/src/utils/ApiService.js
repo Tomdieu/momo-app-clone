@@ -82,17 +82,7 @@ export default class Trixwallet {
     })
     return res
   }
-
-  // static async authenticate(username, password) {
-  //   const url = this.endPoint + '/api/auth/login/'
-  //   const res = await axios.post(url,{username,password},{
-  //     headers:{
-  //       'Content-Type':'application/json'
-  //     }
-  //   })
-  //   return res
-  // }
-
+  
   /**
    * This functions gets the data of a user an create an account
    * with the corresponding information provided.
