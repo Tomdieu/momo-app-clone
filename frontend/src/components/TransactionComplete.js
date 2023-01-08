@@ -15,31 +15,31 @@ const TransactionComplete = ({ data,type }) => {
     return (
         <View style={styles.transactionInfoContainer}>
             <View style={styles.row}>
-                <Text style={styles.text}>Transaction type </Text><Text> {type}</Text>
+                <Text style={styles.text}>{i18n.t('Transaction Type')} </Text><Text> {i18n.t(type)}</Text>
             </View>
             <View style={styles.row}>
-                <Text style={styles.text}>Transaction code </Text><Text> {data.data.code}</Text>
+                <Text style={styles.text}>{i18n.t('Transaction code')} </Text><Text> {data.data.code}</Text>
             </View>
             <View style={styles.row}>
-                <Text style={styles.text}>Transaction state </Text><Text style={{ color: getColor(data.data.status) }}> {data.data.state}</Text>
+                <Text style={styles.text}>{i18n.t('Transaction state')} </Text><Text style={{ color: getColor(data.data.status) }}> {data.data.state}</Text>
             </View>
             <View style={styles.row}>
-                <Text style={styles.text}>Transaction amount </Text><Text> {i18n.numberToCurrency(data.data.amount, { unit: `${data.data.currency} ` })}</Text>
+                <Text style={styles.text}>{i18n.t('Transaction Amount')} </Text><Text> {i18n.numberToCurrency(data.data.amount, { unit: `${data.data.currency} ` })}</Text>
             </View>
             <View style={styles.row}>
-                <Text style={styles.text}>Transaction charge </Text><Text> {i18n.numberToPercentage(data.data.charge.charge * 100, { precision: 0 })}</Text>
+                <Text style={styles.text}>{i18n.t('Transaction charge')} </Text><Text> {i18n.numberToPercentage(data.data.charge.charge * 100, { precision: 0 })}</Text>
             </View>
             <View style={styles.row}>
-                <Text style={styles.text}>From </Text><Text> {data.data.sender.user.full_name}</Text>
+                <Text style={styles.text}>{i18n.t('From')} </Text><Text> {data.data.sender.user.full_name}</Text>
             </View>
             <View style={styles.row}>
-                <Text style={styles.text}>To </Text><Text> {data.data.reciever.user.full_name}</Text>
+                <Text style={styles.text}>{i18n.t('To')} </Text><Text> {data.data.reciever.user.full_name}</Text>
             </View>
             <View style={styles.row}>
-                <Text style={styles.text}>Date </Text><Text> {moment(data.data.created_at).format('D/MM/YYYY HH:mm')}</Text>
+                <Text style={styles.text}>{i18n.t('Date')} </Text><Text> {moment(data.data.created_at).format('D/MM/YYYY HH:mm')}</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                <Text style={styles.text}>INFO </Text><Text style={styles.message}> {data.message} </Text>
+                <Text style={styles.text}>{i18n.t('INFO')} </Text><Text style={styles.message}> {data.message} </Text>
             </View>
 
         </View>
