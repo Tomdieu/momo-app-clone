@@ -7,6 +7,7 @@ welcome: "Bienvenue",
     all: 'Tous',
     latest: 'Dernier',
     seeAll: 'Voir tous',
+    latest_transactions:'Dernier Transactions',
     settings: 'Parametre',
     myInfo: 'Mes Informations',
     account: 'Compte',
@@ -21,6 +22,7 @@ welcome: "Bienvenue",
     fname: 'Nom',
     lname: 'Prenom',
     email: 'Email',
+    city:'Ville',
     phoneNumber: 'Numero Telephone',
     password: 'Mot de passe',
     confirmPassword: 'Confirm le mot de pass',
@@ -71,7 +73,28 @@ welcome: "Bienvenue",
 
 
     'Transaction options':'Transaction options',
-    'Transaction Amount':'Transaction Amount'
+    'Transaction Amount':'Montant de Transaction',
+
+    'Confirm Transaction':'Confirmer Transaction',
+
+
+    update:'Mettre a jour',
+
+    'select a language':'Choisser une langue',
+
+    TRANSFER:'TREANSFER',
+    WITHDRAW:'Retrait',
+    DEPOSIT:'Depot',
+    PENDING:"En Attente",
+
+    'Transaction type':'Type de transaction',
+    'Transaction code':'Code de transaction',
+    'Transaction state':'etat de transaction',
+    'Transaction charge':'Frias de transaction',
+    'From':'de',
+    To:'a',
+    Date:'Date',
+    INFO:'INFO'
 }
 
 export default fr;

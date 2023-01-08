@@ -23,6 +23,7 @@ const en = {
     lname: 'Last name',
     email: 'Email',
     phoneNumber: 'Phone Number',
+    city:'City',
     accountNumber:'Account Number',
     password: 'Mot de passe',
     confirmPassword: 'Confirm Password',
@@ -76,7 +77,28 @@ const en = {
 
 
     'Transaction options':'Transaction options',
-    'Transaction Amount':'Transaction Amount'
+    'Transaction Amount':'Transaction Amount',
+
+    'Confirm Transaction':'Confirm Transaction',
+
+
+    update:'Update',
+
+    'select a language':'Select A Language',
+
+    TRANSFER:'Transfer',
+    WITHDRAW:'Withdraw',
+    DEPOSIT:'Top up',
+    PENDING:"Pending",
+
+    'Transaction type':'Transaction type',
+    'Transaction code':'Transaction code',
+    'Transaction state':'Transaction state',
+    'Transaction charge':'Transaction charge',
+    'From':'From',
+    To:'To',
+    Date:'Date',
+    INFO:'INFO',
 
 }
 
