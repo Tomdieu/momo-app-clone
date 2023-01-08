@@ -4,6 +4,8 @@ import { AuthContext } from '../context/AuthContext'
 import React from 'react';
 import APIService from '../utils/ApiService'
 
+import { useLanguageContext } from '../context/LangContext';
+
 import WebSocket from 'ws';
 
 export const AuthProvider = (props) => {
@@ -12,6 +14,8 @@ export const AuthProvider = (props) => {
     const [token, setToken] = useState(null)
     const [isLoading, setIsLoading] = useState(true);
     const [isAgent, setIsAgent] = useState(false);
+
+    const {setLocale} = useLanguageContext()
 
     // const ws = useRef(null);
 
@@ -50,7 +54,9 @@ export const AuthProvider = (props) => {
                 setUserInfo(JSON.parse(userData))
             }
         }
-        getToken().then(() => getUserData())
+        getToken().then(() => {
+            getUserData()
+        })
     }, [])
 
     useEffect(() => {
@@ -68,6 +74,7 @@ export const AuthProvider = (props) => {
         async function setUserData() {
             if (userInfo) {
                 await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo))
+                setLocale(userInfo.lang.toLocaleLowerCase())
             }
         }
         setUserData(userInfo)
