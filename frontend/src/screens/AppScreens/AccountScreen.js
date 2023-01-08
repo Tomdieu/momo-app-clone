@@ -7,7 +7,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import { COLORS } from '../../utils/constants'
 
@@ -42,7 +41,7 @@ const AccountScreen = ({ navigation }) => {
       .then(account => {
         // console.log(account)
         setAccountDetail(account.data);
-        AsyncStorage.setItem('isAgent',JSON.stringify({"agent":account.data.is_agent}));
+        AsyncStorage.setItem('isAgent',JSON.stringify({"agent":account.data.is_agent}))
         setIsLoading(false)
       })
       .catch(err => console.error(err))

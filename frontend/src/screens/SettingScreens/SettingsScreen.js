@@ -7,9 +7,13 @@ import {useAuthContext} from '../../context/AuthContext'
 
 const { StatusBarManager } = NativeModules
 
-const SettingsScreen = () => {
+const SettingsScreen = ({navigation,route}) => {
 
   const {lestLogout} = useAuthContext()
+
+  const navigate = (route) => {
+    navigation.navigate(route)
+  }
 
   return (
     <SafeAreaView style={{
@@ -20,13 +24,13 @@ const SettingsScreen = () => {
       <View style={{ flex: 1 }}>
         <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: '600',marginVertical:10 }}>Settings</Text>
         <View style={{ flex: 1 }}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>navigate('profile')}>
             <View style={styles.option}>
               <Text style={styles.label}>My Informations</Text>
               <Feather name={'chevron-right'} size={16} style={styles.action} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>navigate('accountInfo')}>
             <View style={styles.option}>
               <Text style={styles.label}>Account</Text>
               <Feather name={'chevron-right'} size={16} style={styles.action} />
@@ -38,7 +42,7 @@ const SettingsScreen = () => {
               <Feather name={'chevron-right'} size={16} style={styles.action} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>navigate('language')}>
             <View style={styles.option}>
               <Text style={styles.label}>Language</Text>
               <Feather name={'chevron-right'} size={16} style={styles.action} />

@@ -32,8 +32,9 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
 
   const [loading,setLoading] = useState(false)
 
-  console.log('Type is : ',type)
-
+  useEffect(()=>{
+    navigation.setOptions({ headerTitle: i18n.t('Confirm Transaction'), })
+  },[])
 
   useEffect(()=>{
     APIService
@@ -185,7 +186,7 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
             <Text style={styles.text}>{i18n.t('reciever')} : {account.user.full_name}</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={styles.text}>{i18n.t('amount')} : {i18n.numberToCurrency(amount,{unit:'XAF '})}</Text>
-              <Text style={styles.text}>Charges : {i18n.numberToPercentage(charge*100,{precision: 0,format:'%n %'})}</Text>
+              <Text style={styles.text}>{i18n.t('charges')} : {i18n.numberToPercentage(charge*100,{precision: 0,format:'%n %'})}</Text>
             </View>
             <View>
               <Text style={styles.text}>{i18n.t('amountSend')} : {i18n.numberToCurrency(amountToSend,{unit:'XAF '})}</Text>
@@ -196,7 +197,7 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
               value={pinCode}
               onChangeText={handleChangePinCode}
               style={styles.input}
-              placeholder={'Pin Code'}
+              placeholder={i18n.t('pinCode')}
               maxLength={5}
               keyboardType={'numeric'}
               secureTextEntry

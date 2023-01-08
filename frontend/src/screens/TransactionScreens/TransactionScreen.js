@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React, { useEffect,useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,6 +9,7 @@ import { useLanguageContext } from '../../context/LangContext';
 const TransactionScreen = ({ navigation }) => {
   const { i18n } = useLanguageContext()
   const [isAgent, setIsAgent] = useState(false)
+  
   const goToScreen = (transactionType) => {
     if (transactionType) {
       navigation.navigate('InputPhone', { type: transactionType })
@@ -16,12 +17,11 @@ const TransactionScreen = ({ navigation }) => {
   }
 
   useEffect(() => {
-    const _isAgent = AsyncStorage.getItem('isAgent');
-    if (_isAgent) {
-      console.log(_isAgent)
-      setIsAgent(_isAgent)
-    }
-  },[])
+    AsyncStorage.getItem('isAgent').then(dt=>{
+      console.log(dt)
+      setIsAgent(JSON.parse(dt).agent)
+    })
+  }, [])
 
   return (
     <View style={styles.container}>

@@ -4,10 +4,7 @@ import {
   TextInput,
   View,
   NativeModules,
-  ScrollView,
-  Pressable,
-  TouchableOpacity,
-  TouchableHighlight,
+  ScrollView
 } from "react-native";
 
 import React from "react";
@@ -192,7 +189,7 @@ const RegisterScreen = ({ navigation }) => {
                   </Button>
                 </TouchableOpacity> */}
 
-                <CustomButton disabled={Boolean(!isValid || !dirty)} title={'Sign Up'} style={{ color: 'white', backgroundColor: COLORS.green }} />
+                <CustomButton onPress={handleSubmit} disabled={Boolean(!isValid || !dirty)} title={'Sign Up'} style={{ color: 'white', backgroundColor: COLORS.green }} />
 
 
               </View>

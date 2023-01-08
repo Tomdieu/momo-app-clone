@@ -4,7 +4,7 @@ import React from 'react'
 const ChangePinCodeScreen = () => {
   return (
     <View>
-      <Text>ChangePinCodeScreen</Text>
+      <Text>Change Pin</Text>
     </View>
   )
 }
