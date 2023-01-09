@@ -1,24 +1,25 @@
-import { StyleSheet, Text, TouchableOpacity,ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React from 'react'
 import PropTypes from 'prop-types'
 
 const CustomButton = (props) => {
-    const { title='Ok',loading=false,disabled = false, style = {}, onPress, onLongPress, ...others } = props;
+    const { title = 'Ok', loading = false, disabled = false, style = {}, onPress, onLongPress, ...others } = props;
     const { color } = style;
     return (
-        <TouchableOpacity disabled={disabled} onPress={onPress} onLongPress={onLongPress} {...others} style={[{ ...styles.container, ...style },disabled && styles.touchableDisabled]}>
-        
-        {!loading?(<Text style={{ ...styles.text,color }}>{title}</Text>):(<ActivityIndicator color={"#fff"}/>)}
+        <TouchableOpacity disabled={disabled || loading} onPress={onPress} onLongPress={onLongPress} {...others} style={[{ ...styles.container, ...style }, disabled && styles.touchableDisabled]}>
+
+            {!loading ? (<Text style={{ ...styles.text, color }}>{title}</Text>) : (<ActivityIndicator color={"#fff"} />)}
         </TouchableOpacity>
     )
 }
 
 CustomButton.propTypes = {
-    title:PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
     style: PropTypes.object,
     onPress: PropTypes.func,
-    onLongPress:PropTypes.func
+    onLongPress: PropTypes.func,
+    loading: PropTypes.bool
 }
 
 export default CustomButton
@@ -28,5 +29,5 @@ const styles = StyleSheet.create({
     text: { color: '#fff', fontWeight: '800', textAlign: 'center', margin: 3 },
     touchableDisabled: {
         backgroundColor: "grey",
-      },
+    },
 })

@@ -3,13 +3,16 @@ import React from 'react'
 import Feather from 'react-native-vector-icons/Feather'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
+import APiService from '../../utils/ApiService'
+
 import {useAuthContext} from '../../context/AuthContext'
+import { COLORS } from '../../utils/constants'
 
 const { StatusBarManager } = NativeModules
 
 const SettingsScreen = ({navigation,route}) => {
 
-  const {lestLogout} = useAuthContext()
+  const {logout} = useAuthContext()
 
   const navigate = (route) => {
     navigation.navigate(route)
@@ -49,8 +52,8 @@ const SettingsScreen = ({navigation,route}) => {
             </View>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={lestLogout}>
-          <View style={styles.option}>
+        <TouchableOpacity onPress={logout}>
+          <View style={[styles.option,styles.logout]}>
             <Text style={styles.label}>SignOut</Text>
             <MaterialIcons name={'logout'} size={16} style={styles.action} />
           </View>
@@ -65,7 +68,8 @@ export default SettingsScreen
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor:COLORS.bg
   },
   option: {
     flexDirection: 'row',
@@ -76,13 +80,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     borderRadius: 4,
     backgroundColor: '#fff',
+    backgroundColor:'#2262c9'
   },
   label: {
     paddingLeft: 5,
-    fontSize: 18
+    fontSize: 18,
+    color:'#fff'
   },
   action: {
     marginRight: 5,
-
+    color:'#fff'
+  },
+  logout:{
+    backgroundColor:'#dd3131cf'
   }
 })
