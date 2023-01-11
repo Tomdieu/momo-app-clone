@@ -26,7 +26,7 @@ COPY . .
 
 # Install pip requirements
 # COPY requirements.txt requirements.txt
-# RUN python -m pip install --upgrade pip
+RUN python -m pip install --upgrade pip
 RUN python -m pip install "setuptools<58"
 RUN python -m pip install ez_setup
 RUN python -m pip install -r req.txt
