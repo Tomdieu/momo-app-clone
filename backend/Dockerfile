@@ -9,7 +9,7 @@ EXPOSE 8000
 ENV PYTHONDONTWRITEBYTECODE=1
 
 
-RUN apk update && apk add gcc python3-dev musl-dev python3-virtualenv
+RUN apk update && apk add gcc python3-dev musl-dev
 
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
