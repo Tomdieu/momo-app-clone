@@ -1,5 +1,6 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.8-alpine
+# FROM python:3.8-alpine
+FROM alpine:3.7
 
 
 EXPOSE 8000
@@ -16,14 +17,16 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /django_backend
 COPY . .
 
-ENV VIRTUAL_ENV=/opt/venv
-RUN python3 -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN apk add --no-cache python3 py3-pip gcc
 
-RUN python -m pip install --upgrade pip
+# ENV VIRTUAL_ENV=/opt/venv
+# RUN python3 -m venv $VIRTUAL_ENV
+# ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 
 # Install pip requirements
 # COPY requirements.txt requirements.txt
+# RUN python -m pip install --upgrade pip
 RUN python -m pip install "setuptools<58"
-RUN python -m pip install ez_setup 
-RUN python -m pip install -r requirements.txt   
+RUN python -m pip install ez_setup
+RUN python -m pip install -r req.txt

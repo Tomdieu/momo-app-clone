@@ -102,15 +102,17 @@ ASGI_APPLICATION = 'backend.asgi.application'
 # Database
 # https: // docs.djangoproject.com/en/4.1/ref/settings/  # databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        "TEST": {
-            "NAME": BASE_DIR / "db_test.sqlite3",
-        },
-    }
-}
+# Sqlite 3 database
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#         "TEST": {
+#             "NAME": BASE_DIR / "db_test.sqlite3",
+#         },
+#     }
+# }
 
 # MySql Database
 
@@ -127,6 +129,54 @@ DATABASES = {
 #         }
 #     }
 # }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'byxbnbk4wcicbpcwpzld',
+#         'USER': 'ufssjdgv3hdwxgfk',
+#         'PASSWORD': 's4VM87fRQcgdLtLBLQrm',
+#         'HOST': 'byxbnbk4wcicbpcwpzld-mysql.services.clever-cloud.com',
+#         'PORT': '3306',
+#         # 'OPTIONS': {
+#         #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+#         # }
+#     }
+# }
+
+# https://www.freemysqlhosting.net/account/
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': ' 	sql11589869',
+#         'USER': ' 	sql11589869',
+#         'PASSWORD': '4B5uMA9FLS',
+#         'HOST': 'sql11.freemysqlhosting.net',
+#         'PORT': '3306',
+#         # 'OPTIONS': {
+#         #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+#         # }
+#     }
+# }
+
+# Postgresql Database           
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'bilswzvmimrdtj5uaq4h',
+        'USER': 'uagp5kdtfp8axye1dbb6',
+        'PASSWORD': 'ClVbgL0JXq040utM2FRG',
+        'HOST': 'bilswzvmimrdtj5uaq4h-postgresql.services.clever-cloud.com'                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ,
+        'PORT': '5361',
+        # 'OPTIONS': {
+        #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        # }
+    }
+}
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

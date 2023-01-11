@@ -77,7 +77,7 @@ class AccountAdmin(admin.ModelAdmin):
     def formalise_account_number(self, request, queryset):
 
         for acc in queryset:
-            acc.account_number = str(1000000 + acc.id)
+            acc.account_number = 1000000 + acc.id
             acc.save()
 
 

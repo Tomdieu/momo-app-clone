@@ -33,7 +33,7 @@ class GetAccountViewSet(GenericViewSet, ListModelMixin):
         account_number = self.request.query_params.get('account_number')
         if account_number:
 
-            return Account.objects.filter(account_number=account_number)
+            return Account.objects.filter(account_number=int(account_number))
 
         phone_number = self.request.query_params.get(
             'phone_number', '').replace(' ', '')                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        

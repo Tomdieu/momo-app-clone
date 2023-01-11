@@ -12,7 +12,7 @@ def test_account_creation(api_client:APIClient):
             "username": "ivantom1",
             "first_name": "navi",
             "last_name": "gg",
-            "email": "ivantomdio@gmail.com",
+            "email": "admin@gmail.com",
             "password": "1234"
         },
         "phone_number": "+222222",
@@ -25,5 +25,10 @@ def test_account_creation(api_client:APIClient):
 
 
     assert response.status_code == 201
-    assert json.loads(response.content)['data']['user']['username'] == 'ivantom1'
+    data = json.loads(response.content)['data']
+    assert data['user']['username'] == 'ivantom1'
+    assert data['user']['email'] == 'admin@gmail.com'
+    assert data['city'] == 'Garoua'
+    assert data['lang'] == 'EN'
+    
     print("User created : ")

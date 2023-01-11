@@ -116,6 +116,7 @@ const LoginScreen = ({ navigation }) => {
               </Text>
             </Text>
           </View>
+          {/* <SnackBar visible={true} textMessage="Hello There!" actionHandler={()=>{console.log("snackbar button clicked!")}} actionText="let's go"/> */}
         </TouchableWithoutFeedback>
       </ScrollView>
     </SafeAreaView>
