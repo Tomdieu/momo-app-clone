@@ -3,6 +3,8 @@
 
 [![wakatime](https://wakatime.com/badge/user/7a03d500-b310-4adb-9229-1bb6044d565d/project/255879e0-ef36-4ec4-bb05-2bf27d669b7f.svg)](https://wakatime.com/badge/user/7a03d500-b310-4adb-9229-1bb6044d565d/project/255879e0-ef36-4ec4-bb05-2bf27d669b7f)
 
+[![Docker Image CI](https://github.com/Tomdieu/momo-app-clone/actions/workflows/docker-image.yml/badge.svg)](https://github.com/Tomdieu/momo-app-clone/actions/workflows/docker-image.yml)
+
 ## This is a small project on a money transaction app made in python using Django and Django Rest Framework to build api
 
 ## Technology used
