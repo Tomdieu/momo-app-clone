@@ -12,11 +12,11 @@ import {
   Keyboard
 } from "react-native";
 
-import React, { useState,useEffect } from "react";
+import React, { useState} from "react";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
 import { Button } from "react-native-paper";
-import { COLORS } from "../../utils/constants";
+// import { COLORS } from "../../utils/constants";
 
 const { StatusBarManager } = NativeModules;
 
@@ -29,11 +29,6 @@ const LoginScreen = ({ navigation }) => {
   const [error, setError] = useState("")
   const { login, setToken, setUserInfo } = useAuthContext()
   const [loading,setLoading] = useState(false);
-
-
-  useEffect(()=>{
-    setError('')
-  },[username,password]);
 
   const handleSubmit = () => {
     if (!username && !password) {
@@ -62,7 +57,7 @@ const LoginScreen = ({ navigation }) => {
       .catch(err => {
         console.log(err.message);
         setError(err.message);
-        setLoading(false);
+        setLoading(false)
       })
   };
 
@@ -154,7 +149,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 25,
-    // fontWeight: "900",
+    fontWeight: "400",
     textAlign: "center",
   },
   wrapper: {
