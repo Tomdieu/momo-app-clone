@@ -30,6 +30,11 @@ const LoginScreen = ({ navigation }) => {
   const { login, setToken, setUserInfo } = useAuthContext()
   const [loading,setLoading] = useState(false);
 
+
+  useEffect(()=>{
+    setError('')
+  },[username,password]);
+
   const handleSubmit = () => {
     if (!username && !password) {
       return setError('username and password required')
@@ -149,7 +154,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 25,
-    fontWeight: "900",
+    // fontWeight: "900",
     textAlign: "center",
   },
   wrapper: {
