@@ -11,7 +11,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard
 } from "react-native";
-import React, { useState } from "react";
+
+import React, { useState,useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
 import { Button } from "react-native-paper";
@@ -27,6 +28,7 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("")
   const { login, setToken, setUserInfo } = useAuthContext()
+  const [loading,setLoading] = useState(false);
 
   const handleSubmit = () => {
     if (!username && !password) {
@@ -38,16 +40,25 @@ const LoginScreen = ({ navigation }) => {
     else if (!password) {
       return setError('password required');
     }
-
+    setLoading(true);
     login(username, password)
       .then(res => res.json())
       .then((data) => {
         console.log('Response ', data);
-        setToken(data.token);
-        setUserInfo(data.data)
-
+        if(data.success){
+          setToken(data.token);
+          setUserInfo(data.data)
+        }
+        else{
+          setError(data.message);
+        }
+        setLoading(false);
       })
-      .catch(err => console.log('Error ', err))
+      .catch(err => {
+        console.log(err.message);
+        setError(err.message);
+        setLoading(false);
+      })
   };
 
   return (
@@ -95,7 +106,7 @@ const LoginScreen = ({ navigation }) => {
               />
             </View>
 
-            <CustomButton title="Login" onPress={handleSubmit} disabled={Boolean(!username || !password)} style={{ color: '#fff' }} />
+            <CustomButton loading={loading} title="Login" onPress={handleSubmit} disabled={Boolean(!username || !password || loading)} style={{ color: '#fff' }} />
 
             <View style={styles.inputContainer}>
               <TouchableOpacity style={{ ...styles.btn, color: (!username) ? 'grey' : 'default' }}>
