@@ -1,7 +1,7 @@
 // import axios from 'axios'
 
 export default class Trixwallet {
-  static endPoint = 'http://192.168.8.103:8000'
+  static endPoint = 'http://192.168.8.106:8000/'
   static webSocketUrl = 'ws://127.0.0.1:8000'
 
   /**

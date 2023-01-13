@@ -13,6 +13,7 @@ const UpdateProfileScreen = ({ navigation, route }) => {
                 initialValues={{
                     first_name: data.user.first_name,
                     last_name: data.user.last_name,
+                    phone_number:data.phone_number
 
                 }}
                 validationSchema={UpdateProfileSchema}
@@ -43,6 +44,13 @@ const UpdateProfileScreen = ({ navigation, route }) => {
                                     <TextInput style={styles.textInput} name="last_name" value={values.last_name} onChangeText={handleChange('last_name')} onBlur={handleBlur('last_name')} />
                                     {(errors.last_name && touched.last_name) && (<Text>{errors.last_name}</Text>)}
                                 </View>
+                                {
+                                    !data.phone_number ? (<View style={styles.row}>
+                                    <Text style={styles.label}>Phone Number</Text>
+                                    <TextInput style={styles.textInput} name="phone_number" value={values.phone_number} onChangeText={handleChange('phone_number')} onBlur={handleBlur('phone_number')} />
+                                    {(errors.phone_number && touched.phone_number) && (<Text>{errors.last_name}</Text>)}
+                                </View>):null   
+                                }
                             </ScrollView>
                             <View style={{padding:8}}>
                                 <CustomButton
@@ -74,6 +82,7 @@ const styles = StyleSheet.create({
     textInput: {
         borderWidth: 1,
         padding: 8,
-        fontSize:18
+        fontSize:18,
+        borderRadius:3
     }
 })

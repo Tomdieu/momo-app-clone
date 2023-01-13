@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, NativeModules, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { RefreshControl,StyleSheet, Text, View, NativeModules, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect } from 'react'
 const { StatusBarManager } = NativeModules;
 import { StatusBar } from 'expo-status-bar'
@@ -23,6 +23,8 @@ const AccountScreen = ({ navigation }) => {
   const [accountDetail, setAccountDetail] = useState({});
   const [isLoading, setIsLoading] = useState(true)
 
+  const [resfreshing,setResfreshing] = useState(false);
+
   const { token,userInfo } = useAuthContext();
   const { i18n } = useLanguageContext();
 
@@ -34,12 +36,27 @@ const AccountScreen = ({ navigation }) => {
     // navigation.navigate('Transactions',{screen:'TransactionType',params:{type:transactionType}})
   }
 
+  const onRefresh = React.useCallback(()=>{
+    setResfreshing(true);
+    APIService
+      .account(token)
+      .then(res => res.json())
+      .then(account => {
+        console.log(account)
+        setAccountDetail(account.data);
+        AsyncStorage.setItem('isAgent',JSON.stringify({"agent":account.data.is_agent}))
+        setIsLoading(false)
+        setResfreshing(false);
+      })
+      .catch(err => console.error(err))
+  },[]);
+
   useEffect(() => {
     APIService
       .account(token)
       .then(res => res.json())
       .then(account => {
-        // console.log(account)
+        console.log(account)
         setAccountDetail(account.data);
         AsyncStorage.setItem('isAgent',JSON.stringify({"agent":account.data.is_agent}))
         setIsLoading(false)
@@ -60,7 +77,9 @@ const AccountScreen = ({ navigation }) => {
     }}
     >
       <StatusBar style="dark" />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false} 
+        refreshControl={<RefreshControl refreshing={resfreshing}/>} onRefresh={onRefresh}>
         <View style={{ flex: 1, marginTop: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: '800' }}>{i18n.t('welcome')}, {userInfo.user.username}</Text>
 

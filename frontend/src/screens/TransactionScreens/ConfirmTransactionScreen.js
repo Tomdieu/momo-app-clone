@@ -76,16 +76,19 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
             console.log(data)
             if(data.success){
               navigation.navigate('SuccessTransactionScreen',{data:data,type:type})
+              setLoading(false);
             }
             else{
               setError(data.message)
               setModalVisible(true)
+              setLoading(false);
             }
           })
           .catch(err=>{
             console.error(err)
             setError(err.message)
             setModalVisible(true)
+            setLoading(false);
           })
         }
 
@@ -203,7 +206,7 @@ const ConfirmTransactionScreen = ({ navigation, route }) => {
               secureTextEntry
 
             />
-            <CustomButton disabled={Boolean(pinCode.length != 5)} onPress={validatePinCode} title='Confirm' style={{ color: '#fff' }} />
+            <CustomButton loading={loading} disabled={Boolean(pinCode.length != 5)} onPress={validatePinCode} title='Confirm' style={{ color: '#fff' }} />
           </View>
         </View>
       </TouchableWithoutFeedback>

@@ -9,8 +9,6 @@ EXPOSE 8000
 ENV PYTHONDONTWRITEBYTECODE=1
 
 RUN apk --update add gcc build-base freetype-dev libpng-dev openblas-dev libffi-dev
-# RUN apk update && apk add gcc python3-dev musl-dev build-essential libssl-dev libffi-dev python-dev
-
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 

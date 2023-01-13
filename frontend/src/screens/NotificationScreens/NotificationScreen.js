@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, NativeModules, ScrollView, FlatList, TouchableOpacity,Alert } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, NativeModules, ScrollView, ActivityIndicator,FlatList, TouchableOpacity,Alert } from 'react-native'
 import React, { useState,useEffect } from 'react'
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
@@ -26,6 +26,8 @@ const NotificationScreen = ({ navigation }) => {
 
   const [messages,setMessages] = useState([])
 
+  const [loading,setLoading] = useState(true);
+
   const {token} = useAuthContext();
 
   useEffect(()=>{
@@ -34,7 +36,7 @@ const NotificationScreen = ({ navigation }) => {
     .then(res=>res.json())
     .then(data=>{
       setMessages(data.data)
-
+      setLoading(false);
     })
     .catch(err=>console.log(err))
   },[]);
@@ -94,7 +96,11 @@ const NotificationScreen = ({ navigation }) => {
 
   const isEmpty= () => selectedNotification?.length === 0
 
-  console.log(selectedNotification)
+  if(loading){
+    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size={'large'} color={COLORS.blue} />
+    </View>
+  }
 
   return (
     <SafeAreaView style={{

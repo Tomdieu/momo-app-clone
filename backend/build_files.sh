@@ -1,8 +1,17 @@
 # build_files.sh
 
-pip3 install "setuptools<58"
-pip3 install psycopg2-binary
-pip3 install -r requirements.txt
-pip3 install --upgrade pip
+DIR=./
+if [ -d "$DIR/staticfiles_build" ];
+then
+	rm -rf "$DIR/staticfiles_build"
+else
+	mkdir "$DIR/staticfiles_build"
+fi
 
-python3 manage.py collectstatic
+
+pip3 install --upgrade pip
+pip3 install "setuptools<58.0.0"
+pip3 install psycopg2-binary
+pip3 install -r req.txt
+
+python3.9 manage.py collectstatic

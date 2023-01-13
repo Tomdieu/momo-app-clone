@@ -18,6 +18,7 @@ const EnterPhoneNumberScreen = ({ navigation,route }) => {
 
     const [phoneNumber, setPhoneNumber] = useState('')
     const {token} = useAuthContext();
+    const [loading,setLoading] = useState(false);
 
     const {i18n} = useLanguageContext()
     const {type} = route.params
@@ -40,11 +41,12 @@ const EnterPhoneNumberScreen = ({ navigation,route }) => {
             initialValues={{ phoneNumber: '' }}
             validationSchema={PhoneSchema}
             onSubmit={(values) => {
-
+                setLoading(true);
                 APIService
                 .getAccountInfo('phone_number',values.phoneNumber,token)
                 .then(res=>res.json())
                 .then(data=>{
+                    setLoading(false);
                     navigation.navigate('TransactionAmount', { type:type,account: data.data, phoneNumber: values.phoneNumber })
                 })
 
@@ -82,7 +84,7 @@ const EnterPhoneNumberScreen = ({ navigation,route }) => {
                                 }
                             </View>
                             <View>
-                                <CustomButton title={i18n.t('continue')} onPress={handleSubmit} disabled={Boolean(!isValid || !dirty)} style={{ color: 'white', backgroundColor: 'black' }} />
+                                <CustomButton loading={loading} title={i18n.t('continue')} onPress={handleSubmit} disabled={Boolean(!isValid || !dirty || loading)} style={{ color: 'white', backgroundColor: 'black' }} />
                             </View>
                         </View>
                         <Fab onPress={()=>navigation.replace('Transaction')} iconSize={15} iconName="left" style={{backgroundColor:'#4361ee',color:'#fff',borderRadius:10}}/>

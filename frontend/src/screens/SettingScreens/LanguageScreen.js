@@ -21,6 +21,15 @@ const LanguageScreen = () => {
     console.log(userInfo.lang)
   }, []);
 
+  useEffect(()=>{
+    if(en){
+      setLocale('en');
+    }
+    else{
+      setLocale('fr')
+    }
+  },[en]);
+
   const handleChange = (value) => {
     setEng(value)
     setIsLoading(true);
@@ -29,8 +38,10 @@ const LanguageScreen = () => {
       .updateLanguage(data, token)
       .then(res => res.json())
       .then((data) => {
+        console.log(data.data.lang,data.data.lang.toLocaleLowerCase())
         setUserInfo(data.data);
-        setLocale(en === true ? 'en' : 'fr');
+        // setEng(data.data.lang === 'EN'?true:false)
+        setLocale(data.data.lang.toLocaleLowerCase());
         setIsLoading(false)
       })
 

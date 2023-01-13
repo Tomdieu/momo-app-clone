@@ -55,7 +55,7 @@ export const AuthProvider = (props) => {
             }
         }
         getToken().then(() => {
-            getUserData()
+            getUserData().then(()=>{});
         })
     }, [])
 
@@ -68,13 +68,24 @@ export const AuthProvider = (props) => {
         if (token) {
             setUserToken(token)
         }
+        else if(token === null){
+            AsyncStorage.removeItem('token').then(()=>{
+                
+                AsyncStorage.removeItem("userInfo").then(()=>{
+                    setUserInfo(null)
+                })
+            })
+        }
     }, [token])
 
     useEffect(() => {
         async function setUserData() {
             if (userInfo) {
                 await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo))
-                setLocale(userInfo.lang.toLocaleLowerCase())
+                if(userInfo){
+                    // console.log("user info : ",userInfo);
+                    setLocale(userInfo?.lang?.toLocaleLowerCase() || 'en')
+                }
             }
         }
         setUserData(userInfo)
@@ -106,12 +117,14 @@ export const AuthProvider = (props) => {
     const logout = async () => {
         if (token) {
             await AsyncStorage.removeItem('token')
-            APIService.logout(token).then(res => { }).catch(err => console.log(err)).finally(() => {
-
-                setToken(null);
-                setIsLoading(false)
-            })
+            setToken(null);
+            setIsLoading(false)
+            // APIService.logout(token).then(res => { }).catch(err => console.log(err)).finally(() => {
+            // })
         }
+        await AsyncStorage.clear();
+        setToken(null);
+        setUserInfo(null)
     }
 
     return (
