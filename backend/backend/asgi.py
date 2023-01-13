@@ -27,3 +27,6 @@ application = ProtocolTypeRouter({
     # Just HTTP for now. (We can add other protocols later.)
     'websocket':AllowedHostsOriginValidator(AuthMiddlewareStack(TokenAuthMiddleWare(URLRouter(websocket_urlpatterns))) )
 })
+
+
+app = application

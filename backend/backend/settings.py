@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 
 import environ
+import os
 # Initialise environment variables
 env = environ.Env()
 environ.Env.read_env()
@@ -104,15 +105,15 @@ ASGI_APPLICATION = 'backend.asgi.application'
 
 # Sqlite 3 database
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#         "TEST": {
-#             "NAME": BASE_DIR / "db_test.sqlite3",
-#         },
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        "TEST": {
+            "NAME": BASE_DIR / "db_test.sqlite3",
+        },
+    }
+}
 
 # MySql Database
 
@@ -162,19 +163,19 @@ ASGI_APPLICATION = 'backend.asgi.application'
 
 # Postgresql Database           
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'bilswzvmimrdtj5uaq4h',
-        'USER': 'uagp5kdtfp8axye1dbb6',
-        'PASSWORD': 'ClVbgL0JXq040utM2FRG',
-        'HOST': 'bilswzvmimrdtj5uaq4h-postgresql.services.clever-cloud.com'                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ,
-        'PORT': '5361',
-        # 'OPTIONS': {
-        #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        # }
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'bagqrggpzfzwo2drvayv',
+#         'USER': 'uxfcfpasbtwkua6iasoa',
+#         'PASSWORD': 'CeiELumenUp25L0BEhMW',
+#         'HOST': 'bagqrggpzfzwo2drvayv-postgresql.services.clever-cloud.com'                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ,
+#         'PORT': '6575',
+#         # 'OPTIONS': {
+#         #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+#         # }
+#     }
+# }
 
 
 
@@ -217,7 +218,10 @@ STATICFILES_DIRS = [
     BASE_DIR/'static/'
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+
 MEDIA_URL = 'images/'
+
 
 
 # Default primary key field type
