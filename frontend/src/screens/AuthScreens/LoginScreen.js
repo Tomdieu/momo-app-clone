@@ -12,23 +12,38 @@ import {
   Keyboard
 } from "react-native";
 
-import React, { useState} from "react";
+import React, { useState,useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
-import { Button } from "react-native-paper";
-// import { COLORS } from "../../utils/constants";
+import { Button, Snackbar } from 'react-native-paper';
+
+import { Feather } from "@expo/vector-icons";
 
 const { StatusBarManager } = NativeModules;
 
 import { useAuthContext } from '../../context/AuthContext'
 import CustomButton from "../../components/CustomButton";
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({ navigation,route }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("")
   const { login, setToken, setUserInfo } = useAuthContext()
   const [loading,setLoading] = useState(false);
+  const [visible,setVisible] = useState(false);
+  const [message,setMessage] = useState(null);
+  
+  console.log(route);
+
+  useEffect(()=>{
+    setError(null);
+  },[username,password]);
+
+  useEffect(()=>{
+    if(message){
+      setVisible(true)
+    }
+  },[message]);
 
   const handleSubmit = () => {
     if (!username && !password) {
@@ -81,13 +96,16 @@ const LoginScreen = ({ navigation }) => {
           <View style={styles.wrapper}>
             <View>
 
-              <Text style={styles.title}>Login</Text>
               <Image
                 source={require("../../images/logo.png")}
                 style={styles.logo}
               />
+              <Text style={styles.title}>Login</Text>
             </View>
-            {error && <Text style={{ color: 'red' }}>{error}</Text>}
+            {error && <View style={{justifyContent:'space-between',alignItems:'center',flexDirection:'row',backgroundColor:'rgb(166,89,89)', padding:10,borderRadius:5}}>
+              <Feather size={18} color={'#fff'} name="alert-triangle"/>
+              <Text style={{color: '#fff',marginLeft:9,fontSize:18}}>{error}</Text>
+            </View> }
             <View style={styles.inputContainer}>
               <Text style={styles.label}>username</Text>
               <TextInput
@@ -126,7 +144,21 @@ const LoginScreen = ({ navigation }) => {
                 Register
               </Text>
             </Text>
+            <Snackbar
+            visible={visible}
+            onDismiss={() => setVisible(false)}
+            action={{
+              label: 'Undo',
+              onPress: () => {
+                // Do something
+              },
+            }}
+            style={{backgroundColor: "blue"}}
+          >
+            <View><Text>{message}</Text></View>
+          </Snackbar>
           </View>
+          
           {/* <SnackBar visible={true} textMessage="Hello There!" actionHandler={()=>{console.log("snackbar button clicked!")}} actionText="let's go"/> */}
         </TouchableWithoutFeedback>
       </ScrollView>
