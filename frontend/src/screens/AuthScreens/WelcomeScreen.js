@@ -4,7 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import React from "react";
 const { StatusBarManager } = NativeModules
 
-import { COLORS, CONSTANTS } from "../../utils/constants";
+import { COLORS } from "../../utils/constants";
 
 const WelcomeScreen = ({ navigation, route }) => {
   return (
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: COLORS.green,
+    backgroundColor: COLORS.blue1,
     color: COLORS.white,
     margin: 4,
     flexDirection: 'row',
