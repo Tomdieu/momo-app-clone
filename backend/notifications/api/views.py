@@ -15,7 +15,7 @@ class NotificationsViewSets(ListModelMixin,GenericViewSet,DestroyModelMixin):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return Notification.objects.filter(user=self.request.user)
+        return Notification.objects.filter(user=self.request.user,deleted=False)
 
     def list(self, request):
         queryset = self.get_queryset()
