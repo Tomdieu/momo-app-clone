@@ -8,7 +8,8 @@ EXPOSE 8000
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
 
-RUN apk --update add gcc build-base freetype-dev libpng-dev openblas-dev libffi-dev
+RUN apk --update add gcc build-base libffi-dev
+# freetype-dev libpng-dev openblas-dev libffi-dev
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
