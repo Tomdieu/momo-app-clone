@@ -407,19 +407,33 @@ class LatestTransactionViewSet(ViewSet):
 
     def list(self, request, *args, **kwargs):
 
-        t = Transfer.objects.filter(sender=self.request.user.account)[:5]
+        t = Transfer.objects.filter(sender=self.request.user.account)[:3]
 
-        d = Deposit.objects.filter(sender=self.request.user.account)[:5]
+        d = Deposit.objects.filter(sender=self.request.user.account)[:3]
 
-        w = Withdraw.objects.filter(agent=self.request.user.account)[:5]
+        w = Withdraw.objects.filter(agent=self.request.user.account)[:3]
+
+
+        transactions = []
+
+        for t in TransferListSerializer(t, many=True).data:
+            data = t
+            data['type'] = 'transfer'
+            transactions.append(data)
+
+        for t in WithdrawListSerializer(w, many=True).data:
+            data = t
+            data['type'] = 'withdraw'
+            transactions.append(data)
+        
+        for t in DepositListSerializer(d, many=True).data:
+            data = t
+            data['type'] = 'deposit'
+            transactions.append(data)
 
         return Response({
             "success": True,
-            "data": {
-                "transfer": TransferListSerializer(t, many=True).data,
-                "withdraw": WithdrawListSerializer(w, many=True).data,
-                "deposit": DepositListSerializer(d, many=True).data
-            }
+            "data":transactions
         })
 
 
