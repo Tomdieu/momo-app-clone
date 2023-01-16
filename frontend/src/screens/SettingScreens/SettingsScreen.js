@@ -54,7 +54,7 @@ const SettingsScreen = ({navigation,route}) => {
         </View>
         <TouchableOpacity onPress={logout}>
           <View style={[styles.option,styles.logout]}>
-            <Text style={styles.label}>SignOut</Text>
+            <Text style={styles.label}>Sign Out</Text>
             <MaterialIcons name={'logout'} size={16} style={styles.action} />
           </View>
         </TouchableOpacity>

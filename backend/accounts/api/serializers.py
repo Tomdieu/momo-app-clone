@@ -4,7 +4,9 @@ from django.utils import timezone
 
 from accounts.models import Profile
 from core.models import Account
+from notifications.models import Notification
 
+from django.conf import settings
 
 User = get_user_model()
 
@@ -98,6 +100,8 @@ class ProfileListSerializer(serializers.ModelSerializer):
         
 
     def create(self, validated_data):
+        print(validated_data)
+
         user = validated_data.pop('user')
         serializer = UserSerializer(data=user)
         serializer.is_valid(raise_exception=True)
@@ -105,7 +109,18 @@ class ProfileListSerializer(serializers.ModelSerializer):
 
         profile = Profile(**validated_data)
         profile.user = user_instance
+        print(profile)
         profile.save()
+
+        lang = profile.lang
+        msg = ''
+
+        if lang == 'FR':
+            msg = f'Bienvenu sur {settings.APP_NAME}\nVotre code pin est [00000] et solde de votre compte est {profile.user.account.currency} {profile.user.account.balance}'
+        elif lang == 'EN':
+            msg = f'Welcome To {settings.APP_NAME} \nYour pin code is [00000] and account balance is {profile.user.account.currency} {profile.user.account.balance}'
+
+        Notification.objects.create(user=profile.user, message=msg)
 
         return profile
         
@@ -118,8 +133,7 @@ class ProfileListSerializer(serializers.ModelSerializer):
 
         nested_data = validated_data.pop('user')
 
-        nested_serializer.update_user(nested_instance, nested_data) 
-
+        nested_serializer.update_user(nested_instance, nested_data)
 
         return super(ProfileListSerializer, self).update(instance, validated_data)
 

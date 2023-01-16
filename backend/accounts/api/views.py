@@ -76,7 +76,7 @@ class ProfileViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Destr
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
-        if self.request.method.upper() in ['GET','PUT','PATCH']:
+        if self.request.method.upper() in ['GET','PATCH']:
             return ProfileListSerializer
         return ProfileSerializer
 

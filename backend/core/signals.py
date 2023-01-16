@@ -3,6 +3,8 @@ from django.db.models.signals import post_save, pre_save
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 
+import binascii,os
+
 from django.db import transaction
 
 from .models import Account, Transfer, Withdraw, TransactionType, Deposit
@@ -36,27 +38,29 @@ def createAccount(sender, instance, created, **kwargs):
 
     if created:
         # it means when the user is created
-
+        # if not Profile.objects.filter(user=instance):
+        #     profile = Profile.objects.create(
+        #         user=instance, dob=timezone.now().date())
         if not Account.objects.select_related('user').filter(user=instance).exists():
-            Account.objects.create(user=instance)
+            account = Account.objects.create(user=instance,account_number=0000000)
+            account.account_number = 1000000 + account.id
+            account.save()
         if not Token.objects.filter(user=instance).exists():
             Token.objects.create(user=instance)
-        if not Profile.objects.filter(user=instance):
-            profile = Profile.objects.create(
-                user=instance, dob=timezone.now().date())
-        else:
-            profile = Profile.objects.select_related(
-                'profile').get(user=instance)
 
-        lang = profile.lang
-        msg = ''
+        # else:
+        #     profile = Profile.objects.select_related(
+        #         'profile').get(user=instance)
 
-        if lang == 'FR':
-            msg = f'Bienvenu sur {settings.APP_NAME}\nVotre code pin est [00000] et solde de votre compte est {profile.user.account.currency} {profile.user.account.balance}'
-        elif lang == 'EN':
-            msg = f'Welcome To {settings.APP_NAME} \nYour pin code is [00000] and account balance is {profile.user.account.currency} {profile.user.account.balance}'
+        # lang = profile.lang
+        # msg = ''
 
-        Notification.objects.create(user=profile.user, message=msg)
+        # if lang == 'FR':
+        #     msg = f'Bienvenu sur {settings.APP_NAME}\nVotre code pin est [00000] et solde de votre compte est {profile.user.account.currency} {profile.user.account.balance}'
+        # elif lang == 'EN':
+        #     msg = f'Welcome To {settings.APP_NAME} \nYour pin code is [00000] and account balance is {profile.user.account.currency} {profile.user.account.balance}'
+
+        # Notification.objects.create(user=profile.user, message=msg)
 
 
 @receiver(pre_save, sender=Profile)
@@ -76,15 +80,6 @@ def passThroughProfile(sender, instance, *args, **kwargs):
                     msg = f'The language of your account have been changed from {previous.lang} to {instance.lang}'
 
                 Notification.objects.create(user=instance.user, message=msg)
-
-
-@receiver(post_save, sender=Account)
-def createAccountNumber(sender, instance, created, **kwargs):
-
-    if created:
-
-        instance.account_number = 1000000 + instance.id
-        instance.save()
 
 
 @receiver(pre_save, sender=Account)

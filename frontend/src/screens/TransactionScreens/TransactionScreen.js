@@ -67,6 +67,14 @@ const TransactionScreen = ({ navigation }) => {
             onPress={()=>navigation.navigate('TransactionsAccomplish')}
             style={{backgroundColor:'green'}}
             rightIcon={<FontAwesome name='caret-right' color={"#fff"} size={24} />}
+          />
+          <IconButtonArrow
+            style={{backgroundColor:'#0f0'}}  
+            leftIcon={<MaterialCommunityIcons name="bank-transfer" color={"#fff"} size={24}/>} 
+            label={'Pending Withdrawals'}
+            onPress={()=>navigation.navigate('TransactionsAccomplish')}
+            style={{backgroundColor:'orange'}}
+            rightIcon={<FontAwesome name='caret-right' color={"#fff"} size={24} />}
             />
         </View>
       </View> 
