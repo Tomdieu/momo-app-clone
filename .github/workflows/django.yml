@@ -30,5 +30,6 @@ jobs:
     - name: Run Tests
       run: |
         cd backend
+        python manage.py makemigrations
         python manage.py migrate
         pytest
