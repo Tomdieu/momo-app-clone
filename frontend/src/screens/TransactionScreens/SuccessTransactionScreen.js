@@ -24,12 +24,13 @@ const SuccessTransactionScreen = ({ navigation, route }) => {
       <View style={{ flex: 1, padding: 10 }}>
         <Text style={{ fontSize: 25, fontWeight: '700', textAlign: 'center', marginVertical: 10 }}>Transaction {data.data.state}</Text>
         <TransactionComplete data={data} type={type} />
-        <ActivityIndicator size={50} color={''} />
+        
         <CustomButton 
-          title="Account" 
+          title="Navigate To Account" 
           style={{ color: 'white' }} 
-          onClick={() => {
-              navigation.navigate('Account') 
+          onPress={() => {
+              navigation.replace('Transaction')
+              navigation.navigate('Account')
             }} 
             
         />

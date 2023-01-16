@@ -1,14 +1,16 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity,ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons'
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import IconButtonArrow from '../../components/IconButtonArrow'
 
 import { useLanguageContext } from '../../context/LangContext';
+import { useAuthContext } from '../../context/AuthContext';
+
 
 const TransactionScreen = ({ navigation }) => {
   const { i18n } = useLanguageContext()
-  const [isAgent, setIsAgent] = useState(false)
+  const {isAgent} = useAuthContext();
   
   const goToScreen = (transactionType) => {
     if (transactionType) {
@@ -16,22 +18,16 @@ const TransactionScreen = ({ navigation }) => {
     }
   }
 
-  useEffect(() => {
-    AsyncStorage.getItem('isAgent').then(dt=>{
-      console.log(dt)
-      setIsAgent(JSON.parse(dt).agent)
-    })
-  }, [])
 
   return (
     <View style={styles.container}>
-      <Text style={{ marginTop: 10 }}>{i18n.t('selectTransactionType')}</Text>
+      <Text style={{ marginTop: 10,fontSize:20 }}>{i18n.t('selectTransactionType')}</Text>
       <View style={styles.transactions_type}>
         <TouchableOpacity style={styles.padding} onPress={() => goToScreen('Transfer')}>
           <View style={styles.transaction_type}>
             <View style={{ flexDirection: 'row' }}>
               <FontAwesome name="send" color={'white'} size={24} />
-              <Text style={{ marginLeft: 5, color: '#fff' }}>{i18n.t('transfer')}</Text>
+              <Text style={{ marginLeft: 5, color: '#fff',fontSize:18 }}>{i18n.t('transfer')}</Text>
             </View>
             <FontAwesome name='caret-right' color={'white'} size={24} />
           </View>
@@ -44,7 +40,7 @@ const TransactionScreen = ({ navigation }) => {
                 <View style={styles.transaction_type}>
                   <View style={{ flexDirection: 'row' }}>
                     <MaterialCommunityIcons name="cash-plus" color={'white'} size={24} />
-                    <Text style={{ marginLeft: 5, color: '#fff' }}>{i18n.t('deposit')}</Text>
+                    <Text style={{ marginLeft: 5, color: '#fff',fontSize:18 }}>{i18n.t('deposit')}</Text>
                   </View>
                   <FontAwesome name='caret-right' color={'white'} size={24} />
                 </View>
@@ -53,7 +49,7 @@ const TransactionScreen = ({ navigation }) => {
                 <View style={styles.transaction_type}>
                   <View style={{ flexDirection: 'row' }}>
                     <MaterialCommunityIcons name="cash-minus" color={'white'} size={24} />
-                    <Text style={{ marginLeft: 5, color: '#fff' }}>{i18n.t('withdraw')}</Text>
+                    <Text style={{ marginLeft: 5, color: '#fff',fontSize:18 }}>{i18n.t('withdraw')}</Text>
                   </View>
                   <FontAwesome name='caret-right' color={'white'} size={24} />
                 </View>
@@ -61,7 +57,19 @@ const TransactionScreen = ({ navigation }) => {
             </React.Fragment>
           ) : null
         }
-      </View>
+
+        <View style={{flex:1}}>
+          <Text style={{color:"#aaa",fontSize:20,fontWeight:'800'}}>Transactions History</Text>
+          <IconButtonArrow
+            style={{backgroundColor:'#0f0'}}
+            leftIcon={<MaterialCommunityIcons name="bank-transfer" color={"#fff"} size={24}/>} 
+            label={i18n.t('transactions')}
+            onPress={()=>navigation.navigate('TransactionsAccomplish')}
+            style={{backgroundColor:'green'}}
+            rightIcon={<FontAwesome name='caret-right' color={"#fff"} size={24} />}
+            />
+        </View>
+      </View> 
     </View>
   )
 }

@@ -91,6 +91,10 @@ const en = {
     DEPOSIT:'Top up',
     PENDING:"Pending",
 
+    Transfer:'Transfer',
+    Withdraw:'Withdraw',
+    Deposit:'Deposit',
+
     'Transaction type':'Transaction type',
     'Transaction code':'Transaction code',
     'Transaction state':'Transaction state',
@@ -100,6 +104,10 @@ const en = {
     Date:'Date',
     INFO:'INFO',
 
+    'Change pin code':'Change Pin Code',
+    'Change password':'Change password',
+
+    'Transaction Type':'Transaction Type'
 }
 
 export default en

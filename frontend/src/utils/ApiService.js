@@ -1,8 +1,20 @@
 // import axios from 'axios'
 
 export default class Trixwallet {
-  static endPoint = 'http://192.168.8.106:8000/'
-  static webSocketUrl = 'ws://127.0.0.1:8000'
+  static endPoint = 'http://192.168.8.101:8000'
+  static webSocketUrl = 'ws://127.0.0.1:8000';
+
+  static async getLatestTransactions(token){
+    const url = this.endPoint + '/api/momo/lastest-transaction/';
+    const res = await fetch(url,{
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`token ${token}`
+      }
+    })
+
+    return res;
+  }
 
   /**
    *
@@ -19,6 +31,7 @@ export default class Trixwallet {
 
     return res
   }
+
 
   static async getAccountInfo(field,value,token){
     const url = this.endPoint + `/api/momo/get-account/?${field}=${value}`;
@@ -186,10 +199,10 @@ export default class Trixwallet {
     return res
   }
 
-  static async updateProfile(id, data) {
+  static async updateProfile(id, data,token) {
     const url = this.endPoint + `/api/auth/profile/${id}/`
     const res = await fetch(url, {
-      method: 'POST',
+      method: 'PATCH',
       body: JSON.stringify(data),
       headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' }
     })
@@ -219,7 +232,7 @@ export default class Trixwallet {
   static async updateAccount(id, data, token) {
     const url = this.endPoint + `/api/momo/accounts/${id}/`
     const res = await fetch(url, {
-      method: 'POST',
+      method: 'PATCH',
       body: JSON.stringify(data),
       headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' }
     })

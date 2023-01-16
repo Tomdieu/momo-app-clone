@@ -39,7 +39,7 @@ const SettingsScreen = ({navigation,route}) => {
               <Feather name={'chevron-right'} size={16} style={styles.action} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>navigate('SecurityScreen')}>
             <View style={styles.option}>
               <Text style={styles.label}>Security</Text>
               <Feather name={'chevron-right'} size={16} style={styles.action} />

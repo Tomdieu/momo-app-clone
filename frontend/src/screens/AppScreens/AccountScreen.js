@@ -15,17 +15,20 @@ import APIService from '../../utils/ApiService'
 import { useAuthContext } from '../../context/AuthContext';
 import { useLanguageContext } from '../../context/LangContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Transaction from '../../components/Transaction';
 
 
-const AccountScreen = ({ navigation }) => {
+const AccountScreen = ({ navigation,route }) => {
 
   const [transactionFilter, setTransactiontransaction] = useState('all')
   const [accountDetail, setAccountDetail] = useState({});
   const [isLoading, setIsLoading] = useState(true)
+  const [latestTransactions,setLatestTransactions]=useState([]);
+  const [transactionDetail, setTransactionDetail] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [reload,setReload] = useState(false);
 
-  const [resfreshing,setResfreshing] = useState(false);
-
-  const { token,userInfo } = useAuthContext();
+  const { token,userInfo,setUserInfo,setIsAgent,isAgent } = useAuthContext();
   const { i18n } = useLanguageContext();
 
   const goToScreen = (transactionType) => {
@@ -36,33 +39,105 @@ const AccountScreen = ({ navigation }) => {
     // navigation.navigate('Transactions',{screen:'TransactionType',params:{type:transactionType}})
   }
 
-  const onRefresh = React.useCallback(()=>{
-    setResfreshing(true);
+  if(route.params){
+    if(route.params.reload){
+      setReload(true);
+    }
+  }
+
+
+
+  const loadData = () =>{
     APIService
       .account(token)
       .then(res => res.json())
       .then(account => {
         console.log(account)
         setAccountDetail(account.data);
-        AsyncStorage.setItem('isAgent',JSON.stringify({"agent":account.data.is_agent}))
         setIsLoading(false)
-        setResfreshing(false);
+        setTimeout(() => {
+          APIService
+          .getProfile(token)
+          .then(res=>res.json())
+          .then(data=>{
+            if(data.success){
+              setUserInfo(data.data);
+            }
+          })
+          .catch(err=>console.log(err))
+          APIService
+          .getLatestTransactions(token)
+          .then(res=>res.json())
+          .then(data=>{
+            setIsAgent(account.data.is_agent);
+            setLatestTransactions(data.data);
+            setTransactionDetail(data.data);
+            setTransactiontransaction('all');
+          })
+          .catch(err=>console.log(err))
+        }, 2000);
       })
       .catch(err => console.error(err))
-  },[]);
+  }
+
+  const onRefresh = React.useCallback(()=>{
+    setRefreshing(true);
+    console.log("onRefresh")
+    APIService
+      .account(token)
+      .then(res => res.json())
+      .then(account => {
+        console.log(account)
+        setAccountDetail(account.data);
+        setIsAgent(account.data.is_agent);
+        setIsLoading(false)
+        setTimeout(()=>{
+          setRefreshing(false);
+          setTimeout(() => {
+          APIService
+          .getProfile(token)
+          .then(res=>res.json())
+          .then(data=>{
+            if(data.success){
+              setUserInfo(data.data);
+            }
+          })
+          .catch(err=>console.log(err))
+          APIService
+          .getLatestTransactions(token)
+          .then(res=>res.json())
+          .then(data=>{
+            setLatestTransactions(data.data);
+            setTransactionDetail(data.data);
+            setTransactiontransaction('all');
+          })
+          .catch(err=>console.log(err))
+        }, 2000);
+        },2000);
+      })
+      .catch(err => console.error(err))
+  });
+
+  useEffect(()=>{
+    loadData();
+  },[reload])
 
   useEffect(() => {
-    APIService
-      .account(token)
-      .then(res => res.json())
-      .then(account => {
-        console.log(account)
-        setAccountDetail(account.data);
-        AsyncStorage.setItem('isAgent',JSON.stringify({"agent":account.data.is_agent}))
-        setIsLoading(false)
-      })
-      .catch(err => console.error(err))
+    loadData();
   }, [])
+
+  useEffect(()=>{
+    switch(transactionFilter){
+      case 'all':
+        setTransactionDetail(latestTransactions);
+        break;
+      case 'transfer':
+      case 'deposit':
+      case 'withdraw':
+        const filter = latestTransactions.filter((trx)=>trx.type===transactionFilter)
+        setTransactionDetail(filter)
+    }
+  },[transactionFilter])
 
   if (isLoading) {
     return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -76,10 +151,11 @@ const AccountScreen = ({ navigation }) => {
       paddingTop: Platform.OS == "android" ? StatusBarManager.HEIGHT : 0,
     }}
     >
-      <StatusBar style="dark" />
-      <ScrollView 
-        showsVerticalScrollIndicator={false} 
-        refreshControl={<RefreshControl refreshing={resfreshing}/>} onRefresh={onRefresh}>
+      <StatusBar style="dark" animated backgroundColor={COLORS.bg}/>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} 
+      >
         <View style={{ flex: 1, marginTop: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: '800' }}>{i18n.t('welcome')}, {userInfo.user.username}</Text>
 
@@ -106,7 +182,7 @@ const AccountScreen = ({ navigation }) => {
               <Text style={styles.btnText}>{i18n.t('transfer')}</Text>
             </TouchableOpacity>
             {
-              accountDetail.is_agent && (
+              isAgent && (
                 <React.Fragment>
                   <TouchableOpacity onPress={() => goToScreen('Withdraw')}>
                     <View style={styles.btn}>
@@ -149,23 +225,9 @@ const AccountScreen = ({ navigation }) => {
                 <Text style={{ textDecorationStyle: 'underline', color: COLORS.white }}>{i18n.t('seeAll')}</Text>
               </View>
               <View style={styles.transactions}>
-                <View style={styles.transaction}>
-                  <View style={{ flexDirection: 'row' }}>
-                    <View style={styles.transaction_icon}>
-                      <MaterialCommunityIcons name={'home'} size={24} color={COLORS.black} />
-                    </View>
-                    <View style={styles.transaction_info}>
-                      <Text style={{ fontSize: 14, fontWeight: '700', justifyContent: 'flex-end' }}>Transfer to  {"ivantom"}</Text>
-                      <Text style={{ fontSize: 10 }}>Ivantom tester</Text>
-                      <Text style={{ fontSize: 10 }}>1 Dec 20222</Text>
-                    </View>
-                  </View>
-                  <View style={styles.transaction_amount}>
-                    <Text style={{ flex: 1 }}>XAF 40,000</Text>
-                  </View>
-                </View>
-
-
+                {transactionDetail?.map((data,index)=>{
+                  return <Transaction key={index} data={data}/>
+                })}
               </View>
             </View>
           </View>
@@ -181,7 +243,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 8,
-    backgroundColor: COLORS.grey
+    backgroundColor: COLORS.bg
   },
   infoContainer: {
     width: '100%',
@@ -189,9 +251,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: COLORS.darkBlue,
-    // backgroundColor: 'rgba( 14, 13, 13, 0.25 )',
-    // boxShadow: '0 8px 32px 0 rgba( 31, 38, 135, 0.37 )',
-    // backdropFilter: 'blur( 4px )',
     padding: 20,
     borderRadius: 4,
     marginVertical: 8,
@@ -220,7 +279,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignSelf: 'center',
     padding: 10,
-    backgroundColor: COLORS.lightOrange,
+    backgroundColor: COLORS.blue1,
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 10

@@ -5,7 +5,7 @@ import moment from 'moment'
 import { useLanguageContext } from '../context/LangContext'
 
 const TransactionComplete = ({ data,type }) => {
-
+    console.log(data)
     const {i18n} = useLanguageContext()
 
     const getColor = (state) => {
@@ -21,7 +21,7 @@ const TransactionComplete = ({ data,type }) => {
                 <Text style={styles.text}>{i18n.t('Transaction code')} </Text><Text> {data.data.code}</Text>
             </View>
             <View style={styles.row}>
-                <Text style={styles.text}>{i18n.t('Transaction state')} </Text><Text style={{ color: getColor(data.data.status) }}> {data.data.state}</Text>
+                <Text style={styles.text}>{i18n.t('Transaction state')} </Text><Text style={{ color: getColor(data.data.status) }}> {data.data.status}</Text>
             </View>
             <View style={styles.row}>
                 <Text style={styles.text}>{i18n.t('Transaction Amount')} </Text><Text> {i18n.numberToCurrency(data.data.amount, { unit: `${data.data.currency} ` })}</Text>
@@ -63,8 +63,8 @@ const styles = StyleSheet.create({
     row:{ 
         flexDirection: 'row', 
         justifyContent: 'space-between',
-        borderBottomWidth:2,
-        borderBottomColor:'blue'
+        // borderBottomWidth:2,
+        // borderBottomColor:'blue'
     },
     text: {
         fontSize: 18,

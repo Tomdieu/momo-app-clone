@@ -26,6 +26,7 @@ const AccountInfoScreen = ({ navigation }) => {
                 setIsLoading(false)
             })
             .catch(err => console.error(err))
+            .finally(()=>setIsLoading(false))
     }, []);
 
     if (isLoading) {
@@ -60,7 +61,8 @@ const AccountInfoScreen = ({ navigation }) => {
                 <Text>Display Currency</Text>
                 <Text style={styles.textInput}>{accountInfo.display_currency}</Text>
             </View>
-            <CustomButton title='update' style={{ color: '#fff', marginTop: 5, paddingVertical: 12 }} />
+            {/*<CustomButton onPress={()=>navigation.navigate('updatedAccount',{accountInfo})} title='update' style={{ color: '#fff', marginTop: 5, paddingVertical: 12 }} /> */}
+        
         </ScrollView>
     )
 }

@@ -9,12 +9,17 @@ import ChangePinCodeScreen from '../screens/SettingScreens/ChangePinCodeScreen'
 import ChangePasswordScreen from '../screens/SettingScreens/ChangePasswordScreen'
 import UpdateProfileScreen from '../screens/SettingScreens/Profile/UpdateProfileScreen'
 import AccountInfoScreen from '../screens/SettingScreens/AccountInfoScreen'
-import UpdateAccountScreen from '../screens/SettingScreens/AccountInfoScreen'
+import UpdateAccountScreen from '../screens/SettingScreens/UpdateAccountScreen'
+import SecurityScreen from '../screens/SettingScreens/SecurityScreen'
+
+
+import { useLanguageContext } from '../context/LangContext'
 
 const Stack = createStackNavigator()
 
 
 const SettingStack = ({ navigation }) => {
+    const {i18n} = useLanguageContext();
     return (
         <Stack.Navigator>
             <Stack.Screen component={SettingScreen} name="settings" options={{headerShown: false}}/>
@@ -25,6 +30,8 @@ const SettingStack = ({ navigation }) => {
             <Stack.Screen component={LanguageScreen} name="language" options={{headerTitle:'Language'}}/>
             <Stack.Screen component={ChangePinCodeScreen} name="changePinScreen" />
             <Stack.Screen component={ChangePasswordScreen} name="changePassword" />
+            <Stack.Screen component={SecurityScreen} name="SecurityScreen" options={{headerTitle:'Security'}}/>
+            
         </Stack.Navigator>
     )
 }; 

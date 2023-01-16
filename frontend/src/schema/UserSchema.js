@@ -58,7 +58,7 @@ export const basicSchema = Yup.object().shape({
           .then((res) => res.json())
           .then((dt) => {
             console.log(dt);
-            if (dt.found) {
+            if (dt.success) {
               resolve(false);
             } else {
               resolve(true);

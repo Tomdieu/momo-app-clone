@@ -68,14 +68,14 @@ export const AuthProvider = (props) => {
         if (token) {
             setUserToken(token)
         }
-        else if(token === null){
-            AsyncStorage.removeItem('token').then(()=>{
+        // else if(token === null){
+        //     AsyncStorage.removeItem('token').then(()=>{
                 
-                AsyncStorage.removeItem("userInfo").then(()=>{
-                    setUserInfo(null)
-                })
-            })
-        }
+        //         AsyncStorage.removeItem("userInfo").then(()=>{
+        //             setUserInfo(null)
+        //         })
+        //     })
+        // }
     }, [token])
 
     useEffect(() => {

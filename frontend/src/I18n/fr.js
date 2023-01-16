@@ -82,10 +82,14 @@ welcome: "Bienvenue",
 
     'select a language':'Choisser une langue',
 
-    TRANSFER:'TREANSFER',
+    TRANSFER:'TRANSFER',
     WITHDRAW:'Retrait',
     DEPOSIT:'Depot',
     PENDING:"En Attente",
+
+    Transfer:'Transfer',
+    Withdraw:'Retrait',
+    Deposit:'Depot',
 
     'Transaction type':'Type de transaction',
     'Transaction code':'Code de transaction',
@@ -94,7 +98,12 @@ welcome: "Bienvenue",
     'From':'de',
     To:'a',
     Date:'Date',
-    INFO:'INFO'
+    INFO:'INFO',
+
+    'Change pin code':'Changer de Code Pin',
+    'Change password':'Changer de mot de password',
+
+    'Transaction Type':'Type de transaction'
 }
 
 export default fr;

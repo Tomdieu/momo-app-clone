@@ -9,7 +9,7 @@ import APiService from '../../utils/ApiService'
 import { useAuthContext } from '../../context/AuthContext'
 import { useLanguageContext } from '../../context/LangContext'
 
-const LanguageScreen = () => {
+const LanguageScreen = ({navigation,route}) => {
   const [en, setEng] = useState(true)
   const [isLoading, setIsLoading ] = useState(false)
   const { userInfo, setUserInfo, token } = useAuthContext()

@@ -8,6 +8,8 @@ import EnterPhoneNumberScreen from '../screens/TransactionScreens/EnterPhoneNumb
 import TransactionAmountScreen from '../screens/TransactionScreens/TransactionAmountScreen'
 import SuccessTransactionScreen from '../screens/TransactionScreens/SuccessTransactionScreen'
 
+import TransactionsStack from './TransactionsStack'
+
 const Stack = createStackNavigator()
 
 
@@ -21,6 +23,7 @@ const TransactionNavigator = ({ navigation,route }) => {
             <Stack.Screen name="TransactionAmount" component={TransactionAmountScreen} options={{headerTitle:'Transaction Amount',headerTitleAlign:'center'}}/>
             <Stack.Screen name="ConfirmTransaction" component={ConfirmTransactionScreen} options={{headerTitle:'Confirm Transaction',headerTitleAlign:'center'}}/>
             <Stack.Screen name="SuccessTransactionScreen" component={SuccessTransactionScreen} options={{'headerShown':false}}/>
+            <Stack.Screen name="TransactionsAccomplish" component={TransactionsStack} options={{headerTitle:'Transactions',headerTitleAlign:'center'}}/>
         </Stack.Navigator>
     )
 

@@ -30,6 +30,7 @@ README.md
 other
 build_files.sh
 vercel.json
-env
+env/
+./env/
 .vscode
 .vercel

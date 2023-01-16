@@ -197,7 +197,7 @@ const RegisterScreen = ({ navigation }) => {
 
 
               </View>
-              <Text style={{ textAlign: "center", marginBottom: 20 }}>
+              <Text style={{ textAlign: "center", marginVertical: 20,fontSize:19 }}>
                 Already a user ?{" "}
                 <Text
                   style={{ color: "blue" }}

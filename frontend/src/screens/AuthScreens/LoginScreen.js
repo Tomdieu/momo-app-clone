@@ -30,10 +30,12 @@ const LoginScreen = ({ navigation,route }) => {
   const [error, setError] = useState("")
   const { login, setToken, setUserInfo } = useAuthContext()
   const [loading,setLoading] = useState(false);
-  const [visible,setVisible] = useState(false);
-  const [message,setMessage] = useState(null);
-  
-  console.log(route);
+  const [visible, setVisible] = React.useState(false);
+
+  const onToggleSnackBar = () => setVisible(!visible);
+
+  const onDismissSnackBar = () => setVisible(false);
+  const [message,setMessage] = useState('');
 
   useEffect(()=>{
     setError(null);
@@ -45,7 +47,16 @@ const LoginScreen = ({ navigation,route }) => {
     }
   },[message]);
 
+  useEffect(()=>{
+    if(route){
+      if(route.params){
+        setMessage(route.params.message);
+      }
+    }
+  },[]);
+
   const handleSubmit = () => {
+    console.log(username,password);
     if (!username && !password) {
       return setError('username and password required')
     }
@@ -111,7 +122,7 @@ const LoginScreen = ({ navigation,route }) => {
               <TextInput
                 style={styles.input}
                 value={username}
-                onChangeText={(text) => setUsername(text)}
+                onChangeText={(text) => setUsername(text.trim().replace(/[^A-Za-z0-9]/g,''))}
               />
             </View>
             <View style={styles.inputContainer}>
@@ -148,14 +159,14 @@ const LoginScreen = ({ navigation,route }) => {
             visible={visible}
             onDismiss={() => setVisible(false)}
             action={{
-              label: 'Undo',
+              label: 'Ok',
               onPress: () => {
                 // Do something
               },
             }}
-            style={{backgroundColor: "blue"}}
+            style={{backgroundColor: "lightgreen"}}
           >
-            <View><Text>{message}</Text></View>
+            <View><Text style={{color:'#fff',padding:8,fontSize:20}}>{message}</Text></View>
           </Snackbar>
           </View>
           
@@ -198,7 +209,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 19,
     paddingVertical: 8,
-    // fontWeight: "600",
   },
   input: {
     width: "100%",
@@ -208,7 +218,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(0,0,0,0.6)",
     borderRadius: 3,
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '400',
     backgroundColor: '#e3dede96'
   },
   btn: {
@@ -218,5 +228,6 @@ const styles = StyleSheet.create({
   },
   text: {
     textAlign: "center",
+    fontSize:19
   },
 });
