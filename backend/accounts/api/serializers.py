@@ -120,7 +120,8 @@ class ProfileListSerializer(serializers.ModelSerializer):
 
         nested_serializer.update_user(nested_instance, nested_data) 
 
-        return super(ProfileSerializer, self).update(instance, validated_data)
+
+        return super(ProfileListSerializer, self).update(instance, validated_data)
 
 
 class UserLanguageSerializer(serializers.ModelSerializer):
