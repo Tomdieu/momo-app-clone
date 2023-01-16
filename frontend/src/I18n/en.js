@@ -107,7 +107,34 @@ const en = {
     'Change pin code':'Change Pin Code',
     'Change password':'Change password',
 
-    'Transaction Type':'Transaction Type'
+    'Transaction Type':'Transaction Type',
+
+    'Pending Withdrawals':'Pending Withdrawals',
+    'No Pending Transactions':'No Pending Transactions',
+    'My Informations':'My Informations',
+    'My Account':'My Account',
+    'Security':'Security',
+    Language:'Change Language',
+    'Sign Out':'Sign Out',
+
+    'updatedProfile':'Updated Profile',
+    'Update Password':'Update Password',
+    'Update Pin':'Update Pin',
+
+    'Old Password':'Old Password',
+    'New Password':'New Password',
+    'Confirm Password':'Confirm Password',
+
+    updatedPassword:'Update Password',
+
+    'Updated Pin':'Updated Pin',
+
+    'Change Pin':'Change Pin',
+    'Old Pin':'Old Pin',
+    'New Pin':'New Pin',
+    'Confirm Pin':'Confirm Pin',
+
+    'Get Started':'Get Started'
 }
 
 export default en

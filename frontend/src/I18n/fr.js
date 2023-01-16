@@ -103,7 +103,34 @@ welcome: "Bienvenue",
     'Change pin code':'Changer de Code Pin',
     'Change password':'Changer de mot de password',
 
-    'Transaction Type':'Type de transaction'
+    'Transaction Type':'Type de transaction',
+
+    'Pending Withdrawals':'Retrait En Attente',
+    'No Pending Transactions':'Pas de retrait encour',
+    'My Informations':'Mes Informations',
+    'My Account':'Mon compte',
+    'Security':'Securiter',
+    Language:'Changer de Langue',
+    'Sign Out':'Deconnecter',
+
+    'updatedProfile':'Mettre a jour profile',
+
+    'Update Password':'Modifier Mot de Passe',
+    'Update Pin':'Modifier Code Pin',
+    'Old Password':'Ancien Mot de Passe',
+    'New Password':'Nouveau Mot de Passe',
+    'Confirm Password':'Confirmer Mot de Passe',
+
+    updatedPassword:'Mettre A Jour',
+
+    'Updated Pin':'Mettre A Jour',
+
+    'Change Pin':'Changer de pin',
+    'Old Pin':'Ancien Pin',
+    'New Pin':'Nouveau Pin',
+    'Confirm Pin':'Confirmer Pin',
+
+    'Get Started':'Commencer',
 }
 
 export default fr;
