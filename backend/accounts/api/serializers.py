@@ -100,8 +100,6 @@ class ProfileListSerializer(serializers.ModelSerializer):
         
 
     def create(self, validated_data):
-        print(validated_data)
-
         user = validated_data.pop('user')
         serializer = UserSerializer(data=user)
         serializer.is_valid(raise_exception=True)
@@ -109,7 +107,6 @@ class ProfileListSerializer(serializers.ModelSerializer):
 
         profile = Profile(**validated_data)
         profile.user = user_instance
-        print(profile)
         profile.save()
 
         lang = profile.lang
@@ -127,7 +124,6 @@ class ProfileListSerializer(serializers.ModelSerializer):
          
 
     def update(self, instance, validated_data):
-        print('Context : ',self.context)
         nested_serializer = self.fields['user']
         nested_instance = instance.user
 
