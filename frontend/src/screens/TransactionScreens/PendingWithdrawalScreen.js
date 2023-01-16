@@ -23,6 +23,7 @@ const Btn = ({label,onPress,style}) => {
 const PendingWithdrawalScreen = () => {
 
 	const {token} = useAuthContext();
+	const {i18n} = useLanguageContext();
 	const [pendingTransactions,setPendingTransactions] = useState([]);
 	const [loading,setLoading] = useState(false)
 
@@ -94,7 +95,7 @@ const PendingWithdrawalScreen = () => {
 			<ScrollView
 				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
 			>
-				{pendingTransactions.length === 0 ?(<Text style={{fontSize:20,padding:20,textAlign:'center',fontWeight:'600'}}>No Pending Transactions</Text>):(<Text style={{fontSize:20,fontWeight:'300',margin:8}}>Pending Withdrawal</Text>) }
+				{pendingTransactions.length === 0 ?(<Text style={{fontSize:20,padding:20,textAlign:'center',fontWeight:'600'}}>{i18n.t('No Pending Transactions')}</Text>):(<Text style={{fontSize:20,fontWeight:'300',margin:8}}>Pending Withdrawal</Text>) }
 				{pendingTransactions?.map((data,index)=>{
 					return (
 						<View style={{width:'100%'}}>

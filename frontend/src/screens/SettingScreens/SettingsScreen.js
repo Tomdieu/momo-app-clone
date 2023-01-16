@@ -6,6 +6,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import APiService from '../../utils/ApiService'
 
 import {useAuthContext} from '../../context/AuthContext'
+import {useLanguageContext} from '../../context/LangContext'
 import { COLORS } from '../../utils/constants'
 
 const { StatusBarManager } = NativeModules
@@ -13,6 +14,8 @@ const { StatusBarManager } = NativeModules
 const SettingsScreen = ({navigation,route}) => {
 
   const {logout} = useAuthContext()
+
+  const {i18n} = useLanguageContext()
 
   const navigate = (route) => {
     navigation.navigate(route)
@@ -25,36 +28,36 @@ const SettingsScreen = ({navigation,route}) => {
     }}
     >
       <View style={{ flex: 1 }}>
-        <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: '600',marginVertical:10 }}>Settings</Text>
+        <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: '600',marginVertical:10 }}>{i18n.t('settings')}</Text>
         <View style={{ flex: 1 }}>
           <TouchableOpacity onPress={()=>navigate('profile')}>
             <View style={styles.option}>
-              <Text style={styles.label}>My Informations</Text>
+              <Text style={styles.label}>{i18n.t('My Informations')}</Text>
               <Feather name={'chevron-right'} size={16} style={styles.action} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={()=>navigate('accountInfo')}>
             <View style={styles.option}>
-              <Text style={styles.label}>Account</Text>
+              <Text style={styles.label}>{i18n.t('My Account')}</Text>
               <Feather name={'chevron-right'} size={16} style={styles.action} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={()=>navigate('SecurityScreen')}>
             <View style={styles.option}>
-              <Text style={styles.label}>Security</Text>
+              <Text style={styles.label}>{i18n.t('Security')}</Text>
               <Feather name={'chevron-right'} size={16} style={styles.action} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={()=>navigate('language')}>
             <View style={styles.option}>
-              <Text style={styles.label}>Language</Text>
+              <Text style={styles.label}>{i18n.t('Language')}</Text>
               <Feather name={'chevron-right'} size={16} style={styles.action} />
             </View>
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={logout}>
           <View style={[styles.option,styles.logout]}>
-            <Text style={styles.label}>Sign Out</Text>
+            <Text style={styles.label}>{i18n.t('Sign Out')}</Text>
             <MaterialIcons name={'logout'} size={16} style={styles.action} />
           </View>
         </TouchableOpacity>

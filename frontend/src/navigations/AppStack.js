@@ -12,14 +12,20 @@ import TransactionNavigator from './TransactionStack'
 
 import SettingStack from './SettingsStack'
 
+import {useLanguageContext} from '../context/LangContext'
+
 
 const Tab = createBottomTabNavigator()
 
 const AppNavigator = () => {
+  const {i18n} = useLanguageContext()
+  const settings = i18n.t("settings");
+  const compte = i18n.t('account')
   return (
     <Tab.Navigator
       screenOptions={{ headerShown: false, tabBarHideOnKeyboard: true }}>
       <Tab.Screen name="Account" component={AccountScreen} options={{
+        tabBarLabel:compte,
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="ios-wallet" color={color} size={size} />
         ),
@@ -39,7 +45,7 @@ const AppNavigator = () => {
       }} />
       <Tab.Screen name="Settings" component={SettingStack} options={{
         title: "Settings",
-        tabBarLabel: "Settings",
+        tabBarLabel: settings,
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="settings" color={color} size={size} />
         ),

@@ -20,17 +20,23 @@ const Stack = createStackNavigator()
 
 const SettingStack = ({ navigation }) => {
     const {i18n} = useLanguageContext();
+    const updateProfile = i18n.t('updatedProfile')
+    const language = i18n.t('Language')
+    const updatepsw = i18n.t('Update Password')
+    const updatepin = i18n.t('Update Pin')
+    const security = i18n.t('Security')
+
     return (
         <Stack.Navigator>
             <Stack.Screen component={SettingScreen} name="settings" options={{headerShown: false}}/>
             <Stack.Screen component={ProfileScreen} name="profile" />
-            <Stack.Screen component={UpdateProfileScreen} name="updatedProfile" />
+            <Stack.Screen component={UpdateProfileScreen} name="updatedProfile" options={{headerLabel:updateProfile}}/>
             <Stack.Screen component={AccountInfoScreen} name="accountInfo" options={{headerTitle:"Account Info",headerTitleAlign:'center'}}/>
             <Stack.Screen component={UpdateAccountScreen} name="updatedAccount" options={{headerTitle:'Update Account',headerTitleAlign:'center'}} />
-            <Stack.Screen component={LanguageScreen} name="language" options={{headerTitle:'Language'}}/>
-            <Stack.Screen component={ChangePinCodeScreen} name="changePinScreen" />
-            <Stack.Screen component={ChangePasswordScreen} name="changePassword" />
-            <Stack.Screen component={SecurityScreen} name="SecurityScreen" options={{headerTitle:'Security'}}/>
+            <Stack.Screen component={LanguageScreen} name="language" options={{headerTitle:language}}/>
+            <Stack.Screen component={ChangePinCodeScreen} name="changePinScreen" options={{headerTitle:updatepin}}/>
+            <Stack.Screen component={ChangePasswordScreen} name="changePassword" options={{headerTitle:updatepsw}}/>
+            <Stack.Screen component={SecurityScreen} name="SecurityScreen" options={{headerTitle:security}}/>
             
         </Stack.Navigator>
     )

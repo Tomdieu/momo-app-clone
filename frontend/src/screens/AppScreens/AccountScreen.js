@@ -172,7 +172,7 @@ const AccountScreen = ({ navigation,route }) => {
             </View>
           </View>
           <View style={styles.btnContainer}>
-            <TouchableOpacity onPress={() => goToScreen('Transfer')}>
+            <TouchableOpacity style={{alignItems:'center',justifyContent:'center'}} onPress={() => goToScreen('Transfer')}>
               <View style={styles.btn}>
                 {/*<FontAwesome name={'send'} size={24} color={COLORS.black} />*/}
 
@@ -184,13 +184,13 @@ const AccountScreen = ({ navigation,route }) => {
             {
               isAgent && (
                 <React.Fragment>
-                  <TouchableOpacity onPress={() => goToScreen('Withdraw')}>
+                  <TouchableOpacity style={{alignItems:'center',justifyContent:'center'}} onPress={() => goToScreen('Withdraw')}>
                     <View style={styles.btn}>
                       <MaterialCommunityIcons name={'cash-minus'} size={32} color={COLORS.white} />
                     </View>
                     <Text style={styles.btnText}>{i18n.t('withdraw')}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => goToScreen('Deposit')}>
+                  <TouchableOpacity style={{alignItems:'center',justifyContent:'center'}} onPress={() => goToScreen('Deposit')}>
                     <View style={styles.btn}>
                       <MaterialCommunityIcons name={'cash-plus'} size={32} color={COLORS.white} />
                     </View>
@@ -282,7 +282,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.blue1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 10
+    marginVertical: 10,
+    textAlign:'center'
   },
   btnText: {
     color: COLORS.white
@@ -295,8 +296,8 @@ const styles = StyleSheet.create({
     borderRadius: 5
   },
   transactionCategory: {
-    padding: 3,
-    borderRadius: 2,
+    padding: 8,
+    borderRadius: 6,
     borderWidth: 1,
     paddingHorizontal: 9,
     borderColor: COLORS.grey,

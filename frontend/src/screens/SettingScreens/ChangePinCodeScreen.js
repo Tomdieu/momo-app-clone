@@ -8,6 +8,7 @@ import { Button, Snackbar } from 'react-native-paper';
 import updatePinSchema from "../../schema/changePinSchema"
 import CustomButton from '../../components/CustomButton'
 
+import {useLanguageContext} from '../../context/LangContext'
 import {useAuthContext} from '../../context/AuthContext'
 
 import APiService from '../../utils/ApiService'
@@ -22,6 +23,8 @@ const ChangePinCodeScreen = ({navigation}) => {
 
   const [errMsg,setErrMsg] = useState(null);
 
+  const {i18n} = useLanguageContext()
+
   const [visible, setVisible] = React.useState(false);
 
   const onToggleSnackBar = () => setVisible(!visible);
@@ -32,7 +35,7 @@ const ChangePinCodeScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Text style={{fontSize:18,fontWeight:'400'}}>Change Pin</Text>
+      <Text style={{fontSize:18,fontWeight:'400'}}>{i18n.t('Change Pin')}</Text>
       <Formik
         validationSchema={updatePinSchema}
         initialValues={{ old_pin: '', new_pin: '', confirm_pin: '' }}
@@ -79,22 +82,22 @@ const ChangePinCodeScreen = ({navigation}) => {
                 {errMsg && <View style={styles.errorContainer}><Text style={styles.errorText}>{errMsg}</Text></View>}
               </View>
               <View style={styles.row}>
-                <Text style={styles.label}>Old Pin</Text>
+                <Text style={styles.label}>{i18n.t('Old Pin')}</Text>
                 <TextInput maxLength={5} secureTextEntry keyboardType='numeric' style={styles.textInput} name="old_pin" onChangeText={handleChange('old_pin')} onBlur={handleBlur('old_pin')}/>
                 {(errors.old_pin && touched.old_pin) && (<Text style={{color:'red'}}>{errors.old_pin}</Text>)}
               </View>
               <View style={styles.row}>
-                <Text style={styles.label}>New Pin</Text>
+                <Text style={styles.label}>{i18n.t('New Pin')}</Text>
                 <TextInput maxLength={5} secureTextEntry keyboardType='numeric' style={styles.textInput} name="new_pin" onChangeText={handleChange('new_pin')} onBlur={handleBlur('new_pin')} />
                 {(errors.new_pin && touched.new_pin) && (<Text style={{color:'red'}}>{errors.new_pin}</Text>)}
               </View>
               <View style={styles.row}>
-                <Text style={styles.label}>Confirm Pin</Text>
+                <Text style={styles.label}>{i18n.t('Confirm Pin')}</Text>
                 <TextInput maxLength={5} secureTextEntry keyboardType='numeric' style={styles.textInput} name="confirm_pin" onChangeText={handleChange('confirm_pin')} onBlur={handleBlur('confirm_pin')} />
                 {(errors.confirm_pin && touched.confirm_pin) && (<Text style={{color:'red'}}>{errors.confirm_pin}</Text>)}
               </View>
   
-              <CustomButton onPress={handleSubmit} loading={loading} disabled={Boolean(loading || !isValid || !dirty)} title={'Updated Pin'} style={{backgroundColor:'#000',color:'#fff'}}/>
+              <CustomButton onPress={handleSubmit} loading={loading} disabled={Boolean(loading || !isValid || !dirty)} title={i18n.t('Updated Pin')} style={{backgroundColor:'#000',color:'#fff'}}/>
               <Snackbar
                 visible={visible}
                 onDismiss={onDismissSnackBar}

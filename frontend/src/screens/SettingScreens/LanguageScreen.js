@@ -15,29 +15,18 @@ const LanguageScreen = ({navigation,route}) => {
   const { userInfo, setUserInfo, token } = useAuthContext()
   const { setLocale,i18n } = useLanguageContext();
 
+  const [userLang,setUserLang] = useState({en:userInfo.lang==='EN',fr:userInfo.lang==='FR'}) 
 
-  useEffect(() => {
-    setEng(userInfo.lang === 'EN' ? true : false)
-    console.log(userInfo.lang)
-  }, []);
 
-  useEffect(()=>{
-    if(en){
-      setLocale('en');
-    }
-    else{
-      setLocale('fr')
-    }
-  },[en]);
-
-  const handleChange = (value) => {
-    setEng(value)
+  const handleChange = () => {
+    console.log(userLang)
     setIsLoading(true);
-    const data = { 'lang': en === true ? 'EN' : 'FR' }
+    const data = { 'lang': userLang.en === true ? 'EN' : 'FR' }
     APiService
       .updateLanguage(data, token)
       .then(res => res.json())
       .then((data) => {
+        console.log(data)
         console.log(data.data.lang,data.data.lang.toLocaleLowerCase())
         setUserInfo(data.data);
         // setEng(data.data.lang === 'EN'?true:false)
@@ -47,9 +36,15 @@ const LanguageScreen = ({navigation,route}) => {
 
   }
 
+  useEffect(()=>{
+    handleChange();
+  },[userLang])
+
   if (isLoading) {
     return <Loading size={50} />
   }
+
+  console.log("The data change new value ",userLang)
 
   return (
     <View style={styles.container}>
@@ -57,11 +52,25 @@ const LanguageScreen = ({navigation,route}) => {
       <View style={styles.row}>
         <View style={styles.box}>
           <Text>Francais</Text>
-          <CheckBox style={styles.checkbox} value={!en} onValueChange={() => handleChange(false)} />
+          <CheckBox 
+            style={styles.checkbox} 
+            value={userLang.fr} 
+            onValueChange={() => {
+              setUserLang({en:false,fr:true});
+              // handleChange()
+            }} 
+          />
         </View>
         <View style={styles.box}>
           <Text>English</Text>
-          <CheckBox style={styles.checkbox} value={en} onValueChange={() => handleChange(true)} />
+          <CheckBox 
+            style={styles.checkbox} 
+            value={userLang.en} 
+            onValueChange={() => {
+              setUserLang({en:true,fr:false});
+              // handleChange()
+            }} 
+          />
         </View>
       </View>
     </View>

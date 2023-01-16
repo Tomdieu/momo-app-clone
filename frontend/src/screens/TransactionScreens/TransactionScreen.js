@@ -21,7 +21,7 @@ const TransactionScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={{ marginTop: 10,fontSize:20 }}>{i18n.t('selectTransactionType')}</Text>
+      <Text style={{ marginTop: 10,color:"#aaa",fontSize:20,fontWeight:'800'}}>{i18n.t('selectTransactionType')}</Text>
       <View style={styles.transactions_type}>
         <TouchableOpacity style={styles.padding} onPress={() => goToScreen('Transfer')}>
           <View style={styles.transaction_type}>
@@ -70,8 +70,8 @@ const TransactionScreen = ({ navigation }) => {
           />
           <IconButtonArrow
             style={{backgroundColor:'#0f0'}}  
-            leftIcon={<MaterialCommunityIcons name="bank-transfer" color={"#fff"} size={24}/>} 
-            label={'Pending Withdrawals'}
+            leftIcon={<MaterialCommunityIcons name="timer-sand" color={"#fff"} size={24}/>} 
+            label={i18n.t('Pending Withdrawals')}
             onPress={()=>navigation.navigate('PendingWithdrawals')}
             style={{backgroundColor:'orange'}}
             rightIcon={<FontAwesome name='caret-right' color={"#fff"} size={24} />}

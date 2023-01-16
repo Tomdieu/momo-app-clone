@@ -8,6 +8,7 @@ import UpdatePasswordSchema from "../../schema/UpdatePasswordSchema"
 import CustomButton from '../../components/CustomButton'
 
 import {useAuthContext} from '../../context/AuthContext'
+import {useLanguageContext} from '../../context/LangContext'
 
 import APiService from '../../utils/ApiService'
 
@@ -21,6 +22,8 @@ const ChangePasswordScreen = ({navigation}) => {
 
   const [errMsg,setErrMsg] = useState(null);
 
+  const {i18n} = useLanguageContext()
+
   const [visible, setVisible] = React.useState(false);
 
   const onToggleSnackBar = () => setVisible(!visible);
@@ -31,7 +34,7 @@ const ChangePasswordScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Text style={{fontSize:18,fontWeight:'400'}}>Change Password</Text>
+      <Text style={{fontSize:18,fontWeight:'400'}}>{i18n.t('Update Password')}</Text>
       <Formik
         validationSchema={UpdatePasswordSchema}
         initialValues={{ old_password: '', new_password: '', confirm_password: '' }}
@@ -78,22 +81,22 @@ const ChangePasswordScreen = ({navigation}) => {
                 {errMsg && <View style={styles.errorContainer}><Text style={styles.errorText}>{errMsg}</Text></View>}
               </View>
               <View style={styles.row}>
-                <Text style={styles.label}>Old Password</Text>
+                <Text style={styles.label}>{i18n.t('Old Password')}</Text>
                 <TextInput style={styles.textInput} name="old_password" onChangeText={handleChange('old_password')} onBlur={handleBlur('old_password')}/>
                 {(errors.old_password && touched.old_password) && (<Text style={{color:'red'}}>{errors.old_password}</Text>)}
               </View>
               <View style={styles.row}>
-                <Text style={styles.label}>New Password</Text>
+                <Text style={styles.label}>{i18n.t('New Password')}</Text>
                 <TextInput style={styles.textInput} name="new_password" onChangeText={handleChange('new_password')} onBlur={handleBlur('new_password')} />
                 {(errors.new_password && touched.new_password) && (<Text style={{color:'red'}}>{errors.new_password}</Text>)}
               </View>
               <View style={styles.row}>
-                <Text style={styles.label}>Confirm Password</Text>
+                <Text style={styles.label}>{i18n.t('Confirm Password')}</Text>
                 <TextInput style={styles.textInput} name="confirm_password" onChangeText={handleChange('confirm_password')} onBlur={handleBlur('confirm_password')} />
                 {(errors.confirm_password && touched.confirm_password) && (<Text style={{color:'red'}}>{errors.confirm_password}</Text>)}
               </View>
   
-              <CustomButton onPress={handleSubmit} loading={loading} disabled={Boolean(loading || !isValid || !dirty)} title={'Updated Password'} style={{backgroundColor:'#000',color:'#fff'}}/>
+              <CustomButton onPress={handleSubmit} loading={loading} disabled={Boolean(loading || !isValid || !dirty)} title={i18n.t('updatedPassword')} style={{backgroundColor:'#000',color:'#fff'}}/>
               <Snackbar
                 visible={visible}
                 onDismiss={onDismissSnackBar}

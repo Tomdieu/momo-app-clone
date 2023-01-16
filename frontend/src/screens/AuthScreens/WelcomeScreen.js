@@ -3,12 +3,18 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import React from "react";
 const { StatusBarManager } = NativeModules
+import { StatusBar } from 'expo-status-bar'
+
+import {useLanguageContext} from '../../context/LangContext'
+
 
 import { COLORS } from "../../utils/constants";
 
 const WelcomeScreen = ({ navigation, route }) => {
+  const {i18n} = useLanguageContext()
   return (
     <SafeAreaView style={{ ...styles.container,backgroundColor:COLORS.bg, paddingTop: Platform.OS === 'android' ? StatusBarManager.HEIGHT : 0 }}>
+      <StatusBar style="dark" animated backgroundColor={COLORS.bg}/>
       <View style={styles.container}>
         <Text style={{...styles.title,color:COLORS.darkBlue}}>Trix Wallet</Text>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -20,7 +26,7 @@ const WelcomeScreen = ({ navigation, route }) => {
         </View>
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
           <View style={styles.btn}>
-            <Text style={{ color: '#fff', fontSize: 18, fontWeight: '800' }}>Get Started</Text>
+            <Text style={{ color: '#fff', fontSize: 18, fontWeight: '800' }}>{i18n.t('Get Started')}</Text>
             <AntDesign name="right" color={"white"} size={32} />
           </View>
         </TouchableOpacity>
