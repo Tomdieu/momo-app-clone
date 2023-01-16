@@ -72,7 +72,7 @@ const TransactionScreen = ({ navigation }) => {
             style={{backgroundColor:'#0f0'}}  
             leftIcon={<MaterialCommunityIcons name="bank-transfer" color={"#fff"} size={24}/>} 
             label={'Pending Withdrawals'}
-            onPress={()=>navigation.navigate('TransactionsAccomplish')}
+            onPress={()=>navigation.navigate('PendingWithdrawals')}
             style={{backgroundColor:'orange'}}
             rightIcon={<FontAwesome name='caret-right' color={"#fff"} size={24} />}
             />

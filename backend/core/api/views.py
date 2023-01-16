@@ -363,7 +363,7 @@ class ConfirmWithdraw(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Gene
     def list(self, request, *args, **kwargs):
         if self.get_queryset():
             queryset = self.get_queryset()
-            return Response({'success': True, 'data': WithdrawSerializer(queryset, many=True).data, 'message': 'Your Pending withdrawals'})
+            return Response({'success': True, 'data': WithdrawListSerializer(queryset, many=True).data, 'message': 'Your Pending withdrawals'})
         else:
             return Response({'success': True, 'data': [], 'message': 'No pending withdrawal'})
 

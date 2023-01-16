@@ -70,7 +70,7 @@ const RegisterScreen = ({ navigation }) => {
                 else{
                   Alert.alert("Could not create account",'Something went wrong',[
                     {
-                    text: 'No',
+                    text: 'Ok',
                     onPress: () => {
                       
                     },

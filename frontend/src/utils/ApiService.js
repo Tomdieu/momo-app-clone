@@ -379,7 +379,7 @@ export default class Trixwallet {
   static async pendingWithdrawals(token) {
     const url = this.endPoint + '/api/momo/confirm-withdrawal/'
     const res = await fetch(url, {
-      method: 'POST',
+      method: 'GET',
       headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' }
     })
     return res
@@ -388,7 +388,7 @@ export default class Trixwallet {
   static async confirmOrDenyWithdrawals(id, data, token) {
     const url = this.endPoint + `/api/momo/confirm-withdrawal/${id}/`
     const res = await fetch(url, {
-      method: 'POST',
+      method: 'PATCH',
       body: JSON.stringify(data),
       headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' }
     })
