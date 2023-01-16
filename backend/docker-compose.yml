@@ -5,18 +5,19 @@ services:
   # Redis
   redis:
     image: redis:7.0.6-alpine
-    container_name: redis
-  
-  
+    container_name: redis  
+    expose:
+      - 6379
   #Django application
 
   backend:
     image: backend
+    restart: unless-stopped
     build: .
     volumes:
       - .:/django_backend
     ports:
-      - 8000:8000
+      - 8001:8000
     container_name: django_container
     command: python manage.py runserver 0.0.0.0:8000
 
@@ -26,7 +27,11 @@ services:
     restart: always
     build: 
       context: .
-    command: celery -A backend worker -l INFO
+    environment:
+      DEBUG: "True"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+    command: celery -A backend worker --beat --scheduler django --loglevel=info
     volumes:
       - .:/django_backend
     container_name: celery
