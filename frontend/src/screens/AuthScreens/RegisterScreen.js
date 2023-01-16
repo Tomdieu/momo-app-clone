@@ -4,7 +4,8 @@ import {
   TextInput,
   View,
   NativeModules,
-  ScrollView
+  ScrollView,
+  Alert
 } from "react-native";
 
 import React,{useState} from "react";
@@ -51,16 +52,27 @@ const RegisterScreen = ({ navigation }) => {
           onSubmit={(values) => {
             setLoading(true);
             const { username, first_name, last_name, email, phone_number, password } = values;
-            const profile = { phone_number }
+            
             const user = {
-              username, first_name, last_name, email, password, profile
+              username, first_name, last_name, email, password
             }
+            const profile = { phone_number,user }
+
             const data = JSON.stringify(user)
-            ApiService.register(data)
+            console.log(data);
+            ApiService.register(profile)
               .then(res => res.json())
               .then(data => {
-                navigation.navigate('Login',{message:data.message})
+                console.log(data);
+                if(data.success){
+                  navigation.navigate('Login',{message:data.message})
+                }
+                else{
+                  Alert("Could not create account")
+                }
               })
+              .catch(err=>console.log(err))
+              .finally(()=>setLoading(false))
 
             console.log(values)
           }}
