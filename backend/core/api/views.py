@@ -100,8 +100,13 @@ class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateM
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
+        serializer = self.get_serializer_class()
         if instance.user == request.user:
+            print(super().partial_update(request, *args, **kwargs))
             return super().partial_update(request, *args, **kwargs)
+            # return Response({'success': True, 'data': serializer(data).data, 'message': 'Updated'})
+        else:
+            return Response({'success': False, 'data': [], 'message': 'Not Found'})
 
     def retrieve(self, request, *args, **kwargs):
 
@@ -386,11 +391,10 @@ class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
         if not request.user.account.check_pincode(old_pin):
             return Response({'success': False, 'message': 'pin code incorrect!'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if len(new_pin) < 5:
-            return Response({'success': False, 'message': 'new pin code must be atleast 5 digits'}, status=status.HTTP_400_BAD_REQUEST)
+        if len(new_pin) < 5 or len(new_pin) > 5:
+            return Response({'success': False, 'message': 'new pin code must be 5 digits'}, status=status.HTTP_400_BAD_REQUEST)
         if new_pin != confirm_pin:
             return Response({'success': False, 'message': 'pin code don\'t match'}, status=status.HTTP_400_BAD_REQUEST)
-
         else:
             account = request.user.account
             account.set_pincode(new_pin)
@@ -407,11 +411,11 @@ class LatestTransactionViewSet(ViewSet):
 
     def list(self, request, *args, **kwargs):
 
-        t = Transfer.objects.filter(sender=self.request.user.account)[:3]
+        t = Transfer.objects.filter(Q(sender=self.request.user.account) | Q(reciever=self.request.user.account))[:3]
 
-        d = Deposit.objects.filter(sender=self.request.user.account)[:3]
+        d = Deposit.objects.filter(Q(sender=self.request.user.account) | Q(reciever=self.request.user.account))[:3]
 
-        w = Withdraw.objects.filter(agent=self.request.user.account)[:3]
+        w = Withdraw.objects.filter(Q(agent=self.request.user.account) | Q(withdraw_from=self.request.user.account))[:3]
 
 
         transactions = []

@@ -287,27 +287,25 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 # With Redis
 
-if not DEBUG:
-
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": ["redis://localhost:6379/0"]
-                # "hosts": [("127.0.0.1", 6379)],
-            },
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": ["redis://redis:6379/0"]
+            # "hosts": [("127.0.0.1", 6379)],
         },
-    }
+    },
+}
 
 
 # With internal memoryChannelLayer
-if DEBUG:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND":
-            "channels.layers.InMemoryChannelLayer",
-        }
-    }
+# if DEBUG:
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND":
+#         "channels.layers.InMemoryChannelLayer",
+#     }
+# }
 
 
 # Crispy configurations

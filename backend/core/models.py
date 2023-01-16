@@ -170,6 +170,9 @@ class Transfer(Transaction):
 
         return {'sender_message': sender_message, 'reciever_message': reciever_message}
 
+    class Meta:
+        ordering = ['-created_at']
+
 
 class Withdraw(Transaction):
 
@@ -206,6 +209,9 @@ class Withdraw(Transaction):
                 raise ValidationError({'withdraw_from': _(
                     "You can't withdraw money from the account the account balance is insufficent")})
 
+    class Meta:
+        ordering = ['-created_at']
+
 
 class Deposit(Transaction):
 
@@ -220,6 +226,9 @@ class Deposit(Transaction):
                                  related_name='reciever_account', help_text='the reciever account id')
     status = models.CharField(
         max_length=20, choices=DEPOSIT_STATE, default='SUCCESSFULL')
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"Deposit {self.code} {self.status}"
