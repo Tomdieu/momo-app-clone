@@ -31,4 +31,3 @@ def test_account_creation(api_client:APIClient):
     assert data['city'] == 'Garoua'
     assert data['lang'] == 'EN'
     
-    print("User created : ")

@@ -2,17 +2,49 @@ from django.test import TestCase
 from rest_framework.test import APITestCase
 from django.urls import reverse
 
+from django.contrib.auth import get_user_model
+
 import json
+import pytest
+
+from mixer.backend.django import mixer
 
 # Create your tests here.
 
-class AccountTestCase(APITestCase):
+
+User = get_user_model()
+
+pytest.mark.django_db
+class TestUserModel(TestCase):
+
+    def setUp(self) -> None:
+        self.user = mixer.blend(User)
+
+    def test_user_account_balance(self):
+
+        self.assertEqual(self.user.account.balance,0)
+
+    def test_user_profile(self):
+        self.assertEqual(self.user.profile.user.username,self.user.username)
+
+    def test_update_user_account_balance(self):
+
+        account = self.user.account
+
+        account.balance = 100
+
+        account.save()
+
+        self.assertEqual(account.balance, 100)
+
+pytest.mark.django_db
+class TestUserApi(APITestCase):
 
     def setUp(self) -> None:
         self.user = json.loads(self.create_account().content)
+        self.token = self.authenticate()
 
     def create_account(self):
-        # token = 'f52ff4c495dff4c05e6f869ef2f3b8250c45c5e2'
         # self.client.credentials(HTTP_AUTHORIZATION=f"token {token}")
 
         data = {
@@ -20,7 +52,7 @@ class AccountTestCase(APITestCase):
                 "username": "ivantom1",
                 "first_name": "navi",
                 "last_name": "gg",
-                "email": "ivantomdio@gmail.com",
+                "email": "admin@gmail.com",
                 "password": "1234"
             },
             "phone_number": "+222222",
@@ -39,29 +71,25 @@ class AccountTestCase(APITestCase):
             'password':'1234'
         }
         response = self.client.post('/api/auth/login/',data)
-        return response
-
-    def fetch_transaction_charges(self):
-        authentication_response = json.loads(self.authenticate().content)
-        token = authentication_response['token']
-
-        self.client.credentials(HTTP_AUTHORIZATION=f"token {token}")
-
-        response = self.client.get('/api/momo/transaction-charges/')
-
-        print(json.loads(response.content))
+        return json.loads(response.content)['token']
 
 
+        #     self.client.credentials(HTTP_AUTHORIZATION=f"token {token}")
 
-
-    def test_1(self):
-        print(self.user)
+    def test_get_user_data(self):
         self.assertEqual(self.user['data']['user']['username'],"ivantom1")
+        self.assertEqual(self.user['data']['user']['email'],"admin@gmail.com")
+        self.assertEqual(self.user['data']['dob'],"2000-12-01")
+
         # acc = self.create_account()
         # user = json.loads(acc.content)
-        # print(user,acc.status_code)
         # authentication_response = json.loads(self.authenticate().content)
 
-    # def test_2(self):
-    #     self.fetch_transaction_charges()
+    def test_user_account_balance(self):
 
+        self.client.credentials(HTTP_AUTHORIZATION=f"token {self.token}")
+        res = self.client.get('/api/momo/accounts/')
+        data = json.loads(res.content)['data']
+        self.assertEqual(data['balance'],0)
+        self.assertEqual(data['total_amount_transfer'],0)
+        self.assertEqual(data['is_agent'],False)
