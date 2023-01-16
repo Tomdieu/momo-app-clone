@@ -44,7 +44,6 @@ class UserForm(ModelForm):
         password= self.cleaned_data.get('password')
         if confirm_password != password:
             raise ValidationError( _('The confirm password is different from the password'))
-        # print(self.cleaned_data)
 
         else:
             return confirm_password

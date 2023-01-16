@@ -68,7 +68,7 @@ class CreateProfile(View):
         return render(request,self.template_name,context)
 
     def post(self,request,*args,**kwargs):
-        print(request.POST)
+
         user_form = UserForm(data=request.POST)
 
         profile_form = ProfileForm(data=request.POST)

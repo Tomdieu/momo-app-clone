@@ -29,7 +29,6 @@ class GetAccountViewSet(GenericViewSet, ListModelMixin):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        print(self.request.query_params)
         account_number = self.request.query_params.get('account_number')
         if account_number:
 
@@ -45,7 +44,6 @@ class GetAccountViewSet(GenericViewSet, ListModelMixin):
             return Account.objects.filter(user=self.request.user)
 
     def list(self, request, *args, **kwargs):
-        print(self.get_queryset())
         if self.get_queryset():
             serializer = AccountListSerializer(self.get_queryset())
             queryset = self.get_queryset()

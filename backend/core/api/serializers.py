@@ -157,7 +157,7 @@ class TransferCreateSerializer(serializers.ModelSerializer):
 	def create(self, validated_data):
 
 		validated_data.pop('pin_code')
-		print(validated_data)
+		 
 		validated_data['sender'] = self.context['request'].user.account
 		transfer = Transfer.objects.create(**validated_data)
 

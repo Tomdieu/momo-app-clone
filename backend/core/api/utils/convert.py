@@ -80,10 +80,8 @@ if __name__ == '__main__':
     try:
         url = 'https://api.exchangerate-api.com/v4/latest/USD'
         converter = RealTimeCurrencyConverter(url)
-        print(converter.convert('USD','XAF',100))
     except:
         c = OffLineCurrencyConverter()
-        print(c.convert('USD','XAF',100))
     # v = [(i,i) for i in self.data['rates'].keys()]
 
 

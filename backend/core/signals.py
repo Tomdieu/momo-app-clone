@@ -81,13 +81,21 @@ def passThroughProfile(sender, instance, *args, **kwargs):
 
                 Notification.objects.create(user=instance.user, message=msg)
 
+@receiver(post_save,sender=Account)
+def createProfileIfNotExists(sender,instance,created,**kwargs):
+
+    if created:
+
+        profile = Profile.objects.filter(user=instance.user)
+        if not profile.exists():
+            Profile.objects.create(user=instance.user)      
 
 @receiver(pre_save, sender=Account)
 def checkAccount(sender, instance, **kwargs):
 
     # If Instance/row is been created,then do nothing
     if instance.id is None:
-        pass
+        pass        
 
     # Else if it is being modified
 
@@ -251,7 +259,6 @@ def sendNotificationsToAccounst(sender, instance, created, **kwargs):
 @receiver(pre_save, sender=Withdraw)
 def accept_or_deny(sender, instance, **kwargs):
 
-    print(kwargs)
     """_summary_
 
     Args:
