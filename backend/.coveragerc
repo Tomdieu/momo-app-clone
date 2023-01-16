@@ -1,0 +1,28 @@
+
+# .coveragerc to control coverage.py
+[run]
+source = .
+omit =
+   *env/*
+   *env/bin/*
+   *env/include/*
+   *env/lib/*
+   *manage.py
+   */settings.py
+   */local_settings.py
+   */tests/*
+   *apps.py
+   *migrations/*
+   *asgi.py
+   *wsgi.py
+
+   *__init__*
+   */__pycache__/*
+   */site-packages/*
+   */distutils/*
+
+
+[report]
+#fail_under = 100
+show_missing = True
+#skip_covered = True
