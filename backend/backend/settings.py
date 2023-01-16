@@ -320,7 +320,7 @@ APP_NAME = 'TrixWallet'  # this is the name i gaved to my backend system app
 
 # -------------- Withdraw minutes valid ---------------
 
-WITHDRAW_MONEY_MINUTES = 2
+WITHDRAW_MONEY_MINUTES = 3
 
 WALLET_DEFAULT_PIN_CODE = '00000'
 
