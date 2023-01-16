@@ -68,7 +68,14 @@ const RegisterScreen = ({ navigation }) => {
                   navigation.navigate('Login',{message:data.message})
                 }
                 else{
-                  Alert("Could not create account")
+                  Alert.alert("Could not create account",'Something went wrong',[
+                    {
+                    text: 'No',
+                    onPress: () => {
+                      
+                    },
+                  },
+                  ])
                 }
               })
               .catch(err=>console.log(err))
