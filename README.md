@@ -5,6 +5,8 @@
 
 [![Docker Image CI](https://github.com/Tomdieu/momo-app-clone/actions/workflows/docker-image.yml/badge.svg)](https://github.com/Tomdieu/momo-app-clone/actions/workflows/docker-image.yml)
 
+[![Django CI](https://github.com/Tomdieu/momo-app-clone/actions/workflows/django.yml/badge.svg)](https://github.com/Tomdieu/momo-app-clone/actions/workflows/django.yml)
+
 ## This is a small project on a money transaction app made in python using Django and Django Rest Framework to build api
 
 ## Technology used
