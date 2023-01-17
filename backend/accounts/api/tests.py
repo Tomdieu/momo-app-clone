@@ -87,7 +87,6 @@ class TestUserAPIViews(TestCase):
 
     
     @pytest.mark.order(3)
-    @pytest.mark.xfail
     def test_user_cannot_login(self):
         faker = Faker()
         data = {
@@ -96,7 +95,7 @@ class TestUserAPIViews(TestCase):
         }
         res = self.client.post('/api/auth/login/',data)
 
-        assert res.status_code == 200
+        assert res.status_code != 200
 
     @pytest.mark.order(4)
     def test_user_account_balance(self):
@@ -109,7 +108,6 @@ class TestUserAPIViews(TestCase):
         assert res.json()['data']['balance'] == 0
 
     @pytest.mark.order(5)
-    @pytest.mark.xfail
     def test_user_logout(self):
         
         print("Token in logout : ",self.token)
