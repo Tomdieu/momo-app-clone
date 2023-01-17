@@ -1,6 +1,6 @@
 import pytest
 
-from django.test import TestCase
+# from django.test import TestCase
 
 from accounts.models import Profile
 from django.contrib.auth import get_user_model
@@ -8,6 +8,9 @@ from django.contrib.auth import get_user_model
 from mixer.backend.django import mixer
 
 from rest_framework.test import APIClient
+
+from hypothesis import given,strategies as st
+from hypothesis.extra.django import TestCase
 
 from faker import Faker
 
@@ -28,6 +31,7 @@ class TestUserAPIViews(TestCase):
         self.token = None
 
         self.res = self.create_user()
+        self.token = self.res.json()['token']
 
     def create_user(self):
 
@@ -77,11 +81,9 @@ class TestUserAPIViews(TestCase):
             "password": self.password
         }
         res = self.client.post('/api/auth/login/',data)
-
-        self.token = res.json()["token"]
-
+        
         assert res.status_code == 200
-        assert self.token != None
+        assert res.json()['data']['user']['username'] == self.username
 
     
     @pytest.mark.order(3)
@@ -97,9 +99,20 @@ class TestUserAPIViews(TestCase):
         assert res.status_code == 200
 
     @pytest.mark.order(4)
+    def test_user_account_balance(self):
+        print(self.token)
+        self.client.credentials(HTTP_AUTHORIZATION=f"token {self.token}")
+
+        res = self.client.get('/api/momo/accounts/')
+
+        assert res.status_code == 200
+        assert res.json()['data']['balance'] == 0
+
+    @pytest.mark.order(5)
     @pytest.mark.xfail
     def test_user_logout(self):
         
+        print("Token in logout : ",self.token)
         self.client.credentials(HTTP_AUTHORIZATION=f"token {self.token}")
 
         res = self.client.post('/api/auth/logout/')

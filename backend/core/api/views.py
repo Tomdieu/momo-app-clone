@@ -100,7 +100,6 @@ class AccountViewSet(RetrieveModelMixin, GenericViewSet, ListModelMixin, UpdateM
         instance = self.get_object()
         serializer = self.get_serializer_class()
         if instance.user == request.user:
-            print(super().partial_update(request, *args, **kwargs))
             return super().partial_update(request, *args, **kwargs)
             # return Response({'success': True, 'data': serializer(data).data, 'message': 'Updated'})
         else:
@@ -365,6 +364,19 @@ class ConfirmWithdraw(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, Gene
         else:
             return Response({'success': True, 'data': [], 'message': 'No pending withdrawal'})
 
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        instance = serializer.save()
+
+        return Response({'success': True, 'data': WithdrawListSerializer(instance).data, 'message': 'Your Updated The withdrawals'})
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
 
 class ChangePinCodeViewSet(GenericViewSet, CreateAPIView):
     """
