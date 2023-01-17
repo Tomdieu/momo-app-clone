@@ -6,7 +6,7 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register('profile', ProfileViewSet, basename='users')
-router.register('register', CreateProfileViewSet, basename='create profile')
+router.register('register', CreateProfileViewSet, basename='create_profile')
 router.register('login', LoginViewSet, basename="login")
 router.register('update-password', UpdatePasswordViewSet,
                 basename='updated-password')

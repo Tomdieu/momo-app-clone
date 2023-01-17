@@ -1,11 +1,14 @@
-from django.test import TestCase
+# from django.test import TestCase
 from rest_framework.test import APITestCase
 from django.urls import reverse
 
 from django.contrib.auth import get_user_model
 
 import json
+
 import pytest
+from hypothesis import given,strategies as st
+from hypothesis.extra.django import TestCase
 
 from mixer.backend.django import mixer
 
@@ -36,6 +39,19 @@ class TestUserModel(TestCase):
         account.save()
 
         self.assertEqual(account.balance, 100)
+    
+    @given(st.text(min_size=5,alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMOPQRSTUVWXYZ0123456789"))
+    def test_change_username(self,name):
+        
+        user = self.user
+        user.username = name
+        user.save()
+
+
+        assert user.username == name
+
+        
+
 
 pytest.mark.django_db
 class TestUserApi(APITestCase):
