@@ -16,6 +16,7 @@ import { useAuthContext } from '../../context/AuthContext'
 import moment from 'moment'
 
 
+
 const { StatusBarManager } = NativeModules
 
 moment.locale('en')
@@ -24,7 +25,6 @@ const NotificationScreen = ({ navigation }) => {
 
   const [selectedNotification, setSelectedNotification] = useState([])
 
-  const [messages, setMessages] = useState([])
 
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +32,28 @@ const NotificationScreen = ({ navigation }) => {
 
  
 
-  const { token } = useAuthContext();
+  const { messages, setMessages,token,userInfo,notificationCount,setNotificationCount } = useAuthContext();
+
+  useEffect(()=>{
+    if(notificationCount){
+      ApiService
+      .getNotifications(token)
+      .then(res => res.json())
+      .then(data => {
+        setMessages(data.data)
+        setLoading(false);
+
+        setTimeout(()=>{
+          setNotificationCount(0);
+        },4000)
+
+      })
+      .catch(err => {
+        console.log(err)
+        setLoading(false);
+      })
+    }
+  },[notificationCount])
 
   useEffect(() => {
     ApiService
@@ -47,6 +68,17 @@ const NotificationScreen = ({ navigation }) => {
         setLoading(false);
       })
   }, []);
+
+  useEffect(()=>{
+    const unsubscribe = navigation.addListener('tabPress', (e) => {
+   // Prevent default behavior
+   setNotificationCount(0)
+   e.preventDefault();
+   set
+   });
+
+ return unsubscribe;
+  },[navigation])
 
   const onRefresh = React.useCallback(()=>{
     setRefreshing(true);

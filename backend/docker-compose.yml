@@ -13,11 +13,12 @@ services:
   backend:
     image: backend
     restart: unless-stopped
-    build: .
+    build: 
+      context: .
     volumes:
       - .:/django_backend
     ports:
-      - 8001:8000
+      - 8000:8000
     container_name: django_container
     command: python manage.py runserver 0.0.0.0:8000
 

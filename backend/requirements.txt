@@ -36,6 +36,7 @@ django-timezone-field==5.0
 djangorestframework==3.14.0
 drf-yasg==1.21.4
 exceptiongroup==1.1.0
+execnet==1.9.0
 factory-boy==3.2.1
 Faker==12.0.1
 gunicorn==20.1.0
@@ -68,6 +69,8 @@ pytest-cov==4.0.0
 pytest-django==4.5.2
 pytest-factoryboy==2.5.1
 pytest-order==1.0.1
+pytest-sugar==0.9.6
+pytest-xdist==3.1.0
 python-crontab==2.6.0
 python-dateutil==2.8.2
 pytz==2022.6
@@ -80,6 +83,7 @@ simplejson==3.18.0
 six==1.16.0
 sortedcontainers==2.4.0
 sqlparse==0.4.3
+termcolor==2.2.0
 tomli==2.0.1
 Twisted==22.10.0
 txaio==22.2.1

@@ -187,6 +187,25 @@ def checkIfUserCanDepositMoney(sender, instance: Account, **kwargs):
                 Notification.objects.create(user=sender_account.user, message="Your account balance is insufficent to perform the transaction. Please fill you account and retry later!\nCurrent account balance {}".format(
                     sender_account.get_balance()), type=notification_status.NOTIFCATION_WITHDRAW_REJECTED)
 
+
+@receiver(post_save,sender=Deposit)
+def sendNotificationsToAccountWhenDeposit(sender, instance, created, **kwargs):
+    """
+     ## Transfer ModelPost ave Signal for
+
+    """
+
+    if created:
+        # instance.code = str(5000000 + instance.id)
+        if instance.status == 'SUCCESSFULL':
+            Notification.objects.create(user=instance.sender.user, message=instance.generateMessage(
+                instance.sender.user.profile.lang)["sender_message"], type=notification_status.NOTIFICATION_TRANSFER_SUCCESSFULL)
+
+            Notification.objects.create(user=instance.reciever.user, message=instance.generateMessage(
+                instance.reciever.user.profile.lang)["reciever_message"], type=notification_status.NOTIFICATION_NORMAL)
+
+        instance.save()
+
 ####################################TRANSFER SIGNALS##############################################################
 
 @receiver(pre_save, sender=Transfer)

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View,TouchableOpacity } from 'react-native'
 import CheckBox from 'expo-checkbox'
 import React, { useState, useEffect } from 'react'
 
@@ -50,6 +50,10 @@ const LanguageScreen = ({navigation,route}) => {
     <View style={styles.container}>
       <Text style={styles.title}>{i18n.t('select a language')}</Text>
       <View style={styles.row}>
+      <TouchableOpacity onPress={() => {
+              setUserLang({en:false,fr:true});
+              // handleChange()
+            }}>
         <View style={styles.box}>
           <Text>Francais</Text>
           <CheckBox 
@@ -61,6 +65,12 @@ const LanguageScreen = ({navigation,route}) => {
             }} 
           />
         </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+              setUserLang({en:true,fr:false});
+              // handleChange()
+            }}>
+
         <View style={styles.box}>
           <Text>English</Text>
           <CheckBox 
@@ -72,6 +82,7 @@ const LanguageScreen = ({navigation,route}) => {
             }} 
           />
         </View>
+        </TouchableOpacity>
       </View>
     </View>
   )

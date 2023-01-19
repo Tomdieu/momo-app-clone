@@ -13,12 +13,15 @@ import TransactionNavigator from './TransactionStack'
 import SettingStack from './SettingsStack'
 
 import {useLanguageContext} from '../context/LangContext'
+import {useAuthContext} from '../context/AuthContext'
+
 
 
 const Tab = createBottomTabNavigator()
 
 const AppNavigator = () => {
   const {i18n} = useLanguageContext()
+  const {notificationCount} = useAuthContext()
   const settings = i18n.t("settings");
   const compte = i18n.t('account')
   return (
@@ -38,7 +41,7 @@ const AppNavigator = () => {
       <Tab.Screen name="Notification" component={NotificationStack} options={{
         title: "Notifications",
         tabBarLabel: "Notifications",
-        tabBarBadge: '',
+        tabBarBadge: notificationCount ? notificationCount: null,
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="notifications" color={color} size={size} />
         ),

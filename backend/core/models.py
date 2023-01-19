@@ -209,6 +209,18 @@ class Withdraw(Transaction):
                 raise ValidationError({'withdraw_from': _(
                     "You can't withdraw money from the account the account balance is insufficent")})
 
+    def generateMessage(self, lang: str):
+        sender_message = ''
+        reciever_message = ''
+        if lang == 'FR':
+            sender_message = f'Vous avez fait un depot d\'un montant de {self.currency} {self.amount} aux compte {self.reciever.account_number} apartenant a {self.reciever.user.first_name} {self.reciever.user.last_name} [{self.reciever.user}] a {self.created_at} avec success id de transaction {self.code}.\nVotre nouveaux solde est de {self.currency} {self.sender.balance}'
+            reciever_message = f'Vous avez recus un montant de {self.currency} {self.amount} dans votre compte {self.reciever.account_number} de la part de {self.sender.user.first_name} {self.sender.user.last_name} [{self.sender.user}] a {self.created_at}.\nVotre nouveaux solde est de {self.currency} {self.reciever.balance}'
+        elif lang == 'EN':
+            sender_message = f'You have successfully deposit an amount of {self.currency} {self.amount} to the account number {self.reciever.account_number} belonging to {self.reciever.user.first_name} {self.reciever.user.last_name} [{self.reciever.user}] at {self.created_at} transaction id {self.code}.\nYour new account balance is {self.currency} {self.sender.balance}'
+            reciever_message = f'You have recieve an amount of {self.currency} {self.amount} in your account {self.reciever.account_number} from {self.sender.user.first_name} {self.sender.user.last_name} [{self.sender.user}] at {self.created_at}.\nYour new account balance is {self.currency} {self.reciever.balance}'
+
+        return {'sender_message': sender_message, 'reciever_message': reciever_message}
+
     class Meta:
         ordering = ['-created_at']
 
