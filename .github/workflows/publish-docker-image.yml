@@ -14,6 +14,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build the django-backend Docker image
         run: |
-          cd backend docker && build . --tag ghcr.io/tomdieu/momo-app-clone:latest
-          cd backend docker && run ghcr.io/tomdieu/momo-app-clone:latest
-          cd backend docker && push ghcr.io/tomdieu/momo-app-clone:latest
+          cd backend && docker build . --tag ghcr.io/tomdieu/momo-app-clone:latest
+          cd backend && docker run ghcr.io/tomdieu/momo-app-clone:latest
+          cd backend && docker push ghcr.io/tomdieu/momo-app-clone:latest
