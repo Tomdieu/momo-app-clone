@@ -1,5 +1,6 @@
 # momo-app-clone
 
+![alt logo](https://github.com/Tomdieu/momo-app-clone/blob/main/frontend/src/images/logo.png?raw=true)
 
 [![wakatime](https://wakatime.com/badge/user/7a03d500-b310-4adb-9229-1bb6044d565d/project/255879e0-ef36-4ec4-bb05-2bf27d669b7f.svg)](https://wakatime.com/badge/user/7a03d500-b310-4adb-9229-1bb6044d565d/project/255879e0-ef36-4ec4-bb05-2bf27d669b7f)
 
